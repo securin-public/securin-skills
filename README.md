@@ -2,7 +2,7 @@
 
 Vulnerability management is not just a scanning problem. It's a prioritization problem: which of your millions of findings actually matter, which threats target your specific environment, what's worth remediating this sprint, and how do you explain the risk to leadership. The Securin Platform Skills Plugin packages Securin expertise and MCP-backed execution together so your AI agent can do real security work instead of giving generic vulnerability advice.
 
-**[Install the plugin](#install-in-60-seconds)**
+**[Install now](#install)** — Claude Code, Copilot, Cursor, Gemini CLI, Codex CLI, Windsurf, and any MCP-compatible host.
 
 ## One install, two layers of capability
 
@@ -27,7 +27,7 @@ This is not a prompt pack. It is a packaged Securin capability layer:
 - **Skills** teach the agent when to use which Securin workflow and what to avoid.
 - **MCP tools** let the agent act on live Securin Platform data.
 - **Brand + visual communication** is enforced by default — outputs ship as Securin-branded reports, charts, and infographics.
-- **Multi-host support** lets you use the same Securin capability across Claude Cowork, Claude Code, Claude Desktop, and other compatible MCP-aware hosts.
+- **Multi-host support** — the MCP server works with every MCP-compatible host, and the skills follow the open [Agent Skills](https://openai.com/index/agentic-ai-foundation/) standard supported by Claude Code, Codex CLI, GitHub Copilot, Gemini CLI, Cursor, Windsurf, and others.
 
 ## What you get
 
@@ -54,62 +54,166 @@ The 8 skills in this plugin, when each one activates, and what it produces.
 
 All skills enforce four cross-cutting invariants: account-id preflight, deep links back into the platform, scope discipline (hand off to a sibling skill when the ask fits), and Securin-branded visual output.
 
-## Install in 60 seconds
+## Install
 
 ### Prerequisites
 
-Before you install, make sure you have:
-
 - A Securin Platform account you can sign in to at <https://auth.securin.io>
-- **Node.js 18+** available on your PATH (used by `npx` to launch the `mcp-remote` proxy)
+- **Node.js 18+** on your PATH (used by `npx` for hosts that need the `mcp-remote` bridge)
 
-No API token or bearer secret is required — the MCP server handles authentication through the Securin identity provider automatically the first time you use it. A browser window will open asking you to sign in; future sessions reuse the stored credential silently.
+No API token or bearer secret is required — authentication happens through the Securin identity provider automatically. A browser window opens on first use; future sessions reuse the stored credential.
 
-### Claude Cowork
+### What you're installing
 
-**Add the marketplace** (first time only):
+| Component | Delivery | Supported hosts |
+| --- | --- | --- |
+| **Securin MCP tools** (300+ API tools) | MCP server at `https://mcp.securin.io/mcp` | Every MCP-compatible host |
+| **Securin skills** (8 workflows) | Standard `SKILL.md` files in `skills/` | Claude Code, Cowork, Codex CLI, GitHub Copilot, Gemini CLI, Cursor, Windsurf, and any host supporting the [Agent Skills](https://openai.com/index/agentic-ai-foundation/) standard |
 
-```bash
-/plugin marketplace add securin-inc/securin-mcp
-```
+---
 
-**Install the plugin**:
+### Claude Code / Claude Cowork
 
-```bash
-/plugin install securin-platform@securin-mcp
-```
-
-**Update the plugin**:
+The plugin marketplace installs both the MCP server and all 8 skills automatically:
 
 ```bash
-/plugin marketplace update securin-mcp
+# Add the marketplace (first time only)
+/plugin marketplace add securin-public/securin-skills
+
+# Install the plugin
+/plugin install securin-platform@securin-skills
+
+# Update later
+/plugin marketplace update securin-skills
 ```
 
-That's it. The MCP configuration ships inside the plugin — no env vars, no token paste. The first time the MCP server boots it opens a browser for `auth.securin.io` sign-in; subsequent launches use the cached credential.
+The MCP configuration ships inside the plugin — no env vars, no token paste.
 
-### Claude Code
+**Team distribution** — pre-configure the plugin for everyone by adding to your project's `.claude/settings.json`:
 
-Same marketplace + install commands as Cowork:
-
-```bash
-/plugin marketplace add securin-inc/securin-mcp
-/plugin install securin-platform@securin-mcp
+```json
+{
+  "extraKnownMarketplaces": {
+    "securin-skills": {
+      "source": {
+        "source": "github",
+        "repo": "securin-public/securin-skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "securin-platform@securin-skills": true
+  }
+}
 ```
 
-No additional config needed — sign in through the browser when prompted.
+---
 
-### Claude Desktop
+### VS Code (GitHub Copilot)
 
-Claude Desktop does not load Claude plugin skills — only the MCP server connects. Your agent will have access to every Securin Platform tool, but the 8 branded-workflow skills are only available in Cowork / Claude Code.
+**MCP tools** — add to `.vscode/mcp.json`:
 
-Edit the config file:
+```json
+{
+  "servers": {
+    "securin": {
+      "type": "http",
+      "url": "https://mcp.securin.io/mcp"
+    }
+  }
+}
+```
 
-| OS | Path |
+**Skills** — clone this repo and add the path to your VS Code settings (`settings.json`):
+
+```json
+{
+  "chat.agentSkillsLocations": [
+    { "path": "/path/to/securin-skills/skills" }
+  ]
+}
+```
+
+Or copy the skill subdirectories into your project's `.agents/skills/` for automatic discovery.
+
+---
+
+### Cursor
+
+**MCP tools** — add to `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "securin": {
+      "url": "https://mcp.securin.io/mcp"
+    }
+  }
+}
+```
+
+**Skills** — clone this repo and copy the skill subdirectories from `skills/` into your project's `.agents/skills/` directory for automatic discovery.
+
+---
+
+### Windsurf
+
+**MCP tools** — add to `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "securin": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.securin.io/mcp"]
+    }
+  }
+}
+```
+
+**Skills** — clone this repo and copy the skill subdirectories from `skills/` into your project's `.agents/skills/` directory.
+
+---
+
+### Gemini CLI
+
+**MCP tools** — add to `.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "securin": {
+      "url": "https://mcp.securin.io/mcp"
+    }
+  }
+}
+```
+
+**Skills** — clone this repo and copy the skill subdirectories from `skills/` into `.gemini/skills/` or your project's `.agents/skills/` directory.
+
+---
+
+### OpenAI Codex CLI
+
+**MCP tools** — add to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.securin]
+url = "https://mcp.securin.io/mcp"
+```
+
+**Skills** — clone this repo and copy the skill subdirectories from `skills/` into your project's `.agents/skills/` directory.
+
+---
+
+### Claude Desktop (MCP tools only)
+
+Claude Desktop does not load agent skills — only the MCP server connects.
+
+| OS | Config file |
 |---|---|
 | macOS | `~/Library/Application Support/Claude/claude_desktop_config.json` |
 | Windows | `%APPDATA%\Claude\claude_desktop_config.json` |
-
-Add the Securin MCP server:
 
 ```json
 {
@@ -126,23 +230,34 @@ Add the Securin MCP server:
 }
 ```
 
-Save and **fully quit and relaunch** Claude Desktop (a tray restart isn't enough). The first MCP call opens a browser to sign in via `auth.securin.io`; after that, the credential is cached locally by `mcp-remote`.
+Save and **fully quit and relaunch** Claude Desktop (a tray restart isn't enough).
 
-### Other MCP-aware hosts
+---
 
-The plugin's skills follow the standard Agent Skills spec and the MCP server uses standard Streamable-HTTP transport, so any MCP-aware host (VS Code MCP extensions, Cursor, Copilot CLI, Gemini CLI with MCP support, custom agents built on the Claude Agent SDK) can consume them. Copy the same `mcpServers.securin` block into the host's config and point the host's skills loader at the `skills/` directory inside a local clone of this repo.
+### Any other MCP-compatible host
+
+The Securin MCP endpoint (`https://mcp.securin.io/mcp`) uses Streamable HTTP transport. Hosts that support HTTP-based MCP can connect directly via the URL. Hosts that only support stdio transport can use the `npx mcp-remote` bridge:
+
+```json
+{
+  "command": "npx",
+  "args": ["-y", "mcp-remote", "https://mcp.securin.io/mcp"]
+}
+```
+
+For skills, clone this repo and point the host's skill loader at the `skills/` directory — each subdirectory contains a standard `SKILL.md` file with YAML frontmatter (`name`, `description`) and markdown instructions, following the [Agent Skills](https://openai.com/index/agentic-ai-foundation/) open standard.
 
 ## Verify the installation
 
 After install, try three quick checks.
 
-### 1. Verify the skills layer (Cowork / Claude Code only)
+### 1. Verify the skills layer
 
 Ask:
 
 > What can you do with Securin?
 
-You should get a short menu pointing at the 8 skills — not a generic "I can search your data" answer.
+You should get a response referencing specific Securin workflows (CVE enrichment, exposure triage, threat correlation, etc.) — not a generic "I can search your data" answer. This works on any host that loaded the skills.
 
 ### 2. Verify the Securin MCP
 
@@ -184,7 +299,7 @@ Then restart your host and run a Securin query — the browser will prompt again
 
 ## Prompts to try
 
-Once the plugin is installed, try prompts like these:
+Once installed, try prompts like these:
 
 - `Enrich CVE-2024-3400.`
 - `Show me my open critical exposures breaching SLA.`
@@ -212,6 +327,7 @@ Drop your approved Securin logo files into `skills/_shared/securin_logos/` (file
 
 If you are exploring or customizing the plugin source, the key pieces are:
 
+- `.claude-plugin/marketplace.json` — marketplace catalog (enables `/plugin marketplace add`)
 - `.claude-plugin/plugin.json` — plugin manifest
 - `.mcp.json` — Securin Platform MCP server configuration (runs `mcp-remote` against `https://mcp.securin.io/mcp`)
 - `skills/` — the 8 Securin skill definitions
@@ -225,16 +341,17 @@ If you are exploring or customizing the plugin source, the key pieces are:
 
 ### The agent is not using Securin skills
 
-- Make sure the plugin installed successfully (`/plugin` lists `securin-platform`).
-- Reload or restart your host so it re-indexes plugins and MCP configuration.
-- Confirm you are on Cowork or Claude Code — Claude Desktop does not load skills, only the MCP server.
+- **Claude Code / Cowork:** Make sure the plugin installed successfully (`/plugin` lists `securin-platform`).
+- **Other hosts:** Verify the skills were copied into the correct directory (`.agents/skills/`, `.gemini/skills/`, etc.) and each subdirectory contains a `SKILL.md` file.
+- Reload or restart your host so it re-indexes skills and MCP configuration.
 
 ### MCP tools are not showing up
 
 - Verify Node.js 18+ is installed and `npx` works: `node --version` and `npx --version`.
-- Run `/mcp` (Cowork / Claude Code) and confirm `securin` is listed.
-- On Claude Desktop, fully quit and relaunch — a tray restart isn't enough.
-- On macOS, if Claude Desktop can't find `npx`, launch it from a terminal so it inherits your shell PATH.
+- **Claude Code / Cowork:** Run `/mcp` and confirm `securin` is listed.
+- **Claude Desktop:** Fully quit and relaunch — a tray restart isn't enough.
+- **Other hosts:** Check the host's MCP server logs for connection errors. Verify the config file path and JSON/TOML format for your specific host.
+- On macOS, if the host can't find `npx`, launch it from a terminal so it inherits your shell PATH.
 
 ### The sign-in browser window never opens
 
@@ -269,16 +386,17 @@ Your host may not support file artifacts. The plugin falls back to an ASCII bar 
 - [Securin Platform documentation](https://docs.securin.io)
 - [Securin Platform MCP Server](https://github.com/securin-inc/securin-mcp)
 - [Model Context Protocol specification](https://modelcontextprotocol.io)
+- [Agent Skills open standard](https://openai.com/index/agentic-ai-foundation/) (Agentic AI Foundation / Linux Foundation)
 
 ## Feedback & support
 
-- **Report issues:** https://github.com/securin-inc/securin-mcp/issues
+- **Report issues:** https://github.com/securin-public/securin-skills/issues
 - **Product support:** support@securin.io
 - **Security disclosures:** see [SECURITY.md](SECURITY.md)
 
 ## Contribution
 
-Contributions are welcome. See the main [securin-mcp](https://github.com/securin-inc/securin-mcp) repository for contribution guidelines and the upstream MCP server source.
+Contributions are welcome. File issues or pull requests against [securin-public/securin-skills](https://github.com/securin-public/securin-skills). For the upstream MCP server source, see [securin-inc/securin-mcp](https://github.com/securin-inc/securin-mcp).
 
 ---
 

@@ -6,7 +6,8 @@
     "name": "Securin",
     "url": "https://www.securin.io"
   },
-  "homepage": "https://github.com/securin-inc/securin-mcp",
+  "homepage": "https://github.com/securin-public/securin-skills",
+  "repository": "https://github.com/securin-public/securin-skills",
   "keywords": [
     "securin",
     "vulnerability-management",

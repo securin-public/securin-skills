@@ -1,0 +1,32 @@
+{
+  "name": "securin-skills",
+  "metadata": {
+    "description": "Securin vulnerability-management skills and MCP tooling for AI agents"
+  },
+  "owner": {
+    "name": "Securin",
+    "email": "support@securin.io"
+  },
+  "plugins": [
+    {
+      "name": "securin-platform",
+      "source": "./",
+      "description": "Securin Platform workflows for triage, CVE enrichment, threat correlation, and remediation guidance — plus 300+ MCP tools for the Securin API.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Securin",
+        "url": "https://www.securin.io"
+      },
+      "homepage": "https://github.com/securin-public/securin-skills",
+      "repository": "https://github.com/securin-public/securin-skills",
+      "keywords": [
+        "securin",
+        "vulnerability-management",
+        "exposure-management",
+        "cve",
+        "threat-intelligence",
+        "remediation"
+      ]
+    }
+  ]
+}

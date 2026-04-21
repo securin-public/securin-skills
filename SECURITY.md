@@ -19,7 +19,7 @@ available at <https://securin.io/.well-known/security.txt>).
 **Alternate channel — private GitHub advisory:**
 
 Open a private security advisory against this repository:
-<https://github.com/securin-inc/securin-mcp/security/advisories/new>
+<https://github.com/securin-public/securin-skills/security/advisories/new>
 
 Please include:
 
