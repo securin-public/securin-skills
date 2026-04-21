@@ -1,0 +1,50 @@
+Securin Platform Skills Plugin — License
+
+Copyright © Securin, Inc. All rights reserved.
+
+This software and its accompanying documentation (the "Plugin") are the
+proprietary work of Securin, Inc. ("Securin").
+
+Grant of use
+------------
+Securin grants customers with an active Securin Platform subscription a
+non-exclusive, non-transferable, revocable license to install, run, and
+modify the Plugin for internal use with their Securin Platform account(s),
+subject to the terms of their Securin Platform subscription agreement and
+any applicable Acceptable Use Policy.
+
+You may:
+  * Install the Plugin in Claude Cowork, Claude Code, Claude Desktop, or any
+    other MCP-aware host that you are authorized to use.
+  * Fork this repository and modify the skill and brand content for your
+    internal use.
+  * Redistribute modifications within your organization.
+
+You may not:
+  * Redistribute the Plugin or derivative works outside your organization
+    without Securin's prior written consent.
+  * Use Securin's name, logo, or brand assets in a way that suggests Securin
+    endorses your modifications.
+  * Use the Plugin to access Securin Platform data you are not authorized to
+    access under your subscription agreement.
+
+Brand assets
+------------
+Securin logos, wordmarks, and the Securin brand palette (including the color
+values documented in `skills/_shared/brand.md`) are trademarks of Securin, Inc.
+Use of these assets is governed by Securin's brand guidelines and the terms
+of your subscription. Keep logo files in `skills/_shared/securin_logos/`
+unmodified and do not recolor, distort, or rebrand them.
+
+Disclaimer of warranty
+----------------------
+THE PLUGIN IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL
+SECURIN BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM
+THE USE OF THE PLUGIN.
+
+Contact
+-------
+Questions about licensing or commercial use: support@securin.io
+Security disclosures: see SECURITY.md

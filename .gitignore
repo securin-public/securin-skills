@@ -1,0 +1,65 @@
+# ---- Credentials / secrets ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+
+# ---- Local plugin/tool state ----
+.claude/
+*.local.md
+*.local.json
+installed_plugins.json
+known_marketplaces.json
+
+# ---- OS / editor junk ----
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# ---- Python artifacts (utility scripts in repo root) ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.venv/
+venv/
+env/
+build/
+dist/
+
+# ---- Node / JS artifacts (if logos are processed via tooling) ----
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ---- Logs / outputs ----
+*.log
+logs/
+
+# ---- Runtime / validation evidence (never check into a public plugin) ----
+# Any account-specific output, user-id, or bearer token captured during QA.
+validation-output/
+runtime-evidence/
+*.runtime.json
+VALIDATION_PLAN.md
+
+# ---- Image processing intermediates (kept originals; exclude temp) ----
+skills/_shared/securin_logos/*.tmp.*
+skills/_shared/securin_logos/_draft/

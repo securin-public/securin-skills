@@ -1,0 +1,18 @@
+{
+  "name": "securin-platform",
+  "version": "0.1.0",
+  "description": "Securin Platform workflows for triage, CVE enrichment, threat correlation, and remediation guidance. Requires the Securin MCP server.",
+  "author": {
+    "name": "Securin",
+    "url": "https://www.securin.io"
+  },
+  "homepage": "https://github.com/securin-inc/securin-mcp",
+  "keywords": [
+    "securin",
+    "vulnerability-management",
+    "exposure-management",
+    "cve",
+    "threat-intelligence",
+    "remediation"
+  ]
+}
