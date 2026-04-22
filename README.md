@@ -68,7 +68,7 @@ No API token or bearer secret is required — authentication happens through the
 | Component | Delivery | Supported hosts |
 | --- | --- | --- |
 | **Securin MCP tools** (300+ API tools) | MCP server at `https://mcp.securin.io/mcp` | Every MCP-compatible host |
-| **Securin skills** (8 workflows) | Standard `SKILL.md` files in `skills/` | Claude Code, Cowork, Codex CLI, GitHub Copilot, Gemini CLI, Cursor, Windsurf, and any host supporting the [Agent Skills](https://openai.com/index/agentic-ai-foundation/) standard |
+| **Securin skills** (8 workflows) | Standard `SKILL.md` files in `skills/` | Claude Code, Cowork, Codex CLI, GitHub Copilot, Gemini CLI, Cursor, Windsurf, and any host supporting the [Agent Skills](https://agentskills.io/home) standard |
 
 ---
 
