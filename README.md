@@ -27,7 +27,7 @@ This is not a prompt pack. It is a packaged Securin capability layer:
 - **Skills** teach the agent when to use which Securin workflow and what to avoid.
 - **MCP tools** let the agent act on live Securin Platform data.
 - **Brand + visual communication** is enforced by default — outputs ship as Securin-branded reports, charts, and infographics.
-- **Multi-host support** — the MCP server works with every MCP-compatible host, and the skills follow the open [Agent Skills](https://openai.com/index/agentic-ai-foundation/) standard supported by Claude Code, Codex CLI, GitHub Copilot, Gemini CLI, Cursor, Windsurf, and others.
+- **Multi-host support** — the MCP server works with every MCP-compatible host, and the skills follow the open [Agent Skills](https://agentskills.io/home) standard supported by Claude Code, Codex CLI, GitHub Copilot, Gemini CLI, Cursor, Windsurf, and others.
 
 ## What you get
 
