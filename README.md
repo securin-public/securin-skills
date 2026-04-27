@@ -330,9 +330,10 @@ If you are exploring or customizing the plugin source, the key pieces are:
 - `.claude-plugin/marketplace.json` — marketplace catalog (enables `/plugin marketplace add`)
 - `.claude-plugin/plugin.json` — plugin manifest
 - `.mcp.json` — Securin Platform MCP server configuration (runs `mcp-remote` against `https://mcp.securin.io/mcp`)
-- `skills/` — the 8 Securin skill definitions
-- `skills/_shared/` — shared invariants (account preflight, deep links, FQL grammar, sorting rules, brand guidelines)
-- `skills/_shared/securin_logos/` — Securin wordmark assets for branded outputs
+- `skills/` — the 8 Securin skill definitions; each skill folder is self-contained and can be copied independently into any host's skills directory
+- `skills/_shared/` — source of truth for shared invariants (account preflight, deep links, FQL grammar, sorting rules, brand guidelines). Mirrored into each skill's `references/_shared/` by `scripts/sync-shared.sh` so individual skills remain shippable on their own.
+- `skills/_shared/securin_logos/` — Securin wordmark assets for branded outputs (also mirrored into each skill)
+- `scripts/sync-shared.sh` — regenerates the per-skill `_shared` mirrors. CI fails if they drift.
 - `README.md` — this document
 - `SECURITY.md` — vulnerability-disclosure policy
 - `LICENSE` — usage terms

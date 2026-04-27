@@ -31,7 +31,7 @@ This skill is the inverse of `securin-cve-enrichment`: enrichment produces a glo
 
 ### Step 0 — Account preflight (CC-1)
 
-See [_shared/account-preflight.md](../_shared/account-preflight.md). Correlation queries always touch the user's environment — you must resolve account-id(s) and validate access before any exposure/asset query. Also detect the composite-vs-source data model (see [_shared/composite-vs-source.md](../_shared/composite-vs-source.md)) to use the correct asset prefix.
+See [_shared/account-preflight.md](references/_shared/account-preflight.md). Correlation queries always touch the user's environment — you must resolve account-id(s) and validate access before any exposure/asset query. Also detect the composite-vs-source data model (see [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md)) to use the correct asset prefix.
 
 ## Suggested tools
 
@@ -177,7 +177,7 @@ searchVulnerabilityData filter: vulnerabilityId = 'CVE-X'
 
 ## FQL patterns
 
-See [_shared/fql-grammar.md](../_shared/fql-grammar.md) for full grammar. Correlation-specific:
+See [_shared/fql-grammar.md](references/_shared/fql-grammar.md) for full grammar. Correlation-specific:
 
 ```text
 # Exposures matching a CVE set
@@ -217,14 +217,14 @@ exploitation.isCisaKev = true
 
 ## Visual output (CC-4)
 
-When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](../_shared/brand.md). Offer customization after delivery; never default to a different brand.
+When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](references/_shared/brand.md). Offer customization after delivery; never default to a different brand.
 
 ## References
 
 - [Correlation Patterns](references/correlation-patterns.md)
-- [Shared: Account Preflight](../_shared/account-preflight.md)
-- [Shared: Composite vs Source](../_shared/composite-vs-source.md)
-- [Shared: Deep Links](../_shared/deep-links.md)
-- [Shared: FQL Grammar](../_shared/fql-grammar.md)
-- [Shared: Sorting Rules](../_shared/sorting-rules.md)
-- [Shared: Brand & Visual Communication](../_shared/brand.md)
+- [Shared: Account Preflight](references/_shared/account-preflight.md)
+- [Shared: Composite vs Source](references/_shared/composite-vs-source.md)
+- [Shared: Deep Links](references/_shared/deep-links.md)
+- [Shared: FQL Grammar](references/_shared/fql-grammar.md)
+- [Shared: Sorting Rules](references/_shared/sorting-rules.md)
+- [Shared: Brand & Visual Communication](references/_shared/brand.md)

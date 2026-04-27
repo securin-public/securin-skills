@@ -78,7 +78,7 @@ These are powerful for dashboards — call `aggregateExposureData` with a TERMS/
 | `asset.reachability` / `compositeAsset.reachability` | ASSET | `'Exposed'` / `'NotExposed'` |
 | `asset.workspaceId` / `compositeAsset.workspaceId` | ASSET | `in [...]` |
 
-> **Namespace reminder:** `vulnerabilities.*` is valid **only** in exposure queries. In `searchVulnerabilityData`, use bare paths (`vulnerabilityId`, `tags`, `exploitation.isCisaKev`). See [_shared/fql-grammar.md](../../_shared/fql-grammar.md).
+> **Namespace reminder:** `vulnerabilities.*` is valid **only** in exposure queries. In `searchVulnerabilityData`, use bare paths (`vulnerabilityId`, `tags`, `exploitation.isCisaKev`). See [_shared/fql-grammar.md](_shared/fql-grammar.md).
 
 ## Aggregation dimensions (common)
 

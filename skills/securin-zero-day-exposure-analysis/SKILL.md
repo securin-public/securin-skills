@@ -31,11 +31,11 @@ Zero-days often lack a vendor patch at discovery time, so remediation emphasis s
 
 ### Step 0 — Account preflight (CC-1)
 
-See [_shared/account-preflight.md](../_shared/account-preflight.md). Required — exposure matches are scoped to the resolved account-id.
+See [_shared/account-preflight.md](references/_shared/account-preflight.md). Required — exposure matches are scoped to the resolved account-id.
 
 ### Step 0.5 — Composite vs source (if asset pivot is needed)
 
-See [_shared/composite-vs-source.md](../_shared/composite-vs-source.md). Only matters when the report includes affected-asset context.
+See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md). Only matters when the report includes affected-asset context.
 
 ## Suggested tools
 
@@ -59,7 +59,7 @@ See [_shared/composite-vs-source.md](../_shared/composite-vs-source.md). Only ma
 - `filterToChipPost` — convert FQL filter → chip form for a platform URL (default, Strategy A).
 - `createDeepLink` — only if the user explicitly asks to save/share the view (Strategy B; write op, needs `x-user-id` + `shareWith`).
 - `getDeepLink` / `aggregateByDeepLink` — retrieve a saved short-code.
-- See [_shared/deep-links.md](../_shared/deep-links.md).
+- See [_shared/deep-links.md](references/_shared/deep-links.md).
 
 ### Outside
 - **Web search** — resolve named zero-days (e.g., "Regresshell", "Citrix Bleed", "MOVEit") to CVE IDs when Core doesn't match on alias.
@@ -217,7 +217,7 @@ AND asset.reachability = 'Exposed'                      # source-model
 AND asset.workspaceId in [<prod-ws-ids>]
 ```
 
-Substitute `compositeAsset.*` in composite-data accounts — see [_shared/composite-vs-source.md](../_shared/composite-vs-source.md).
+Substitute `compositeAsset.*` in composite-data accounts — see [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md).
 
 ## Sorting
 
@@ -242,13 +242,13 @@ Alternative for "worst externally-facing first":
 
 ## Visual output (CC-4)
 
-When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](../_shared/brand.md). Offer customization after delivery; never default to a different brand.
+When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](references/_shared/brand.md). Offer customization after delivery; never default to a different brand.
 
 ## References
 
-- [Shared: Account Preflight](../_shared/account-preflight.md)
-- [Shared: Composite vs Source](../_shared/composite-vs-source.md)
-- [Shared: Deep Links](../_shared/deep-links.md)
-- [Shared: FQL Grammar](../_shared/fql-grammar.md)
-- [Shared: Sorting Rules](../_shared/sorting-rules.md)
-- [Shared: Brand & Visual Communication](../_shared/brand.md)
+- [Shared: Account Preflight](references/_shared/account-preflight.md)
+- [Shared: Composite vs Source](references/_shared/composite-vs-source.md)
+- [Shared: Deep Links](references/_shared/deep-links.md)
+- [Shared: FQL Grammar](references/_shared/fql-grammar.md)
+- [Shared: Sorting Rules](references/_shared/sorting-rules.md)
+- [Shared: Brand & Visual Communication](references/_shared/brand.md)

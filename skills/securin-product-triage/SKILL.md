@@ -39,7 +39,7 @@ Ad-hoc search, filtering, and aggregation of **products** (global catalog entrie
 
 ### Step 0 — Account preflight (CC-1)
 
-See [_shared/account-preflight.md](../_shared/account-preflight.md). Required for **component** queries. For pure product-catalog queries (`getProducts`, `getVendors`), the preflight still runs so that deep links (CC-2) resolve to the correct account's UI context.
+See [_shared/account-preflight.md](references/_shared/account-preflight.md). Required for **component** queries. For pure product-catalog queries (`getProducts`, `getVendors`), the preflight still runs so that deep links (CC-2) resolve to the correct account's UI context.
 
 ## Suggested tools
 
@@ -175,14 +175,14 @@ filter: "product.vendor" = "Apache"
 
 ## Visual output (CC-4)
 
-When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](../_shared/brand.md). Offer customization after delivery; never default to a different brand.
+When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](references/_shared/brand.md). Offer customization after delivery; never default to a different brand.
 
 ## References
 
 - [Product & Component Fields Quickref](references/product-fields.md)
-- [Shared: Account Preflight](../_shared/account-preflight.md)
-- [Shared: Composite vs Source](../_shared/composite-vs-source.md)
-- [Shared: Deep Links](../_shared/deep-links.md)
-- [Shared: FQL Grammar](../_shared/fql-grammar.md)
-- [Shared: Sorting Rules](../_shared/sorting-rules.md)
-- [Shared: Brand & Visual Communication](../_shared/brand.md)
+- [Shared: Account Preflight](references/_shared/account-preflight.md)
+- [Shared: Composite vs Source](references/_shared/composite-vs-source.md)
+- [Shared: Deep Links](references/_shared/deep-links.md)
+- [Shared: FQL Grammar](references/_shared/fql-grammar.md)
+- [Shared: Sorting Rules](references/_shared/sorting-rules.md)
+- [Shared: Brand & Visual Communication](references/_shared/brand.md)

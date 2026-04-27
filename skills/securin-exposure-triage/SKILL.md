@@ -32,9 +32,9 @@ An *exposure* is an instance (e.g., "CVE-2024-3400 on host web-01"). A *vulnerab
 
 ### Step 0 — Account preflight (CC-1)
 
-See [_shared/account-preflight.md](../_shared/account-preflight.md). Resolve account-id(s) and validate access before any query. If the question implies a workspace subset, resolve workspace-ids too.
+See [_shared/account-preflight.md](references/_shared/account-preflight.md). Resolve account-id(s) and validate access before any query. If the question implies a workspace subset, resolve workspace-ids too.
 
-> Note: the exposure index is **not** affected by the composite-vs-source data model (that flag only affects assets). But cross-entity exposure filters that reference asset fields still need the correct asset prefix — see [_shared/composite-vs-source.md](../_shared/composite-vs-source.md).
+> Note: the exposure index is **not** affected by the composite-vs-source data model (that flag only affects assets). But cross-entity exposure filters that reference asset fields still need the correct asset prefix — see [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md).
 
 ## Suggested tools
 
@@ -58,7 +58,7 @@ See [_shared/account-preflight.md](../_shared/account-preflight.md). Resolve acc
 - `aggregateByDeepLink` — aggregation + per-bucket URLs
 - `getDeepLink` — URL for a known exposure-id
 
-See [_shared/deep-links.md](../_shared/deep-links.md).
+See [_shared/deep-links.md](references/_shared/deep-links.md).
 
 ## Workflow
 
@@ -82,7 +82,7 @@ getGroupByFields(entityType="EXPOSURE")
 
 ### Step 3 — Compose FQL
 
-See [_shared/fql-grammar.md](../_shared/fql-grammar.md). Exposure-specific patterns:
+See [_shared/fql-grammar.md](references/_shared/fql-grammar.md). Exposure-specific patterns:
 
 ```text
 exposure.status = 'Open'
@@ -195,14 +195,14 @@ Exposures have `remediationDate - firstSeenAt` → query both, compute client-si
 
 ## Visual output (CC-4)
 
-When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](../_shared/brand.md). Offer customization after delivery; never default to a different brand.
+When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](references/_shared/brand.md). Offer customization after delivery; never default to a different brand.
 
 ## References
 
 - [Exposure Fields Quickref](references/exposure-fields.md)
-- [Shared: Account Preflight](../_shared/account-preflight.md)
-- [Shared: Composite vs Source](../_shared/composite-vs-source.md)
-- [Shared: Deep Links](../_shared/deep-links.md)
-- [Shared: FQL Grammar](../_shared/fql-grammar.md)
-- [Shared: Sorting Rules](../_shared/sorting-rules.md)
-- [Shared: Brand & Visual Communication](../_shared/brand.md)
+- [Shared: Account Preflight](references/_shared/account-preflight.md)
+- [Shared: Composite vs Source](references/_shared/composite-vs-source.md)
+- [Shared: Deep Links](references/_shared/deep-links.md)
+- [Shared: FQL Grammar](references/_shared/fql-grammar.md)
+- [Shared: Sorting Rules](references/_shared/sorting-rules.md)
+- [Shared: Brand & Visual Communication](references/_shared/brand.md)

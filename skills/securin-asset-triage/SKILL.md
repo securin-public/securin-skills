@@ -27,11 +27,11 @@ Ad-hoc asset search, filtering, and aggregation. Translate natural-language ques
 
 ### Step 0 — Account preflight (CC-1)
 
-See [_shared/account-preflight.md](../_shared/account-preflight.md). Resolve the account-id(s), validate access, and hold them for the rest of the turn. If the question implies a workspace subset ("prod", "EU BU"), also resolve workspace-ids via `getEffectiveAccessWorkspaces`.
+See [_shared/account-preflight.md](references/_shared/account-preflight.md). Resolve the account-id(s), validate access, and hold them for the rest of the turn. If the question implies a workspace subset ("prod", "EU BU"), also resolve workspace-ids via `getEffectiveAccessWorkspaces`.
 
 ### Step 0.5 — Detect composite vs source data model (critical)
 
-See [_shared/composite-vs-source.md](../_shared/composite-vs-source.md). Call `getAccountSettings` and determine whether `compositeDataEnabled` is on. This determines:
+See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md). Call `getAccountSettings` and determine whether `compositeDataEnabled` is on. This determines:
 
 - Tool to call: `searchCompositeAssetData` (composite) or `searchAssetData` (source).
 - Field prefix: `compositeAsset.*` vs `asset.*`.
@@ -66,7 +66,7 @@ Cache the flag for the turn. **Picking the wrong model returns empty results wit
 - `aggregateByDeepLink` — one-shot aggregation with per-bucket URLs
 - `getDeepLink` — URL for a known assetId
 
-See [_shared/deep-links.md](../_shared/deep-links.md).
+See [_shared/deep-links.md](references/_shared/deep-links.md).
 
 ## Workflow
 
@@ -93,7 +93,7 @@ getGroupByFields(entityType="ASSET")
 
 ### Step 3 — Compose FQL
 
-Follow [_shared/fql-grammar.md](../_shared/fql-grammar.md). Critical rules:
+Follow [_shared/fql-grammar.md](references/_shared/fql-grammar.md). Critical rules:
 
 - Use the correct prefix (`asset.*` or `compositeAsset.*`) based on Step 0.5.
 - Compound filters use parentheses and explicit `AND`/`OR`.
@@ -186,14 +186,14 @@ groupByField: "asset.scanCredentialed"   # confirm field name via getApiFields
 
 ## Visual output (CC-4)
 
-When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](../_shared/brand.md). Offer customization after delivery; never default to a different brand.
+When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](references/_shared/brand.md). Offer customization after delivery; never default to a different brand.
 
 ## References
 
 - [Asset Fields Quickref](references/asset-fields.md) — common asset fields + aggregation dimensions
-- [Shared: Account Preflight](../_shared/account-preflight.md)
-- [Shared: Composite vs Source](../_shared/composite-vs-source.md)
-- [Shared: Deep Links](../_shared/deep-links.md)
-- [Shared: FQL Grammar](../_shared/fql-grammar.md)
-- [Shared: Sorting Rules](../_shared/sorting-rules.md)
-- [Shared: Brand & Visual Communication](../_shared/brand.md)
+- [Shared: Account Preflight](references/_shared/account-preflight.md)
+- [Shared: Composite vs Source](references/_shared/composite-vs-source.md)
+- [Shared: Deep Links](references/_shared/deep-links.md)
+- [Shared: FQL Grammar](references/_shared/fql-grammar.md)
+- [Shared: Sorting Rules](references/_shared/sorting-rules.md)
+- [Shared: Brand & Visual Communication](references/_shared/brand.md)
