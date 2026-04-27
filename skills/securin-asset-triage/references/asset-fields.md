@@ -1,7 +1,7 @@
 # Asset Fields
 
 
-> **Prefix rule:** use `compositeAsset.*` in composite-FF accounts, `asset.*` otherwise. See [_shared/composite-vs-source.md](../../_shared/composite-vs-source.md).
+> **Prefix rule:** use `compositeAsset.*` in composite-FF accounts, `asset.*` otherwise. See [_shared/composite-vs-source.md](_shared/composite-vs-source.md).
 
 ## Identity
 

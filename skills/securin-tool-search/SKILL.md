@@ -42,7 +42,7 @@ Prefer the dedicated skill when the ask fits:
 
 ### Step 0 — Account preflight (CC-1, conditional)
 
-See [_shared/account-preflight.md](../_shared/account-preflight.md). Run the preflight **before** invoking a discovered tool that is account-scoped (most `search*Data`, `aggregate*Data`, `create*`, `update*`, `delete*`, `get*` tools). The `search_tools` meta-tool itself is not account-scoped and doesn't require preflight.
+See [_shared/account-preflight.md](references/_shared/account-preflight.md). Run the preflight **before** invoking a discovered tool that is account-scoped (most `search*Data`, `aggregate*Data`, `create*`, `update*`, `delete*`, `get*` tools). The `search_tools` meta-tool itself is not account-scoped and doesn't require preflight.
 
 ## Suggested tools
 
@@ -144,13 +144,13 @@ If `search_tools` returns low-relevance hits (top score < ~0.5) or no results, o
 
 ## Visual output (CC-4)
 
-When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](../_shared/brand.md). Offer customization after delivery; never default to a different brand.
+When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](references/_shared/brand.md). Offer customization after delivery; never default to a different brand.
 
 ## References
 
-- [Shared: Account Preflight](../_shared/account-preflight.md)
-- [Shared: Deep Links](../_shared/deep-links.md)
-- [Shared: FQL Grammar](../_shared/fql-grammar.md)
-- [Shared: Sorting Rules](../_shared/sorting-rules.md)
-- [Shared: Brand & Visual Communication](../_shared/brand.md)
+- [Shared: Account Preflight](references/_shared/account-preflight.md)
+- [Shared: Deep Links](references/_shared/deep-links.md)
+- [Shared: FQL Grammar](references/_shared/fql-grammar.md)
+- [Shared: Sorting Rules](references/_shared/sorting-rules.md)
+- [Shared: Brand & Visual Communication](references/_shared/brand.md)
 - Server's internal search index lives in `platform-mcp-server/src/securin_mcp/search.py` (BM25 over tool names + descriptions) — not directly invokable from this skill, but useful context.
