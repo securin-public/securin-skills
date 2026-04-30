@@ -48,7 +48,7 @@
 Pick your AI tool:
 
 <!-- prettier-ignore -->
-### <img src="https://cdn.simpleicons.org/claude/D97757" height="16" alt="Claude"> Claude Desktop
+### <img src="https://cdn.simpleicons.org/claude/D97757" height="16" alt="Claude"> Claude Desktop/Cowork
 
 1. **[Download `securin-platform.mcpb`](https://github.com/securin-public/securin-skills/raw/main/securin-platform.mcpb)** (or click the button at the top).
 2. Open the file. Claude Desktop installs it automatically.
@@ -81,7 +81,7 @@ Save, then **fully quit and relaunch** Claude Desktop. Requires Node.js 18+.
 ---
 
 <!-- prettier-ignore -->
-### <img src="https://cdn.simpleicons.org/claude/D97757" height="16" alt="Claude"> Claude Code / Claude Cowork
+### <img src="https://cdn.simpleicons.org/claude/D97757" height="16" alt="Claude"> Claude Code
 
 The plugin marketplace installs both the MCP server and all 8 skills:
 
