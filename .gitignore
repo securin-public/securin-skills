@@ -53,6 +53,9 @@ yarn-error.log*
 *.log
 logs/
 
+# ---- Local scratch space (test bundles, ad-hoc artifacts; never commit) ----
+.temp/
+
 # ---- Runtime / validation evidence (never check into a public plugin) ----
 # Any account-specific output, user-id, or bearer token captured during QA.
 validation-output/

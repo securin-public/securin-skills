@@ -1,0 +1,9 @@
+{
+  "name": "securin-platform-mcpb-server",
+  "version": "1.2.0",
+  "description": "Securin Platform .mcpb — bundles mcp-remote to proxy stdio to https://mcp.securin.io/mcp.",
+  "license": "MIT",
+  "dependencies": {
+    "mcp-remote": "^0.1.38"
+  }
+}
