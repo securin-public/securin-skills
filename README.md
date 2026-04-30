@@ -255,6 +255,48 @@ Make sure you have the latest Claude Desktop. If install fails silently, fully q
 </details>
 
 <details>
+<summary><code>Error: listen EADDRINUSE: address already in use 127.0.0.1:&lt;port&gt;</code></summary>
+
+This is a **local port collision** on your machine — not a server issue. `mcp-remote` opens a tiny HTTP listener on `127.0.0.1:<random-port>` to receive the OAuth redirect after sign-in. If a previous `mcp-remote` process didn't shut down cleanly (most common cause), the port is still held and the new connection can't bind.
+
+**Fix it:**
+
+```bash
+# macOS / Linux — find what's holding the port (replace 37040 with your port)
+lsof -i :37040
+
+# Kill any orphaned mcp-remote / node processes
+pkill -f mcp-remote
+
+# Fully quit and reopen Claude — quit the app, don't just close the window
+```
+
+```powershell
+# Windows (PowerShell) — find and kill the process holding the port
+Get-NetTCPConnection -LocalPort 37040 | Select-Object OwningProcess
+Stop-Process -Id <pid-from-above> -Force
+
+# Then fully quit and reopen Claude
+```
+
+If it recurs, clear `mcp-remote`'s OAuth cache too — a stale state file can make the client retry and collide with itself:
+
+```bash
+# macOS / Linux
+rm -rf ~/.mcp-auth
+
+# macOS (alternative location used by some versions)
+rm -rf "$HOME/Library/Application Support/mcp-remote"
+
+# Windows (PowerShell)
+Remove-Item -Recurse -Force $HOME\.mcp-auth
+```
+
+Also worth checking: are two AI hosts (e.g. Claude Desktop + Claude Code) racing to launch the same `mcp-remote` instance at the same time? Stagger their startup or pick one host per machine.
+
+</details>
+
+<details>
 <summary>"Authentication successful, but server reconnection failed"</summary>
 
 Clear cached tokens and reconnect. In Claude Code: `/mcp` → select `securin` → **Clear credentials**. In other hosts: `rm -rf ~/.mcp-auth` and restart the host.
