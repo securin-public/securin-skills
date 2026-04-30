@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Securin Platform — Skills & MCP Server for AI assistants</title>
+  <meta name="description" content="8 ready-made skills + 40+ MCP tools that bring Securin's vulnerability, exposure, and threat data into Claude, VS Code, Cursor, and any MCP-compatible host.">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <meta property="og:title" content="Securin Platform — Skills & MCP Server">
+  <meta property="og:description" content="Bring Securin vulnerability, exposure, and threat data into Claude, VS Code, Cursor, and any MCP-compatible AI assistant.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/securin_logo_purple.svg">
+</head>
+<body>
+
+<!-- ========== Top nav ========== -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#top" class="nav-brand">
+      <img src="assets/securin_logo_purple.svg" alt="Securin">
+      <span>Platform MCP</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#install">Install</a>
+      <a href="#skills">Skills</a>
+      <a href="#auth">Auth</a>
+      <a class="nav-cta" href="https://github.com/securin-public/securin-skills">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== Hero ========== -->
+<header class="hero" id="top">
+  <div class="hero-inner">
+    <h1>Bring Securin into <span class="accent">your AI tools</span>.</h1>
+    <p class="hero-tagline">
+      8 ready-made skills and 40+ MCP tools that give your AI assistant a direct line
+      into your Securin vulnerability, exposure, and threat data — across Claude, VS Code,
+      Cursor, and any MCP-compatible host.
+    </p>
+
+    <div class="hero-buttons">
+      <a class="btn btn-primary" href="https://github.com/securin-public/securin-skills/raw/main/securin-platform.mcpb">
+        <img src="https://cdn.simpleicons.org/anthropic/ffffff" alt=""> Download for Claude Desktop
+      </a>
+      <a class="btn btn-secondary" href="https://insiders.vscode.dev/redirect/mcp/install?name=securin&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.securin.io%2Fmcp%22%7D">
+        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt=""> Install in VS Code
+      </a>
+      <a class="btn btn-secondary" href="cursor://anysphere.cursor-deeplink/mcp/install?name=securin&config=eyJ1cmwiOiJodHRwczovL21jcC5zZWN1cmluLmlvL21jcCJ9">
+        <img src="https://cdn.simpleicons.org/cursor/000000" alt=""> Install in Cursor
+      </a>
+    </div>
+
+    <p class="hero-meta">
+      Sign in with your existing Securin SSO. <strong>No tokens to paste.</strong>
+    </p>
+  </div>
+</header>
+
+<!-- ========== Features ========== -->
+<section class="features" id="features">
+  <div class="container">
+    <h2>Built for vulnerability management workflows</h2>
+    <p class="section-sub">
+      Skills handle the heavy lifting — preflight, scoping, deep-link rendering, sorting —
+      so your agent jumps straight to the answer.
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zm0 13L2 10v7l10 5 10-5v-7l-10 5z"/></svg>
+        </div>
+        <h3>8 guided skills</h3>
+        <p>CVE enrichment, zero-day exposure analysis, threat correlation, asset & exposure triage,
+        product inventory, remediation guidance — each follows the open Agent Skills standard.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+        </div>
+        <h3>40+ MCP tools</h3>
+        <p>Search, aggregate, hybrid queries, deep-link generation, account preferences, threat-actor
+        intelligence, and more — auto-generated from the Securin Platform OpenAPI spec.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        </div>
+        <h3>SSO, no token paste</h3>
+        <p>Authentication is delegated to your browser. First connection opens an SSO sign-in;
+        the session caches locally and refreshes silently. Bearer tokens available for headless use.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Install ========== -->
+<section class="install" id="install">
+  <div class="container">
+    <h2>Install in seconds</h2>
+    <p class="section-sub">Pick your AI assistant. All hosts use the same MCP server at <code>mcp.securin.io/mcp</code>.</p>
+
+    <div class="tabs" role="tablist" aria-label="Installation by host">
+      <ul class="tab-list">
+        <li><button class="tab-button" role="tab" aria-selected="true" aria-controls="tab-claude-desktop" data-tab="claude-desktop">
+          <img src="https://cdn.simpleicons.org/anthropic/000000" alt=""> Claude Desktop
+        </button></li>
+        <li><button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-claude-code" data-tab="claude-code">
+          <img src="https://cdn.simpleicons.org/anthropic/000000" alt=""> Claude Code
+        </button></li>
+        <li><button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-vscode" data-tab="vscode">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt=""> VS Code
+        </button></li>
+        <li><button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-cursor" data-tab="cursor">
+          <img src="https://cdn.simpleicons.org/cursor/000000" alt=""> Cursor
+        </button></li>
+        <li><button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-other" data-tab="other">
+          Windsurf · Gemini · Codex
+        </button></li>
+      </ul>
+
+      <!-- Claude Desktop -->
+      <div class="tab-panel" id="tab-claude-desktop" role="tabpanel" aria-hidden="false">
+        <h3>One-click install</h3>
+        <ol>
+          <li><a href="https://github.com/securin-public/securin-skills/raw/main/securin-platform.mcpb"><strong>Download <code>securin-platform.mcpb</code></strong></a> (1.5 MB).</li>
+          <li>Open the file. Claude Desktop installs the MCP server automatically.</li>
+          <li>Sign in to Securin when the browser opens. You're done.</li>
+        </ol>
+        <p class="note"><strong>Skills are not loaded by Claude Desktop.</strong> For the full experience (skills + MCP), use Claude Code.</p>
+
+        <details style="margin-top: 1.25rem;">
+          <summary><strong>Manual setup</strong> (config file)</summary>
+          <p style="margin-top: 0.75rem;">Edit <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS) or <code>%APPDATA%\Claude\claude_desktop_config.json</code> (Windows):</p>
+          <div class="code-wrap">
+            <pre><code>{
+  "mcpServers": {
+    "securin": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.securin.io/mcp"]
+    }
+  }
+}</code></pre>
+          </div>
+          <p>Save, then <strong>fully quit and relaunch</strong> Claude Desktop. Requires Node.js 18+.</p>
+        </details>
+      </div>
+
+      <!-- Claude Code -->
+      <div class="tab-panel" id="tab-claude-code" role="tabpanel" aria-hidden="true">
+        <h3>Plugin marketplace</h3>
+        <p>Installs both the MCP server and all 8 skills:</p>
+        <div class="code-wrap">
+          <pre><code>/plugin marketplace add securin-public/securin-skills
+/plugin install securin-platform@securin-skills</code></pre>
+        </div>
+        <p class="muted">Update later with <code>/plugin marketplace update securin-skills</code>.</p>
+
+        <details style="margin-top: 1.25rem;">
+          <summary><strong>Pre-configure for your team</strong></summary>
+          <p style="margin-top: 0.75rem;">Add to your project's <code>.claude/settings.json</code>:</p>
+          <div class="code-wrap">
+            <pre><code>{
+  "extraKnownMarketplaces": {
+    "securin-skills": {
+      "source": { "source": "github", "repo": "securin-public/securin-skills" }
+    }
+  },
+  "enabledPlugins": {
+    "securin-platform@securin-skills": true
+  }
+}</code></pre>
+          </div>
+        </details>
+      </div>
+
+      <!-- VS Code -->
+      <div class="tab-panel" id="tab-vscode" role="tabpanel" aria-hidden="true">
+        <h3>One-click install (Copilot)</h3>
+        <p>
+          <a class="btn btn-primary" href="https://insiders.vscode.dev/redirect/mcp/install?name=securin&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.securin.io%2Fmcp%22%7D">
+            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt=""> Install in VS Code
+          </a>
+        </p>
+        <p>Or run from a terminal:</p>
+        <div class="code-wrap">
+          <pre><code>code --add-mcp '{"name":"securin","type":"http","url":"https://mcp.securin.io/mcp"}'</code></pre>
+        </div>
+        <p>For skills, clone the repo and add <code>skills/</code> to <code>chat.agentSkillsLocations</code> in your VS Code settings — see the <a href="https://github.com/securin-public/securin-skills/blob/main/docs/host-setup.md#vs-code-github-copilot">full guide</a>.</p>
+      </div>
+
+      <!-- Cursor -->
+      <div class="tab-panel" id="tab-cursor" role="tabpanel" aria-hidden="true">
+        <h3>One-click install</h3>
+        <p>
+          <a class="btn btn-primary" href="cursor://anysphere.cursor-deeplink/mcp/install?name=securin&config=eyJ1cmwiOiJodHRwczovL21jcC5zZWN1cmluLmlvL21jcCJ9">
+            <img src="https://cdn.simpleicons.org/cursor/ffffff" alt=""> Install in Cursor
+          </a>
+        </p>
+        <p>Or add to <code>.cursor/mcp.json</code>:</p>
+        <div class="code-wrap">
+          <pre><code>{
+  "mcpServers": {
+    "securin": { "url": "https://mcp.securin.io/mcp" }
+  }
+}</code></pre>
+        </div>
+        <p>For skills, clone the repo and copy <code>skills/</code> subdirectories into your project's <code>.agents/skills/</code>.</p>
+      </div>
+
+      <!-- Other -->
+      <div class="tab-panel" id="tab-other" role="tabpanel" aria-hidden="true">
+        <h3>Windsurf, Gemini CLI, Codex CLI, &amp; others</h3>
+        <p>The endpoint <code>https://mcp.securin.io/mcp</code> uses Streamable HTTP. Connect directly if your host supports it; otherwise use the <code>mcp-remote</code> bridge for stdio-only hosts:</p>
+        <div class="code-wrap">
+          <pre><code>{
+  "command": "npx",
+  "args": ["-y", "mcp-remote", "https://mcp.securin.io/mcp"]
+}</code></pre>
+        </div>
+        <p>See <a href="https://github.com/securin-public/securin-skills/blob/main/docs/host-setup.md">docs/host-setup.md</a> for per-host instructions (Windsurf, Gemini CLI, Codex CLI, and any MCP-compatible client).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== Skills ========== -->
+<section class="skills" id="skills">
+  <div class="container">
+    <h2>What you can ask</h2>
+    <p class="section-sub">Eight workflows that handle the full triage loop. Just ask in plain English.</p>
+
+    <table class="skills-table">
+      <thead>
+        <tr><th>Skill</th><th>Example ask</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>securin-cve-enrichment</td><td><em>"Enrich CVE-2024-3400."</em> — CVSS, EPSS, KEV, exploitation history, threat actors.</td></tr>
+        <tr><td>securin-zero-day-exposure-analysis</td><td><em>"Am I exposed to any zero-days?"</em> — Open zero-day exposures with affected assets and remediation pointers.</td></tr>
+        <tr><td>securin-threat-correlation</td><td><em>"Am I affected by LockBit?"</em> — Maps a CVE, threat actor, or ransomware group to your environment.</td></tr>
+        <tr><td>securin-asset-triage</td><td><em>"Break down assets by criticality and workspace."</em> — Search, filter, aggregate.</td></tr>
+        <tr><td>securin-exposure-triage</td><td><em>"Show open criticals breaching SLA."</em> — Ranked exposure lists or aggregated views.</td></tr>
+        <tr><td>securin-product-triage</td><td><em>"What versions of Apache do we have?"</em> — Product catalog &amp; component inventory.</td></tr>
+        <tr><td>securin-remediation-guidance</td><td><em>"How do I fix exposure 12345?"</em> — Actionable fix plans, vendor advisories, ticket bodies.</td></tr>
+        <tr><td>securin-tool-search</td><td>Fallback when no other skill fits — searches all 40+ MCP tools.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ========== Auth ========== -->
+<section class="auth" id="auth">
+  <div class="container">
+    <h2>Authentication</h2>
+    <p class="section-sub">Two endpoints, same tools. Pick by how you connect.</p>
+
+    <div class="auth-grid">
+      <div class="auth-card recommended">
+        <h3>OAuth (browser SSO) <span class="badge">Default</span></h3>
+        <p><strong>For people using AI tools.</strong> Sign in once via your browser. The session caches under <code>~/.mcp-auth</code> and refreshes silently.</p>
+        <p>Endpoint: <code>https://mcp.securin.io/mcp</code></p>
+        <p class="muted" style="margin-bottom: 0;">To switch identities: <code>rm -rf ~/.mcp-auth</code> and reconnect. In Claude Code: <code>/mcp</code> → select <code>securin</code> → <strong>Clear credentials</strong>.</p>
+      </div>
+
+      <div class="auth-card">
+        <h3>Bearer token <span class="badge">Headless</span></h3>
+        <p><strong>For CI/CD, scripts, and server-to-server.</strong> Generate <code>client_id</code> &amp; <code>client_secret</code> in <a href="https://documentation.securin.io/s/platform-documentation/m/platform-documentation/a/apps-api-access">App Access</a> on the Securin Platform.</p>
+        <p>Exchange for an access token:</p>
+        <div class="code-wrap">
+          <pre><code>curl -X POST https://platformapi.securin.io/account-service/api/v1/oauth2/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "client_id=&lt;id&gt;&amp;client_secret=&lt;secret&gt;"</code></pre>
+        </div>
+        <p>Connect to <code>/api/mcp</code> with <code>Authorization: Bearer &lt;token&gt;</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section class="cta-bottom">
+  <div class="container">
+    <h2>Ready to start?</h2>
+    <p>Install the MCP for your tool of choice — your first query opens a browser to sign you in.</p>
+    <a class="btn" href="https://github.com/securin-public/securin-skills/raw/main/securin-platform.mcpb">
+      <img src="https://cdn.simpleicons.org/anthropic/712880" alt=""> Download for Claude Desktop
+    </a>
+    <a class="btn" href="https://github.com/securin-public/securin-skills">
+      View on GitHub →
+    </a>
+  </div>
+</section>
+
+<!-- ========== Footer ========== -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <img src="assets/securin_logo_white.svg" alt="Securin">
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/securin-public/securin-skills">GitHub</a>
+      <a href="https://github.com/securin-public/securin-skills/issues">Issues</a>
+      <a href="https://docs.securin.io">Securin Docs</a>
+      <a href="https://modelcontextprotocol.io">Model Context Protocol</a>
+      <a href="https://agentskills.io/home">Agent Skills</a>
+      <a href="https://github.com/securin-public/securin-skills/blob/main/SECURITY.md">Security</a>
+    </div>
+    <div class="footer-copy">
+      &copy; Securin, Inc. Licensed under <a href="https://github.com/securin-public/securin-skills/blob/main/LICENSE">MIT</a>.
+    </div>
+  </div>
+</footer>
+
+<!-- ========== Scripts ========== -->
+<script>
+  // Tab switching
+  document.querySelectorAll('.tab-button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tabId = btn.dataset.tab;
+      document.querySelectorAll('.tab-button').forEach((b) =>
+        b.setAttribute('aria-selected', b.dataset.tab === tabId ? 'true' : 'false'),
+      );
+      document.querySelectorAll('.tab-panel').forEach((p) =>
+        p.setAttribute('aria-hidden', p.id === `tab-${tabId}` ? 'false' : 'true'),
+      );
+    });
+  });
+
+  // Copy buttons on every <pre>
+  document.querySelectorAll('pre').forEach((pre) => {
+    if (pre.parentElement.classList.contains('code-wrap')) {
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.type = 'button';
+      btn.textContent = 'Copy';
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(pre.innerText);
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+          }, 1500);
+        } catch (e) {
+          btn.textContent = 'Press Ctrl+C';
+        }
+      });
+      pre.parentElement.appendChild(btn);
+    }
+  });
+</script>
+
+</body>
+</html>
