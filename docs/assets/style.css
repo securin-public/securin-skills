@@ -674,3 +674,193 @@ section + section {
 }
 
 .muted { color: var(--text-soft); }
+.muted-center { color: var(--text-soft); text-align: center; margin-bottom: 1.5rem; }
+
+/* ---- Stats strip (hero) ---- */
+
+.stats-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 110px;
+}
+
+.stat-num {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent-1) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 0.3rem;
+}
+
+/* ---- Pillars (deck slide 2) ---- */
+
+.pillars h2 { text-align: center; }
+
+.pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.pillar-card {
+  padding: 1.5rem 1.5rem 1.5rem 1.75rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius);
+}
+
+.pillar-card h3 {
+  margin-bottom: 0.4em;
+}
+
+.pillar-card p {
+  color: var(--text-soft);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* ---- Ask grid (deck slide 4 — Real work, on day one) ---- */
+
+.row-label {
+  margin-top: 2.25rem;
+  margin-bottom: 1rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-1);
+  font-weight: 700;
+}
+
+.ask-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.ask-card {
+  padding: 1.4rem 1.5rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ask-card:hover {
+  border-color: var(--accent-2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.ask-quote {
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin: 0 0 0.6em;
+  line-height: 1.35;
+}
+
+.ask-desc {
+  color: var(--text-soft);
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.all-skills {
+  margin-top: 2.5rem;
+}
+
+.all-skills > summary {
+  cursor: pointer;
+  display: inline-block;
+  padding: 0.55rem 1rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--primary);
+  list-style: none;
+  user-select: none;
+}
+
+.all-skills > summary::-webkit-details-marker { display: none; }
+
+.all-skills > summary::after {
+  content: " ▾";
+  color: var(--accent-1);
+}
+
+.all-skills[open] > summary::after {
+  content: " ▴";
+}
+
+/* ---- Three-step install (deck slide 5) ---- */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  margin: 1rem 0 3rem;
+}
+
+.step {
+  position: relative;
+  padding: 1.6rem 1.5rem 1.5rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.step-num {
+  display: inline-block;
+  font-family: "JetBrains Mono", "SF Mono", monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--accent-1);
+  background: var(--accent-3);
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  margin-bottom: 0.8rem;
+  letter-spacing: 0.04em;
+}
+
+.step h3 {
+  margin: 0 0 0.4em;
+}
+
+.step p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+}
+
+.install-sub {
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 0.4em;
+}
