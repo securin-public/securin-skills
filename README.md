@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
 <p align="center">
-  <img src="skills/_shared/securin_logos/Securin_logo_purple.png" alt="Securin" height="48">
+  <img src="skills/_shared/securin_logos/Securin_logo_rounded.png" alt="Securin" height="48">
 </p>
 
 <h3 align="center">Securin Platform — Skills & MCP Server</h3>
