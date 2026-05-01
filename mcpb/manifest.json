@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "securin-platform",
   "display_name": "Securin Platform",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Securin Platform MCP server (remote, OAuth via browser)",
   "long_description": "Connects Claude Desktop to the Securin Platform MCP server at https://mcp.securin.io/mcp. Authentication is delegated to mcp-remote, which opens a browser to auth.securin.io on first use and caches credentials under ~/.mcp-auth. No API keys or tokens to paste.",
   "author": {
@@ -12,7 +12,7 @@
   "homepage": "https://securin.io",
   "documentation": "https://github.com/securin-public/securin-skills",
   "support": "https://github.com/securin-public/securin-skills/issues",
-  "icon": "icon.png",
+  "icon": "icon_rounded.png",
   "license": "MIT",
   "privacy_policies": ["https://www.securin.io/privacy-policy/"],
   "keywords": ["securin", "security", "vulnerability", "cve", "exposure", "attack-surface"],
