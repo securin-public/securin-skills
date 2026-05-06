@@ -12,7 +12,7 @@ description: >
 
 ## Purpose
 
-Ad-hoc asset search, filtering, and aggregation. Translate natural-language questions about the user's asset inventory ("show me exposed-to-internet prod assets with critical exposures") into the correct Securin MCP `search*Data` / `aggregate*Data` / `hybrid*Data` call, with proper account scoping and deep links back to the platform.
+Ad-hoc asset search, filtering, and aggregation. Translate natural-language questions about the user's asset inventory ("show me exposed-to-internet prod assets with critical exposures") into the correct Securin MCP `search*Data` / `aggregate*Data` call, with proper account scoping and deep links back to the platform.
 
 ## When to use
 
@@ -29,29 +29,29 @@ Ad-hoc asset search, filtering, and aggregation. Translate natural-language ques
 
 See [_shared/account-preflight.md](references/_shared/account-preflight.md). Resolve the account-id(s), validate access, and hold them for the rest of the turn. If the question implies a workspace subset ("prod", "EU BU"), also resolve workspace-ids via `getEffectiveAccessWorkspaces`.
 
+Also before you use this SKILL, its MANDATORY for you to read through all the files inside [Referances folder](references/). This also includes all the files inside [Shared referances folder](references/_shared/). It is also COMPELSORY to try and use [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) instead of calling the `getApiFields` tool. ONLY use the tool as a fall back mechanism. 
+
 ### Step 0.5 — Detect composite vs source data model (critical)
 
 See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md). Call `getAccountSettings` and determine whether `compositeDataEnabled` is on. This determines:
 
-- Tool to call: `searchCompositeAssetData` (composite) or `searchAssetData` (source).
+- Tool to call: `assetQuery` (composite) or `searchAssetData` (source).
 - Field prefix: `compositeAsset.*` vs `asset.*`.
 
 Cache the flag for the turn. **Picking the wrong model returns empty results with no error.**
 
 ## Suggested tools
 
-### Primary (pick one triad based on data model)
+### Primary (pick one pair based on data model)
 
 **Composite accounts:**
-- `searchCompositeAssetData` — flat list
-- `aggregateCompositeAssetData` — single-field bucketed count
-- *(no `hybridCompositeAssetData` tool today — if you need compound-filter + aggregation, run `searchCompositeAssetData` and `aggregateCompositeAssetData` as two calls)*
+- `assetQuery` — flat list and single-field bucketed count
 
 **Source accounts:**
 - `searchAssetData` — flat list
 - `aggregateAssetData` — single-field bucketed count
-- `hybridAssetData` — compound-filter + aggregation (requires `groupByField`)
-- `sourceAssetQuery` / `assetQuery` — lower-level query endpoints if the search tools don't fit
+
+> There is no compound-filter + aggregation tool. For "filtered list **and** bucket counts", run the search and the aggregate as two sequential calls and combine client-side.
 
 ### Supporting
 - `getApiFields` with `entityType: ["ASSET"]` — field discovery when unsure of the field name
@@ -59,7 +59,7 @@ Cache the flag for the turn. **Picking the wrong model returns empty results wit
 - `getTopValues` — enum-like value discovery for a field (build `in [...]` sets)
 - `getAccountSettings` / `getAccountPreferences` — composite FF detection
 - `getEffectiveAccessWorkspaces` / `getWorkspacesByAccountId` — workspace scoping
-- `filterToChip` / `filtersToChip` / `validateFilter` — FQL construction + validation
+- `validateFilter` — FQL syntax validation
 
 ### Deep links (CC-2)
 - `createDeepLink` (preferred) — build a URL from entity type + filter
@@ -76,10 +76,10 @@ Classify the question into one of:
 
 | Shape | Example | Tool |
 |---|---|---|
-| Flat list | "Show me all assets where X" | `search*Data` |
-| Bucketed count (one group-by) | "How many assets by type?" | `aggregate*Data` |
-| Compound filter + aggregation | "Exposed-to-internet AND critical, grouped by workspace" | `hybrid*Data` + `groupByField` |
-| Aggregation + deep links per bucket | "Bucketed counts I can click into" | `aggregateByDeepLink` |
+| Flat list | "Show me all assets where X" | `search*Data` / `assetQuery` |
+| Bucketed count (one group-by) | "How many assets by type?" | `aggregate*Data` /`assetQuery` |
+| Compound filter + aggregation | "Exposed-to-internet AND critical, grouped by workspace" | `search*Data` **and** `aggregate*Data` (two calls; combine client-side) **or** `assetQuery` in case of composite mode |
+| Aggregation + deep links per bucket | "Bucketed counts I can click into" | `createDeepLink` |
 
 ### Step 2 — Discover fields if uncertain
 
@@ -87,7 +87,7 @@ If you're unsure of a field path or acceptable value:
 
 ```text
 getApiFields(entityType=["ASSET"])
-getTopValues(field="asset.cloudProvider")   # or compositeAsset.cloudProvider
+getTopValues(field="asset.mappedAttributes.cloudProperties.provider")   # or compositeAsset equivalent
 getGroupByFields(entityType="ASSET")
 ```
 
@@ -103,7 +103,9 @@ Optional sanity check: `validateFilter` before firing the actual query.
 
 ### Step 4 — Pick and call the right tool
 
-Apply the Step 1 classification. For compound filters + aggregation, `hybrid*Data` **requires** `groupByField` — without it, the tool behaves like a plain search.
+Apply the Step 1 classification. For compound filters + aggregation, fire `search*Data` and `aggregate*Data` with the same `filters` string — the search returns the row list, the aggregate returns the bucket counts.
+
+Use `*Query` in case of composite mode. 
 
 ### Step 5 — Deep link every result (CC-2)
 
@@ -128,9 +130,9 @@ Apply the Step 1 classification. For compound filters + aggregation, `hybrid*Dat
 | Filter shape | No aggs | With aggs |
 |---|---|---|
 | `asset.status = 'active'` (single) | `searchAssetData` | `aggregateAssetData` |
-| `asset.reachability = 'Exposed' AND asset.criticality >= 4` (compound, numeric criticality) | `searchAssetData` | **`hybridAssetData` (required)** |
+| `asset.reachability = 'Exposed' AND asset.criticality >= 4` (compound, numeric criticality) | `searchAssetData` | `searchAssetData` + `aggregateAssetData` (two calls, same filter) |
 
-Replace `searchAssetData` with `searchCompositeAssetData` if the account uses composite data.
+Replace `searchAssetData` with `searchCompositeAssetData` and `aggregateAssetData` with `aggregateCompositeAssetData` if the account uses composite data.
 
 ## Common recipes
 
@@ -138,37 +140,50 @@ Replace `searchAssetData` with `searchCompositeAssetData` if the account uses co
 
 ```text
 aggregateAssetData | aggregateCompositeAssetData
-groupByField: "asset.workspaceId"  (or compositeAsset.workspaceId)
+groupByField: "asset.workspaces.id"  (or composite equivalent — see composite-fields.md)
 ```
 
 Enrich workspace-ids → names via `getWorkspacesByAccountId`.
 
 ### "Exposed-to-internet prod assets with open critical exposures"
 
-Compound + aggregation → `hybridAssetData` (or composite variant):
+There are no `asset.exposure.*` rollup fields — the asset record does not carry exposure counts/severity. Run a two-step pattern: query EXPOSURE first, then ASSET (use composite variants if the account is composite):
 
 ```text
-filter: asset.reachability = 'Exposed'
-        AND asset.workspaceId in [<prod-workspace-ids>]
-        AND "asset.exposure.scores.scoreLevel" = 'Critical'
-        AND "asset.exposure.status" = "Open"
-groupByField: "asset.type"
-aggs: [{type: "count"}]
+# 1) Find exposures matching the criteria, collect assetIds
+searchExposureData
+filters: exposure.status = 'Open'
+         AND exposure.scores.scoreLevel = 'Critical'
+fields: ["exposure.assetId"]
+
+# 2) Pull the asset records for those ids, scoped to prod workspaces and exposed-to-internet
+#    NOTE: FQL list literals use parentheses, not square brackets.
+searchAssetData
+filters: asset.assetId in ('<id1>','<id2>',...)
+         AND asset.reachability = 'Exposed'
+         AND asset.workspaces.id in (<prod-ws-id-1>, <prod-ws-id-2>)
+
+# 3) Bucket counts on the same asset filter (e.g., by asset type).
+#    aggs entries require {name, function, field}. `function` (not `type`) is
+#    the operation key — TERMS for bucketing, COUNT/SUM/MIN/MAX/AVG for metrics.
+aggregateAssetData
+filters: <same as step 2>
+aggs: [{ name: "by_type", function: "TERMS", field: "asset.assetType" }]
 ```
 
 ### "Assets discovered in last 30 days"
 
 ```text
 searchAssetData
-filter: "asset.discoveredAt" >= "<ISO-8601 30 days ago>"
-sort: "asset.discoveredAt:desc"
+filter: "asset.firstDiscoveredOn" >= "<ISO-8601 30 days ago>"
+sort: "asset.firstDiscoveredOn:desc"
 ```
 
 ### "Credentialed vs non-credentialed scan coverage"
 
 ```text
 aggregateAssetData
-groupByField: "asset.scanCredentialed"   # confirm field name via getApiFields
+groupByField: "asset.mappedAttributes.isCredentialed"   # or asset.isCredentialedAsset; confirm via getApiFields
 ```
 
 ## Scope guard (CC-3)

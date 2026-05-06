@@ -1,17 +1,17 @@
 # Asset Fields
 
 
-> **Prefix rule:** use `compositeAsset.*` in composite-FF accounts, `asset.*` otherwise. See [_shared/composite-vs-source.md](_shared/composite-vs-source.md).
+> **Prefix rule:** use `compositeAsset.*` in composite-FF accounts, `asset.*` otherwise. See [_shared/composite-vs-source.md](_shared/composite-vs-source.md). The prefix change is not always exactly the same so its MANDATORY for you to refer [Composite API Fields](_shared/composite-fields.md) while using `compositeAsset.*` prefix. The fields below are **source-mode** paths; cross-reference [_shared/source-fields.md](_shared/source-fields.md) for the authoritative list.
 
 ## Identity
 
 | Field | Type | Notes |
 |---|---|---|
 | `asset.assetId` | string | Internal id |
-| `asset.hostname` | string | Primary name |
-| `asset.fqdn` | string | Fully qualified |
-| `asset.ipAddress` | string | Primary IP |
-| `asset.macAddress` | string | |
+| `asset.mappedAttributes.name` | string | Primary name |
+| `asset.mappedAttributes.networkInterfaces.FQDN` | string | Fully qualified |
+| `asset.mappedAttributes.networkInterfaces.ipv4s` | IP | Primary IPs |
+| `asset.mappedAttributes.networkInterfaces.macAddresses` | string | |
 
 ## Classification
 
@@ -19,9 +19,9 @@
 |---|---|---|
 | `asset.criticality` | **INTEGER** | Numeric scale (observed: `3` on real records). **Sort `asset.scores.overallScore:desc`** for most-critical first. Do **not** filter on string labels like `'High'` — it's a number. |
 | `asset.reachability` | enum string | **`Exposed`, `NotExposed`** — binary pair. Not Internet/Internal/Isolated. |
-| `asset.tags` | string[] | Free-form tags |
+| `asset.tags.name` | string | Free-form tags — `asset.tags` is an object array; filter/group by `.name` (or `.id`). |
 
-> `asset.type` returns an error. If you need a "type" dimension, discover the correct field via `getApiFields(entityType=['ASSET'], searchText='type')`.
+> No bare `asset.type` field exists. Use `asset.assetType` (or `asset.mappedAttributes.assetType`). Verify per-account via `getApiFields(entityType=['ASSET'], searchText='type')`.
 
 ## Scanning & discovery (common; confirm per-account)
 
@@ -33,13 +33,9 @@
 
 ## Exposure rollups (cross-entity fields on asset record)
 
-| Field | Type | Notes |
-|---|---|---|
-| `asset.exposure.count` | int | Total exposures on the asset |
-| `asset.exposure.criticalCount` | int | |
-| `asset.exposure.highCount` | int | |
-| `asset.exposure.openCount` | int | `status = Open` |
-| `asset.exposureScore` | number | Asset-level risk score (higher = worse) |
+There are **no `asset.exposure.*` rollup fields** on the asset record (no `asset.exposure.count`, `asset.exposure.openCount`, `asset.exposureScore`, etc.). To answer "assets with N open critical exposures", run a separate `searchExposureData` / `aggregateExposureData` query filtered on `exposure.status = 'Open' AND exposure.scores.scoreLevel = 'Critical'`, then join back to assets via `exposure.assetId` → `asset.assetId`. The closest asset-level risk number is `asset.scores.overallScore`.
+
+In case of **composite mode** use the `exposureQuery` tool.
 
 ## Aggregation dimensions
 
@@ -48,7 +44,7 @@ Call `getGroupByFields(entityType='ASSET')` for the authoritative list. For ever
 Examples that usually work (confirm per-account):
 - `asset.criticality` (numeric — histogram buckets work better than TERMS here)
 - `asset.reachability` (binary)
-- `asset.workspaceId`
+- `asset.workspaces.id`
 - `asset.integration.productName`
 
 ## Sort keys
@@ -68,4 +64,6 @@ getApiFields(entityType=['ASSET'], searchText='custom')
 getCustomAttributeGroups(accountId=<>)
 ```
 
-Then filter with the full path (e.g., `asset.customAttributes.<name>`).
+`entityType=['COMPOSITE_ASSET']` for **composite mode**
+
+Then filter with the full path (e.g., `asset.userManagedAttributes.<name>` for built-in user-managed attributes).

@@ -31,7 +31,9 @@ This skill is the inverse of `securin-cve-enrichment`: enrichment produces a glo
 
 ### Step 0 — Account preflight (CC-1)
 
-See [_shared/account-preflight.md](references/_shared/account-preflight.md). Correlation queries always touch the user's environment — you must resolve account-id(s) and validate access before any exposure/asset query. Also detect the composite-vs-source data model (see [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md)) to use the correct asset prefix.
+See [_shared/account-preflight.md](references/_shared/account-preflight.md). Correlation queries always touch the user's environment — you must resolve account-id(s) and validate access before any exposure/asset query. Also detect the composite-vs-source data model (see [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md)) to use the correct asset prefix. This should also give you context about when to use `*Query` tools and when to use `search*` and `aggregate*` tools. 
+
+Also before you use this SKILL, its MANDATORY for you to read through all the files inside [Referances folder](references/). This also includes all the files inside [Shared referances folder](references/_shared/). It is also COMPELSORY to try and use [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) instead of calling the `getApiFields` tool. ONLY use the tool as a fall back mechanism. 
 
 ## Suggested tools
 
@@ -41,9 +43,8 @@ See [_shared/account-preflight.md](references/_shared/account-preflight.md). Cor
 - `searchWeaknessData` — CWE root cause
 
 ### User environment
-- `searchExposureData` / `aggregateExposureData` / `hybridExposureData` — match CVEs to open exposures
-- `searchAssetData` / `hybridAssetData` (or composite variants) — pivot exposures → affected assets
-- `searchComponentData` / `hybridComponentData` — component-level matches (SBOM-style)
+- `searchExposureData` / `aggregateExposureData` / `exposureQuery` — match CVEs to open exposures (run as two calls when you need both list and bucket counts)
+- `searchAssetData` / `searchCompositeAssetData` / `assetQuery` (+ matching `aggregate*AssetData`) — pivot exposures → affected assets
 
 ### Scoping + access
 - `getEffectiveAccessWorkspaces`
@@ -83,16 +84,23 @@ The user starts with a threat and wants to know if they're affected.
 
 ### A.2 Query exposures for the CVE set
 
+Run two calls with the same filter — `searchExposureData` for the row list, `aggregateExposureData` for the severity breakdown:
+
 ```text
-hybridExposureData
-filter: exposure.mappedAttributes.vulnerabilityIds in [<cve-list>]
+# 1) Itemized list
+searchExposureData
+filter: exposure.mappedAttributes.vulnerabilityIds in (<cve-list>)
         AND exposure.status = 'Open'
         AND "<account/workspace scope>"
+
+# 2) Severity bucket counts (same filter)
+aggregateExposureData
+filter: <same as above>
 groupByField: "exposure.scores.scoreLevel"
 aggs: [{type: "count"}]
 ```
 
-If the set is small, also call `searchExposureData` for an itemized list.
+In case of **composite mode** use `exposureQuery` in place of the above mentioned tools for search and aggregate. 
 
 ### A.3 Pivot to affected assets
 
@@ -144,7 +152,7 @@ The user starts with an asset or exposure and wants to know what threats target 
 ### B.1 Collect CVEs in the user's scope
 
 ```text
-aggregateExposureData                    # or hybrid for compound
+aggregateExposureData                   
 groupByField: "exposure.mappedAttributes.vulnerabilityIds"
 filter: exposure.status = 'Open' AND "<scope>"
 ```
@@ -189,16 +197,16 @@ asset.reachability = 'Exposed'
 compositeAsset.reachability = 'Exposed'
 
 # Exposures tied to CISA KEV CVEs (cross-entity to vuln index from exposures)
-vulnerabilities.exploitation.isCisaKev = true
+vulnerabilities.isCisaKev = true
 
 # In searchVulnerabilityData — bare path, no "vulnerabilities." prefix
 vulnerabilityId = 'CVE-X'
-exploitation.isCisaKev = true
+isCisaKev = true
 ```
 
 - `searchThreatActorData` with no `filters` → an error. Always pass a filter + `fields: ['threatActor']`.
 - THREATACTOR field namespace is bare (`name`, `description`, `vulnerabilityCount`, `originCountry`, `targetedCountries`, `targetedIndustries`, `associatedGroups`) — no `threatActor.` prefix.
-- `validateFilter` only checks FQL syntax — it does not verify field existence. Always cross-check paths against `getApiFields`.
+- `validateFilter` only checks FQL syntax — it does not verify field existence. Always cross-check paths against [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) based on the current mode of execution. Use `getApiFields` tool call as fallback.
 
 ## Scope guard (CC-3)
 
@@ -218,13 +226,3 @@ exploitation.isCisaKev = true
 ## Visual output (CC-4)
 
 When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](references/_shared/brand.md). Offer customization after delivery; never default to a different brand.
-
-## References
-
-- [Correlation Patterns](references/correlation-patterns.md)
-- [Shared: Account Preflight](references/_shared/account-preflight.md)
-- [Shared: Composite vs Source](references/_shared/composite-vs-source.md)
-- [Shared: Deep Links](references/_shared/deep-links.md)
-- [Shared: FQL Grammar](references/_shared/fql-grammar.md)
-- [Shared: Sorting Rules](references/_shared/sorting-rules.md)
-- [Shared: Brand & Visual Communication](references/_shared/brand.md)

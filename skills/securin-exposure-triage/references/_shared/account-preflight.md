@@ -6,7 +6,7 @@ Every skill in this plugin MUST run this preflight as **Step 0** before any data
 
 ## The rule
 
-Before you call any `search*Data`, `aggregate*Data`, `hybrid*Data`, or account-scoped `get*` tool, you MUST:
+Before you call any `search*Data`, `aggregate*Data`, or account-scoped `get*` tool, you MUST:
 
 1. Know the account-id to scope the request to.
 2. Trust that the caller's token has access (verified indirectly through `getUserProfile`).
@@ -24,11 +24,9 @@ In priority order:
    - If exactly **one** account → use it silently.
    - If **more than one** → list them by name + id and call `AskUserQuestion` to pick one (or multiple, if the workflow supports multi-account). Use `getAccountDetails` if you need display names for the picker.
    - If **zero** → surface the auth error and stop. Do not guess.
-4. **Fallback: `listAccount(account-id=<parent>)`** — only relevant when the caller is a management / partner account wanting to operate on a sub-account. Requires the parent `account-id` already.
+4. **Fallback: `listAccounts(account-id=<parent>)`** — only relevant when the caller is a management / partner account wanting to operate on a sub-account. Requires the parent `account-id` already.
 
 ### 2. Validate access — the right way
-
-❌ **`hasActorAccessToResource` does NOT validate account access.** Its `resource-type` enum is `[Views, Dashboards, Tags, Widgets]`. Use it for those resource types, not for accounts.
 
 ✅ **For account access, trust `getUserProfile`**: the accounts it returns are, by definition, accessible to the caller's token. No separate access check is required.
 
@@ -36,7 +34,6 @@ In priority order:
 - `getEffectiveAccess` — full permission snapshot.
 - `getEffectiveAccessPermissions` — permissions list.
 - `getEffectiveAccessWorkspaces` — which workspaces the caller can see within the account.
-- `hasActorAccessToResource` — last step; only valid for the four resource types listed above.
 
 ### 3. Workspace scoping (when the question implies a subset)
 
@@ -51,17 +48,39 @@ Include the workspace-ids as additional FQL constraints: e.g. `asset.workspaceId
 
 Resolved account-id and workspace-ids are stable for the rest of the turn. Re-prompt only on pivot.
 
+## Detect the active model
+
+Call `getAccountSettings` for the resolved account-id (from the CC-1 preflight) using the following payload:
+
+```json
+{
+  "settings": [
+    "COMPOSITE_ASSET_LIST_VIEW"
+  ],
+  "account-id": "<resolved_account_id>",
+  "settings-type": [
+    "Feature Flag"
+  ]
+}
+```
+
+Inspect the response and check the `merged.value` field:
+- If `merged.value` is `'true'`, the **Composite Data** feature flag is **ON** (composite model).
+- If `merged.value` is `'false'` (or missing), the feature flag is **OFF** (source model).
+
+**Cache the result for the turn. You MUST do this before making any calls to retrieve asset or exposure data.** The flag rarely changes within a conversation.
+
 ## Tools used
 
 | Tool | Purpose |
 |---|---|
 | `getUserProfile` | **Primary.** Returns the caller's profile + accessible accounts. |
-| `getUserProfileByAccountId` / `getUserProfileByDefaultAccount` / `getUserProfileByWorkspaceId` | Alternate profile views by specific scope. |
+| `getUserProfileByAccountId` / `getUserProfileByDefaultAccount` | Alternate profile views by specific scope. |
 | `getAccountDetails` | Enrich an account-id with display name for pickers. |
-| `listAccount` | List sub-accounts of a parent (partner/management use only). |
+| `listAccounts` | List sub-accounts of a parent (partner/management use only). |
 | `getEffectiveAccess` / `getEffectiveAccessPermissions` | Full permission snapshot. |
 | `getEffectiveAccessWorkspaces` / `getWorkspacesByAccountId` | Workspace-level scoping. |
-| `hasActorAccessToResource` | **Only for** `Views, Dashboards, Tags, Widgets`. Not for accounts. |
+| `getAccountSettings` | Checks account-level feature flags (e.g., composite vs. source models). |
 
 ## Boilerplate the user sees
 
@@ -73,5 +92,4 @@ Resolved account-id and workspace-ids are stable for the rest of the turn. Re-pr
 
 - Don't hardcode an account-id.
 - Don't guess from prior conversations that may have been in a different scope.
-- Don't call `hasActorAccessToResource` with `resource-type: Account` — it will reject the request.
 - Don't batch cross-account queries silently. If the user wants multiple accounts, loop explicitly and label results per account-id.

@@ -34,6 +34,13 @@ done < <(find "$stage" -type f -name '*.md' -print0)
 
 drift=0
 for skill_dir in "$ROOT"/skills/securin-*/; do
+  # --- EXCEPTION START ---
+  # Skip the securin-tool-search directory
+  if [[ "$(basename "$skill_dir")" == "securin-tool-search" ]]; then
+    continue
+  fi
+  # --- EXCEPTION END ---
+
   dest="$skill_dir/references/_shared"
   if (( CHECK )); then
     if [[ ! -d "$dest" ]] || ! diff -rq "$stage" "$dest" >/dev/null 2>&1; then

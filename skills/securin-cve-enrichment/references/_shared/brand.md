@@ -1,5 +1,7 @@
 <!-- Mirrored from skills/_shared/brand.md. Do not edit here — edit the source and run scripts/sync-shared.sh. -->
 
+<!-- Mirrored from skills/_shared/brand.md. Do not edit here — edit the source and run scripts/sync-shared.sh. -->
+
 # Securin Brand Guidelines (CC-4)
 
 Every visual artifact a skill produces — reports, tables, charts, dashboards, infographics, slide-deck exports, PDFs — MUST follow Securin brand by default. The user can opt out or customize, but **you must apply Securin brand unless they do**.

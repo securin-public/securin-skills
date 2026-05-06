@@ -1,144 +1,254 @@
-# Deep Links (CC-2)
+## Deep Link Generation (MANDATORY for Every List/Table/Aggregation of Customer Data)
 
-Every skill response that surfaces Securin Platform entities MUST give the user a way to open those entities in the platform UI. This plugin uses a 3-tool chain: `getViews` → `getViewSettings` → `createDeepLink`.
+You MUST call `Securin__createDeepLink` to mint a real `shortCode` and build the
+deep-link URL from the tool's response. You MUST NOT fabricate a URL or a
+shortCode. If the tool call is not made, the link is omitted entirely — there
+is no third option.
 
-## Final URL format (customer-facing)
+**Call-order rule** — within a single turn:
+1. Run all search / aggregate queries needed to answer the question.
+2. For EACH list/table/aggregation you will present, call
+   `Securin__createDeepLink` with the exact same FQL filter string you used
+   above. Do this BEFORE you begin emitting the Final Response.
+3. Only after every `createDeepLink` call has returned do you start the Final
+   Response section.
 
-`createDeepLink` returns a `shortCode`. The user-loadable URL is:
+The URL you embed in the response is built ONLY from the tool's returned
+`shortCode` — never from pattern matching, prior turns, or guessing.
 
-```
-https://platform.securin.io/deepLink?accountId=<account-id>&shortCode=<shortCode>
-```
+Whenever your Final Response presents a **list, table, or aggregation of customer data** (assets, exposures, vulnerabilities, weaknesses, components, threat actors, VI stats, dashboards), generate a deep link back into the Securin Platform UI so the user can open the exact same filtered view there. Render the link directly under the relevant table/list — not at the bottom of the response.
 
-Always render the deep link in this format. Never render the raw `shortCode` alone.
+### When to Generate
 
-## The workflow
+- One deep link per logical list. If the response contains multiple distinct lists (e.g. critical exposures table + affected assets table), generate one link per list.
+- **Skip** the deep link when the response is purely conceptual (CVE explanation, threat actor profile from VI, "what is X" answers) with no customer data list.
+- **Skip** if the response is a single-record drilldown rather than a list.
 
-```
-1. getViews(pageId=<entity>, viewType='SYSTEM')
-   → returns system views for that entity (pick by name or isDefault: true)
+### How to Generate
 
-2. getViewSettings(view-id=<picked id>, pageId=<entity>)
-   → returns the full view payload (columns, sort, filters, layout)
+#### `platform_url` is `https://platform.securin.io`
 
-3. createDeepLink(view=<settings from step 2 + overlay filter>, url, x-user-id, accessControl)
-   → returns { shortCode }
+Call `Securin__createDeepLink` with these parameters:
 
-4. Render URL: https://platform.securin.io/deepLink?accountId=<>&shortCode=<>
-```
+| Param | Value |
+|---|---|
+| `x-user-id` | `{actor_id}`  — always this exact value, never invent |
+| `account-id` | `{account_id}` |
+| `url` | **Base page path ONLY — no query string, no fragment.** Shape: `{platform_url}/<path>` — page paths: `ASSET → /assets`, `EXPOSURE → /exposures`, `VULNERABILITY → /vulnerabilities`, `WEAKNESS → /weaknesses`, `COMPONENT → /components`, `THREATACTOR → /threat-actors`, `VISTATS → /vi-stats`, `DASHBOARD → /dashboard`. This is the INPUT to the tool — it is NOT the URL you embed in your response. |
+| `view` | nested object — see structure below |
 
-`createDeepLink` expects a `view` body shaped like the output of `getViewSettings`. Do not fabricate one.
+**URL field discipline (critical):**
 
-## Tools used
+- ❌ `"url": "{platform_url}/exposures?sort=score.desc&status=Open&kev=true"` — WRONG. Query strings are rejected.
+- ❌ `"url": "{platform_url}/exposures#tab=details"` — WRONG. Fragments are rejected.
+- ✅ `"url": "{platform_url}/exposures"` — correct. Everything else (filters, sort, column selection) goes inside the `view` object.
 
-| Tool | Purpose | Required params |
-|---|---|---|
-| `getViews` | List system / saved views for a page | `account-id`, `user-id`, `pageId` |
-| `getViewSettings` | Fetch one view's full settings payload | `account-id`, `user-id`, `view-id`, `pageId` |
-| `createDeepLink` | Create a persistent, shareable deep link | `account-id`, `x-user-id`, `url`, `view` |
-| `getDeepLink` | Retrieve a deep link by `short-code` | `account-id`, `short-code` |
-| `aggregateByDeepLink` | Re-run a saved deep link's filter through aggregation | `account-id`, `shortCode`, `x-user-id` |
-| `getDefaultViewForGroupByField` | Get the view id the platform recommends for a group-by dimension | `account-id`, `apiPath`, `entityType` |
+Any filter, sort, pagination, or column-selection state you would otherwise encode as query parameters belongs in the `view.view` object instead — see the mapping in "Translating Your Query into the View Payload" below.
 
-## Page IDs (from schema)
-
-`ASSET, DASHBOARD, EXPOSURE, VULNERABILITY, WEAKNESS, VULNERABILITY_TIMELINE, THREATACTOR, VISTATS, TACTIC, TECHNIQUE, COMPONENT, THREAT, COMPOSITE_ASSET`
-
-## Common system-view names per page
-
-Pick by name via `getViews` — the exact IDs are per-account. Typical EXPOSURE system views include: *Exposures*, *CISA KEV Exposures*, *Securin KEV Exposures*, *Needs Remediation*, *RemOps - Remediation Targets*, *CVE View*, *Exposures by Asset*, *My Exposures*, *Fixes*. For ASSET, VULNERABILITY, COMPONENT pages, enumerate at request time.
-
-## `createDeepLink` request shape
-
-| Field | Required | Notes |
-|---|---|---|
-| `x-user-id` | ✅ | Caller's user id from `getUserProfile`. The deep link is owned by this user. |
-| `account-id` | ✅ | From CC-1 preflight. |
-| `url` | ✅ | Platform URL path the deep link resolves to. |
-| `view` | ✅ | Shape derived from `getViewSettings` output — see Strategy B below. |
-| `accessControl` | ✅ (practical) | Who can load the link (emails / emailDomains / workspaces / companies / seeds). Include the caller or the link is invisible to them. |
-| `expiryDate` | optional | `yyyy-MM-dd`. Defaults to system preference. |
-| `triggered-by` | optional | Default `UI`. Pass `MCP` for auditability. |
-
-**Always add the caller to `accessControl.emails` with `action: ADD, roles: ['viewer']`** — without this they cannot load the link they just created.
-
-## Two strategies
-
-### Strategy A — platform URL from FQL (default)
-
-For routine triage responses that don't need a persistent saved link:
-
-1. Compose the FQL filter.
-2. Call `filterToChipPost(filter=<FQL>, entityTypes=[<entity>])` to get the chip representation.
-3. Render a `https://platform.securin.io/<page>?...` URL the user can open.
-
-No write op, no sharing setup.
-
-**Use Strategy A for:** every triage / search / correlation / zero-day response. Default.
-
-### Strategy B — saved deep link (opt-in)
-
-Only when the user explicitly asks to save or share a view:
-
-#### B.1 — List views for the entity
-```
-getViews(account-id=<>, user-id=<caller uuid>, pageId='EXPOSURE', viewType='SYSTEM')
-→ inspect .views[]; pick the default (isDefault: true) or the best name match
-```
-
-#### B.2 — Fetch the view settings
-```
-getViewSettings(account-id=<>, user-id=<caller uuid>, view-id=<picked>, pageId='EXPOSURE')
-→ returns the full view payload (columns, sort, filters, layout)
-```
-
-#### B.3 — Confirm with the user
-> "I'll create a persistent deep link based on the system view **`<name>`** with your filter overlaid. This writes a record in your platform. Proceed? (Y/n)"
-
-#### B.4 — Call `createDeepLink`
-
-Use the view settings from B.2 as the `view` body; add the overlay FQL filter to `view.filters`; populate `shareWith` + `accessControl`:
+The `view` object structure:
 
 ```json
-{
-  "x-user-id": "<caller uuid>",
-  "account-id": <number>,
-  "url": "<platform URL for the page>",
-  "view": {
-    "pageId": "EXPOSURE",
-    "viewType": "DEEP_LINK",
-    "filters": "<overlay FQL, e.g., exposure.status = 'Open' AND vulnerabilities.tags = 'Zero Day'>",
-    "shareWith": {
-      "users": ["<caller uuid>"],
-      "teams": []
-    }
-  },
-  "accessControl": {
-    "emails": [
-      {"action": "ADD", "values": ["<caller email>"], "roles": ["viewer"]}
-    ]
-  },
-  "triggered-by": "MCP"
-}
+{{
+  "pageId": "<ENTITY_ID>",
+  "view": {{
+    "name": "<short descriptive name of what was queried>",
+    "layoutType": "LIST_VIEW",
+    "entityType": "<ENTITY_ID>",
+    "columns": [ <column objects — see Column Object Shape below> ],
+    "page": 0,
+    "rowsPerPage": 15,
+    "filters": "<the EXACT FQL filter string used in the search/aggregate query you just ran>"
+  }},
+  "shareWith": {{ "teams": [], "users": ["{actor_id}"] }},
+  "type": "createViewRequest"
+}}
 ```
 
-#### B.5 — Render the final URL
+**`layoutType` is always `"LIST_VIEW"`** for every deep link you generate — lists, tables, and aggregations (including group-by views) all use `"LIST_VIEW"`. This is the ONLY valid value for this agent's use case. Group-by behavior comes from `columns[].groupByProperties`, not from a different `layoutType`. Do not set `layoutType` to anything else, and do not omit it.
+
+**`view.type` is always `"createViewRequest"`** — this is the top-level `type` field inside the outer `view` object (sibling of `pageId`, `view`, `shareWith`), not inside `view.view`. It is the ONLY valid value for this agent's use case. Do not set it to anything else, and do not omit it.
+
+### Schema-Override Notice — READ THIS FIRST
+
+The MCP tool schema for `Securin__createDeepLink` is **incomplete**. Do NOT rely on it alone — the backend HTTP API accepts more fields than the MCP schema lists, and the schema's enums are missing. When the tool schema and this document disagree, **this document wins**. Specifically:
+
+1. **`view.view.columns` is REQUIRED even though the tool schema does not list it as a property.** The backend rejects deep-link calls that do not include a columns array. Always include it, composed per the **Column Object Shape** section below.
+2. **`view.view.page` and `view.view.rowsPerPage` are REQUIRED even though the tool schema does not list them.** Always include `page: 0` and `rowsPerPage: 15` (or whatever pagination matches your query).
+3. **`view.type` accepts only `"createViewRequest"`** for this agent. The tool schema declares `type` as an unconstrained string — ignore that; only `"createViewRequest"` is valid.
+4. **`view.view.layoutType` accepts only `"LIST_VIEW"`** for this agent. The tool schema declares `layoutType` as an unconstrained string — ignore that; only `"LIST_VIEW"` is valid.
+5. **Do NOT set `view.view.viewType`.** The tool schema lists a separate field called `viewType` with enum `["DEEP_LINK", "SAVED", "SYSTEM", "WIDGET"]`. This is a DIFFERENT field from `view.type`, and you should leave it unset. In particular, do NOT put `"DEEP_LINK"` into `view.type` — `"DEEP_LINK"` is a value that belongs to the `viewType` enum, which you are not using. The only value for `view.type` is `"createViewRequest"`.
+
+If the LLM-visible tool schema seems to contradict any of the above, the schema is wrong and this document is right. The backend validates against its own (stricter, more complete) contract, not the MCP schema.
+
+### Column Object Shape (Hardcoded — Source of Truth)
+
+Every entry in `view.view.columns` is an object with these keys. Compose the
+columns list fresh per call — pick field IDs from the **Available API Fields**
+section above so they match the fields returned by the search/aggregate query
+you just ran.
+
+| Key | Type | Required? | Description |
+|---|---|---|---|
+| `id` | string | **required** | Field path from **Available API Fields** (e.g. `exposure.scores.score`, `asset.mappedAttributes.name`), OR a special aggregate id for group-by views (e.g. `GROUPBY_COLUMN`, `OPEN_EXPOSURES`, `CRITICAL_SCORE_EXPOSURES`). |
+| `name` | string | **required** | Human-readable column header (e.g. `"Score"`, `"Asset Name"`). |
+| `entityType` | string | **required** | One of `EXPOSURE`, `ASSET`, `VULNERABILITY`, `WEAKNESS`, `COMPONENT`, `THREATACTOR`, `VISTATS`, `DASHBOARD`. Must match the entity the field belongs to, not necessarily the top-level `entityType` of the view (e.g. an ASSET-prefixed field inside an EXPOSURE view has `entityType: "ASSET"`). |
+| `isHidden` | boolean | **required** | `false` for columns that should display. Set `true` to include a field in the view data set but hide its column. |
+| `sort` | object | optional | Include on the ONE column you want sorted. Shape: `{{"direction": "asc"\|"desc", "index": 1}}`. `index` is the sort priority (1 = primary). Omit on all other columns. |
+| `groupByProperties` | object | optional | Only for group-by / aggregation views. Shape: `{{"function": "COUNT"\|"MAX"\|"MIN"\|"SUM"\|"AVG"\|"FIRST"\|"TERMS"\|"CARDINALITY", "field": "<field path>", "filters": "<optional FQL>", "size": <optional int>}}`. |
+| `onClickViewId` | string | optional | Rare — only when the column drills into another system view on click. Leave out unless you have a specific view id to target. |
+
+**Hard rules for the columns array:**
+
+1. Every `id` MUST come from the **Available API Fields** section above. No guessing.
+2. The column set you send MUST match (be a superset of) the fields your search/aggregate tool call actually returned for the rendered table — this is what ties the deep link to the table the user sees.
+3. Exactly one column may have a `sort` object. Use the same field + direction you used in your search call's `sort` argument.
+4. Do NOT include the `width`, `order`, `isPinned`, or any other keys — send only the keys listed above.
+
+### Translating Your Query into the View Payload
+
+For every parameter you passed to `Securin__searchExposureData` / `Securin__searchAssetData` / `Securin__aggregate*`, copy it to the matching slot in the `view` object. Do NOT encode any of these as URL query parameters.
+
+| Your search tool-call argument | Where it goes in the deep-link payload |
+|---|---|
+| `filters` (FQL string) | `view.view.filters` — copy the FQL string verbatim |
+| `sort` (field + direction) | `view.view.columns[N].sort = {{"direction": "...", "index": 1}}` on the matching column |
+| `pageSize` | `view.view.rowsPerPage` |
+| Field selection / projection | `view.view.columns[].id` — one column per returned field |
+| Entity scope (EXPOSURE/ASSET/etc.) | `view.view.entityType` and `view.pageId` |
+
+If the table you're rendering is an aggregation, set each column's `groupByProperties` to match the aggregation you ran.
+
+### View Payload Strategy
+
+1. **Default path — compose the view yourself.** Build `columns`, `filters`, `sort`, and `rowsPerPage` from scratch using the mappings above. This is what you should do 99% of the time. The deep link is a NEW view definition tied to this one query; it does not need to reference any existing saved view.
+2. **Rare fallback — named system view.** Only if the user explicitly asked for a specific named system view (e.g. *"show me the Sentry view of my internet-facing assets"*):
+   - Call `Securin__getViews` with `{{pageId, viewType: "SYSTEM", searchText: "<view name>"}}` to find the view id.
+   - Call `Securin__getViewSettings` with `{{pageId, view-id}}` to fetch its columns + entityType.
+   - Use those columns in the `createDeepLink` payload.
+
+Both `Securin__getViews` and `Securin__getViewSettings` also require `x-user-id: {actor_id}` and `account-id: {account_id}`.
+
+### Constructing the URL from the Response
+
+The URL you EMBED in the Final Response is a DIFFERENT shape from the `url`
+input parameter above. It is only available AFTER `Securin__createDeepLink`
+returns a `shortCode`.
+
+If `Securin__createDeepLink` returns `status: "SUCCESS"` with a `shortCode`, build the URL exactly as:
 
 ```
-https://platform.securin.io/deepLink?accountId=<account-id>&shortCode=<shortCode-from-response>
+{platform_url}/deepLink?accountId={account_id}&shortCode=<shortCode-from-tool-response>
 ```
 
-Use `getDeepLink(account-id=<>, short-code=<>)` later to retrieve the saved record (set `includeAccessDetails=true` to audit sharing).
+Where `<shortCode-from-tool-response>` is the literal value of the `shortCode`
+field from the tool's JSON response in this turn. If you did not call the
+tool this turn, you do NOT have a shortCode — do not invent one.
 
-## Aggregation + deep link
+If `status` is anything other than `SUCCESS`, **omit the link silently** — do not surface the error to the user, do not retry.
 
-- `aggregateByDeepLink(shortCode=<from Strategy B>)` — re-runs the saved view's filter through the aggregation pipeline. Use when the user wants both the saved view and per-bucket counts.
-- For ad-hoc per-bucket counts without a saved view, use `aggregate*Data` / `hybrid*Data` and emit Strategy-A links per bucket.
+### Embedding in the Response
 
-## Don't
+Render the URL as a plain markdown link directly below the table or list it refers to (not buried in a footer). The `shortCode` in the URL must be the literal value returned by `Securin__createDeepLink` this turn — never invented, never carried over from a prior turn.
 
-- Don't call `createDeepLink` without chaining `getViews` + `getViewSettings` first.
-- Don't call `createDeepLink` without `x-user-id` + `accessControl.emails` including the caller.
-- Don't hand-assemble URLs and also call `createDeepLink` in the same response — pick one strategy.
-- Don't loop `createDeepLink` per row/bucket — it's a write op; one saved view per filter scope.
-- Don't render just the `shortCode` — always wrap it in the `https://platform.securin.io/deepLink?accountId=<>&shortCode=<>` format.
+### Worked Example
+
+User asks: "What are my top critical open exposures with KEV?"
+
+Tool calls (in order, BEFORE the Final Response):
+
+1. `Securin__aggregateExposureData`({{
+     "filters": "\"exposure.status\" = \"Open\" and \"vulnerabilities.isCisaKEV\" = \"true\"",
+     "sort": {{"field": "exposure.scores.score", "direction": "desc"}},
+     "aggs": [...]
+   }}) → {{ "totalResults": 47, "buckets": [...] }}
+
+2. `Securin__createDeepLink`({{
+     "x-user-id": "{actor_id}",
+     "account-id": {account_id},
+     "url": "{platform_url}/exposures",
+     "view": {{
+       "pageId": "EXPOSURE",
+       "view": {{
+         "name": "Critical KEV Open Exposures",
+         "layoutType": "LIST_VIEW",
+         "entityType": "EXPOSURE",
+         "columns": [
+           {{ "id": "exposure.scores.scoreLevel", "name": "Score Level", "entityType": "EXPOSURE", "isHidden": false }},
+           {{ "id": "exposure.mappedAttributes.title", "name": "Title", "entityType": "EXPOSURE", "isHidden": false }},
+           {{ "id": "exposure.scores.score", "name": "Score", "entityType": "EXPOSURE", "isHidden": false, "sort": {{"direction": "desc", "index": 1}} }},
+           {{ "id": "asset.mappedAttributes.name", "name": "Asset Name", "entityType": "ASSET", "isHidden": false }},
+           {{ "id": "exposure.firstDiscoveredOn", "name": "First Discovered On", "entityType": "EXPOSURE", "isHidden": false }}
+         ],
+         "page": 0,
+         "rowsPerPage": 15,
+         "filters": "\"exposure.status\" = \"Open\" and \"vulnerabilities.isCisaKEV\" = \"true\""
+       }},
+       "shareWith": {{ "teams": [], "users": ["{actor_id}"] }},
+       "type": "createViewRequest"
+     }}
+   }}) → {{ "status": "SUCCESS", "shortCode": "a1b2c3d4" }}
+
+Notice:
+- `url` is the bare path `{platform_url}/exposures` — no query string.
+- `filters` is the EXACT FQL from the search call above.
+- The `sort` lives on the `exposure.scores.score` column, matching the search `sort`.
+- Each column `id` is a field path that appears in **Available API Fields**.
+
+Only NOW do you begin emitting the Final Response markdown:
+
+```
+| CVE | Exposures | Severity |
+| --- | --- | --- |
+| ... | ... | ... |
+
+[Open in Securin Platform]({platform_url}/<path>?accountId={account_id}&shortCode=a1b2c3d4)
+```
+
+Note that `a1b2c3d4` in the URL is the EXACT value returned by the tool — it is not a guess, a hash, or a placeholder. If the tool had not been called, the link is omitted entirely.
+
+### Field Validity (Critical — Source of Truth)
+
+The Securin API strictly validates every column `id` and every field path inside the FQL `filters` string. Invalid paths fail the call with `"<field> has invalid information"`.
+
+**Hard rules:**
+
+1. Every `view.view.columns[].id` MUST appear in the **Available API Fields** section above (or be one of the documented special aggregate ids for group-by views). No exceptions, no guessing.
+2. Every field path inside the `view.view.filters` FQL string MUST appear in the **Available API Fields** section above for the matching entityType.
+3. **Reuse the FQL string verbatim.** The filter you pass to `Securin__createDeepLink` should be the EXACT same FQL you just sent to `Securin__searchExposureData` / `Securin__searchAssetData` / `Securin__aggregate*`. If that query worked, those fields are valid.
+4. **Columns must match the rendered table.** The set of `columns[].id` values should correspond one-to-one with the fields you actually show (or need to show) in the markdown table. Do not stuff in unrelated columns; do not leave out columns the user sees.
+5. **`view.view.layoutType` MUST be exactly `"LIST_VIEW"`.** This is the only valid value for every deep link this agent generates (including aggregations and group-by tables). Never substitute another value; never omit the key.
+6. **`view.type` MUST be exactly `"createViewRequest"`.** This is the top-level `type` key inside the outer `view` object (sibling of `pageId`, `view`, `shareWith`) — not a key inside `view.view`. It is the only valid value; never substitute another value; never omit the key.
+7. **EntityType discipline — match the upstream tool call, not the account preference.** The deep-link payload (`view.pageId`, every `columns[].entityType`, every field path inside `view.view.filters`) must come from the same entity family as the `searchExposureData` / `searchAssetData` / `getExposureQuery` / `getAssetQuery` call you just ran. The user may have explicitly asked for composite data on a source-default account or vice-versa, so follow the data they're actually looking at — see `references/_shared/composite-vs-source.md` for picking the upstream call; this rule only governs what the deep-link payload looks like once that call has been made. Never mix prefixes within a single payload.
+
+   | Slot | Source mode | Composite mode |
+   |---|---|---|
+   | `view.pageId` | `EXPOSURE` | `COMPOSITE_EXPOSURE` |
+   | `columns[].entityType` (exposure col) | `EXPOSURE` | `COMPOSITE_EXPOSURE` |
+   | `columns[].entityType` (asset col joined in) | `ASSET` | `COMPOSITE_ASSET` |
+   | Filter / column field path (score) | `exposure.scores.score` | `compositeExposure.scores.score` |
+   | Filter / column field path (asset name) | `asset.mappedAttributes.name` | `compositeAsset.mappedAttributes.name` |
+   | Tool used upstream | `searchExposureData` / `searchAssetData` | `getExposureQuery` / `getAssetQuery` |
+
+### Self-Healing on Field Errors
+
+If `Securin__createDeepLink` returns a non-SUCCESS response containing `"has invalid information"`:
+
+1. Identify the offending field from the error message.
+2. Look it up in the **Available API Fields** section to find the correct path (or call `Securin__getApiFields` once if the entity isn't in the section).
+3. Drop or correct the offending column / filter field.
+4. Retry `Securin__createDeepLink` ONCE.
+5. If it still fails, omit the deep link silently per the rule above. Do not loop, do not surface the error.
+
+### Final Checkpoint — Before Emitting the Response
+
+For every list/table you are about to include in the Final Response, verify ALL of these:
+
+- Did you call `Securin__createDeepLink` this turn for it? If NO → call it now, before you continue.
+- Is the `url` input you sent a bare path (no `?`, no `#`)? If NO → the call will fail — fix it and retry.
+- Is `view.view.layoutType` set to exactly `"LIST_VIEW"`? If NO → fix it before sending the call.
+- Is `view.type` (top-level, sibling of `pageId`) set to exactly `"createViewRequest"`? If NO → fix it before sending the call.
+- Do the `columns[].id` values match the fields shown in your rendered table, and do their prefixes match the upstream tool call's entity family (source vs composite)? If NO → rebuild the columns list before the call.
+- Did the response have `status: "SUCCESS"`? If NO → omit the link.
+- Is the `shortCode` in your embedded URL a value copied verbatim from a `Securin__createDeepLink` tool-call response in this turn? If NO → omit the link.
+
+If you cannot answer YES to all of these for a given list/table, the link does not belong in the response. Omitting the link is always acceptable. Fabricating one is never acceptable.

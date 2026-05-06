@@ -6,21 +6,21 @@ Reference templates for common threat-correlation questions. Each pattern assume
 
 ```text
 1. searchVulnerabilityData
-   filter: vulnerabilityId = 'CVE-X'
+   filters: vulnerabilityId = 'CVE-X'
    → fetch KEV status, severity, exploits
 
-2. hybridExposureData
-   filter: exposure.mappedAttributes.vulnerabilityIds = 'CVE-X'
-           AND exposure.status = 'Open'
-   groupByField: "exposure.scores.scoreLevel"
-   → count + severity breakdown
-
-3. searchExposureData
-   filter: same as above
+2. searchExposureData
+   filters: exposure.mappedAttributes.vulnerabilityIds = 'CVE-X'
+            AND exposure.status = 'Open'
    → itemize each exposure (capped, e.g., top 25 by severity)
 
+3. aggregateExposureData
+   filters: <same as step 2>
+   aggs: [{ name: "by_severity", function: "TERMS", field: "exposure.scores.scoreLevel" }]
+   → count + severity breakdown
+
 4. searchAssetData (or searchCompositeAssetData)
-   filter: asset.assetId = <id from step 3>  # or 'in' for a list
+   filters: asset.assetId in (<ids from step 2>)
    → asset context
 
 5. createDeepLink per affected asset + top-level filter link
@@ -32,12 +32,11 @@ Reference templates for common threat-correlation questions. Each pattern assume
 1. **Web search** for the ransomware family (e.g., "LockBit CVE list", "Clop ransomware CVE")
    → collect CVE IDs from published threat-intel reports (Unit42, Mandiant, CISA advisories)
    → confirm the CVE list with the user before correlating
-   
 
-2. hybridExposureData
-   filter: exposure.mappedAttributes.vulnerabilityIds in [<cve-list>]
-           AND exposure.status = 'Open'
-   groupByField: "exposure.scores.scoreLevel"
+2. searchExposureData + aggregateExposureData (two calls, same filter)
+   filters: exposure.mappedAttributes.vulnerabilityIds in (<cve-list>)
+            AND exposure.status = 'Open'
+   aggregate aggs: [{ name: "by_severity", function: "TERMS", field: "exposure.scores.scoreLevel" }]
 
 3-5. As Pattern 1 steps 3-5
 ```
@@ -46,9 +45,12 @@ Reference templates for common threat-correlation questions. Each pattern assume
 
 ```text
 1. searchThreatActorData
-   filter: name like '<actor>'          # bare path — no `threatActor.` prefix
-   fields: ['threatActor']
-   → gather actor record + cveIds array
+   filters: name like '<actor>'          # bare path — no `threatActor.` prefix
+   # Do NOT pass fields: ['threatActor'] — actor records are flat (name,
+   # description, associatedGroups, vulnerabilities, software, techniques, …),
+   # not nested under a `threatActor` prefix, so that filter returns empty rows.
+   # Omit `fields` to get the full record, or list specific top-level keys.
+   → gather actor record (associatedGroups, vulnerabilities, software, techniques)
    → ALSO gather TTPs if present
 
 2-5. As Pattern 2 steps 2-5
@@ -58,26 +60,34 @@ Reference templates for common threat-correlation questions. Each pattern assume
 
 ## Pattern 4 — "Show me exposures to CISA KEV in my prod env"
 
+Run search + aggregate with the same filter:
+
 ```text
-hybridExposureData
-filter: exposure.status = 'Open'
-        AND vulnerabilities.exploitation.isCisaKev = true
-        AND exposure.workspaceId in [<prod-ws-ids>]
-groupByField: "exposure.scores.scoreLevel"
-aggs: [{type: "count"}]
+# 1) Row list
+searchExposureData
+filters: exposure.status = 'Open'
+         AND vulnerabilities.isCisaKEV = true
+         AND exposure.workspaces.id in (<prod-ws-id-1>, <prod-ws-id-2>)
+         # workspace ids are numeric — do NOT single-quote them
+
+# 2) Bucket counts (same filter)
+aggregateExposureData
+filters: <same as above>
+aggs: [{ name: "by_severity", function: "TERMS", field: "exposure.scores.scoreLevel" }]
 ```
 
 ## Pattern 5 — "What hunts my environment" (outbound)
 
 ```text
 1. aggregateExposureData
-   groupByField: "exposure.mappedAttributes.vulnerabilityIds"
-   filter: exposure.status = 'Open' AND "<scope>"
+   filters: exposure.status = 'Open' AND <scope>
+   aggs: [{ name: "by_cve", function: "TERMS",
+            field: "exposure.mappedAttributes.vulnerabilityIds" }]
    → list of CVEs with exposure counts in your env
 
 2. For top N CVEs by exposure count, in parallel:
    - searchVulnerabilityData (CVE record)
-   - searchThreatActorData (actors exploiting it), fields: ["threatActor"]
+   - searchThreatActorData (actors exploiting it)   # do NOT pass fields:['threatActor'] (see Pattern 3)
    - **Web search** (ransomware/malware → CVE list)
 
 3. Aggregate by threat actor / ransomware family:
@@ -103,17 +113,21 @@ User says "the Fortinet thing from last week" — no CVE ID.
 Time-series correlation for trending:
 
 ```text
-hybridVulnerabilityTimelineData
-filter: vulnerabilities.exploitation.exploitedInWild = true
-        AND exposure.status = 'Open'
-groupByField: "exposure.firstSeenAt"   # or exposure.state for new/closed
-aggs: [{type: "count", interval: "week"}]
+searchVulnerabilityTimelineData
+filters: title like 'CVE-2024-3400'
+fields: ["author", "title", "publishedDate", "source.name", "type"]
+   # `fields` matters: without a valid timeline prefix in the projection,
+   # the call returns totalRecords > 0 with an empty results array. Valid
+   # paths come from getApiFields(entityType=['VULNERABILITY_TIMELINE']):
+   # author · title · content · publishedDate · language · type · source.name
+   # · translatedPost.{title,content,language}
 ```
+`fields` and `filters` are mandatory in the above tool call. 
 
 ## Anti-patterns to avoid
 
 - **Starting a correlation without a resolved account-id** — CC-1 preflight first, always.
-- **Forgetting `fields: ["threatActor"]` / `fields: ["threat"]`** — returns empty rows silently.
+- **Passing `fields: ["threatActor"]` to `searchThreatActorData`** — returns empty rows silently because actor records are flat, not nested under that prefix. Omit `fields` (or pass top-level keys like `name`, `vulnerabilities`) to get the record. The same trap may apply to `searchThreatData` — verify with the live schema before adding a `fields` array.
 - **Hand-constructing URLs** instead of `createDeepLink`.
 - **Mixing `asset.*` and `compositeAsset.*`** in one query — pick one per account.
-- **Blindly iterating all CVEs for a prolific threat actor** — batch, or prioritize by KEV / exploitedInWild first.
+- **Blindly iterating all CVEs for a prolific threat actor** — batch, or prioritize by CISA KEV / isExploitedInTheWild first.

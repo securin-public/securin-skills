@@ -1,0 +1,1068 @@
+---
+name: apiFieldsSource
+description: Source-of-truth list of valid API field paths for ASSET, EXPOSURE, VULNERABILITY, COMPONENT, and WEAKNESS entities. Load before constructing FQL filters / sort / groupBy for `Securin__searchAssetData` / `Securin__searchExposureData` / `Securin__aggregateAssetData` / `Securin__aggregateExposureData` calls or `Securin__createDeepLink` view payloads when the account is in Source Mode (or the user explicitly asked for raw / unmerged / source data).
+compatibility: Reference-only skill. No workflow steps; no MCP tool invocations beyond the listed `Securin__getApiFields` fallback.
+allowed-tools:
+  - Securin__getApiFields
+model_grade: MEDIUM
+metadata:
+  personas: Security Analyst, RemOps Engineer, SOC Lead
+  workflow_category: reference
+---
+# API Fields — Source of Truth (Source Mode)
+
+These are the ONLY valid field paths for **Source Mode** queries on
+this account, refreshed in parallel from the Securin Platform Gateway
+at the start of every request. Use them when:
+
+- The account is in Source Mode (default — see "Step 0 — Account Mode"
+  in the system prompt), OR
+- The user explicitly asked for raw / unmerged / source-of-truth data.
+
+These paths apply to:
+
+- `filters`, `sort`, and field selections in
+  `Securin__searchAssetData` / `Securin__searchExposureData` /
+  `Securin__aggregateAssetData` / `Securin__aggregateExposureData`
+  calls (Source Mode keeps the existing search + aggregate tools).
+- `view.view.columns[].id` and field paths inside `view.view.filters`
+  for `Securin__createDeepLink` when targeting source entities.
+
+## Hard rules
+
+- If a field path is not listed below, do **not** use it. Do not invent
+  or guess paths — pick the closest listed one or omit the field.
+- Field paths are entity-scoped. Use the path style that matches the
+  entityType: `exposure.*` for `EXPOSURE`, `asset.*` for `ASSET`, and
+  so on.
+- Do NOT use `compositeExposure.*` / `compositeAsset.*` paths or
+  `COMPOSITE_*` entityTypes here — those belong in the
+  `apiFieldsComposite` skill.
+
+## Fallback
+
+If an entity you need is not listed below — and only then — call
+`Securin__getApiFields` once with the right `entityType` to fetch its
+schema before constructing the query.
+
+---
+
+### ASSET
+#### Built-in Attributes
+  - `asset.accountId` (STRING)
+  - `asset.assetId` (STRING) — "Platform Asset ID"
+  - `asset.assetType` (STRING)
+  - `asset.compositeAssetDefinition.id` (LONG)
+  - `asset.compositeAssetDefinition.name` (STRING)
+  - `asset.compositeAssetId` (STRING) — "Composite Platform Asset ID"
+  - `asset.compositeAssetIdentifiedBy` (STRING) — "Composite Asset Identified By"
+  - `asset.compositeAssetIdentifier` (STRING) — "Composite Asset Identifier"
+  - `asset.criticality` (INTEGER) — "Asset Criticality"
+  - `asset.decommission.decommissionMode` (STRING) — "Decommission Mode"
+  - `asset.decommission.decommissionedBy` (STRING) — "Decommissioned By"
+  - `asset.decommission.decommissionedOn` (DATE) — "Decommissioned On"
+  - `asset.decommission.decommissionedReason` (STRING) — "Decommissioned Reason"
+  - `asset.decommission.preDecommissionLifeCycleState` (STRING)
+  - `asset.decommission.preDecommissionStatus` (STRING)
+  - `asset.discoveryTarget.dueDate` (DATE) — "Discovery Due Date"
+  - `asset.discoveryTarget.dueDateCalculatedUsingField` (STRING)
+  - `asset.discoveryTarget.dueDateCalculatedUsingValue` (DATE)
+  - `asset.discoveryTarget.dueDateCreatedOn` (DATE) — "Discovery Due Date First Updated On"
+  - `asset.discoveryTarget.dueDateUpdatedBy` (STRING)
+  - `asset.discoveryTarget.dueDateUpdatedOn` (DATE) — "Discovery Due Date Last Updated On"
+  - `asset.discoveryTarget.generatedDueDate` (DATE)
+  - `asset.discoveryTarget.isDefaultPolicyUsed` (BOOLEAN) — "Default Discovery Policy Applied"
+  - `asset.discoveryTarget.priority` (STRING) — "Discovery Target Priority"
+  - `asset.discoveryTarget.status` (STRING) — "Discovery Status"
+  - `asset.discoveryTarget.targetDays` (INTEGER) — "Discovery Target Days"
+  - `asset.discoveryTarget.userOverriddenDueDate` (DATE)
+  - `asset.firstDiscoveredOn` (DATE) — "Asset First Discovered On"
+  - `asset.firstIngestedOn` (DATE) — "Asset First Ingested On"
+  - `asset.identifiedBy` (STRING) — "Asset Identified By"
+  - `asset.identifier` (STRING) — "Asset Identifier"
+  - `asset.integration.definitionID` (STRING) — "Connector Product ID"
+  - `asset.integration.instanceID` (LONG) — "Connector ID"
+  - `asset.integration.name` (STRING) — "Connector Name"
+  - `asset.integration.productName` (STRING) — "Connector Product"
+  - `asset.integration.vendorName` (STRING) — "Connector Vendor"
+  - `asset.isCredentialedAsset` (BOOLEAN)
+  - `asset.isIdentitySourcedFrom` (BOOLEAN)
+  - `asset.isUserOverriddenCompositeAsset` (BOOLEAN)
+  - `asset.lastDiscoveredOn` (DATE) — "Asset Last Discovered On"
+  - `asset.lastIngestedOn` (DATE) — "Asset Last Ingested On"
+  - `asset.lastSeenImportId` (STRING) — "Asset Last Seen Import ID"
+  - `asset.lifeCycleState` (STRING) — "Asset Lifecycle State"
+  - `asset.lifeCycleStateLastUpdatedOn` (DATE)
+  - `asset.overriddenCriticality` (INTEGER) — "Asset Overridden Criticality"
+  - `asset.overriddenReachability` (ENUM) — "Asset Overridden Reachability"
+  - `asset.precedenceFidelity` (INTEGER)
+  - `asset.priorCompositeAssetId` (STRING)
+  - `asset.rawAssetDataType` (STRING)
+  - `asset.rawAssetFieldName` (STRING)
+  - `asset.reachability` (ENUM) — "Asset Reachability"
+  - `asset.scannerReportedStatus` (STRING)
+  - `asset.scores.overallScore` (DOUBLE) — "Asset Score"
+  - `asset.scores.overallScoreGrade` (STRING)
+  - `asset.scores.remediationScore` (DOUBLE) — "Asset Remediation Score"
+  - `asset.scores.remediationScoreGrade` (STRING)
+  - `asset.scores.routingScore` (DOUBLE) — "Asset Routing Score"
+  - `asset.scores.routingScoreGrade` (STRING)
+  - `asset.scores.scanPolicyOffset` (INTEGER)
+  - `asset.scores.scanScore` (DOUBLE) — "Asset Discover Score"
+  - `asset.scores.scanScoreGrade` (STRING)
+  - `asset.scores.scanScoreGradeSlot1` (STRING)
+  - `asset.scores.scanScoreGradeSlot2` (STRING)
+  - `asset.scores.scanScoreGradeSlot3` (STRING)
+  - `asset.scores.scanScoreReferenceDate` (DATE)
+  - `asset.scores.scanScoreSlot1` (DOUBLE)
+  - `asset.scores.scanScoreSlot2` (DOUBLE)
+  - `asset.scores.scanScoreSlot3` (DOUBLE)
+  - `asset.status` (STRING) — "Asset Status"
+  - `asset.statusLastUpdatedOn` (STRING)
+  - `asset.tags.colorType` (ENUM)
+  - `asset.tags.id` (LONG)
+  - `asset.tags.isLocked` (BOOLEAN)
+  - `asset.tags.name` (STRING) — "Asset Tags"
+  - `asset.timeToScan` (INTEGER) — "Last Scan Interval"
+  - `asset.workspaces.id` (LONG)
+  - `asset.workspaces.name` (STRING) — "Workspaces"
+  - `asset.workspaces.scores.score` (DOUBLE)
+  - `assetImportHistory.assetId` (STRING)
+  - `assetImportHistory.fileIds` (STRING)
+  - `assetImportHistory.fileNames` (STRING)
+  - `assetImportHistory.importDetails.file_id` (STRING)
+  - `assetImportHistory.importDetails.file_name` (STRING)
+  - `assetImportHistory.importDetails.hash` (STRING)
+  - `assetImportHistory.importDetails.import_id` (STRING)
+  - `assetImportHistory.importDetails.nessus_test_details.plugins` (STRING)
+  - `assetImportHistory.importId` (STRING) — "Asset Import ID"
+  - `assetImportHistory.importName` (STRING) — "Asset Import Name"
+  - `assetImportHistory.ingestedOn` (DATE)
+
+#### Built-in Mapped Attributes
+  - `asset.mappedAttributes.applicationUrl` (STRING) — "Asset Application URL"
+  - `asset.mappedAttributes.assetType` (STRING) — "Asset Type"
+  - `asset.mappedAttributes.category` (STRING) — "Asset Category"
+  - `asset.mappedAttributes.cloudProperties.accountId` (STRING) — "Asset Cloud Account ID"
+  - `asset.mappedAttributes.cloudProperties.accountName` (STRING) — "Asset Cloud Account Name"
+  - `asset.mappedAttributes.cloudProperties.provider` (STRING) — "Asset Cloud Provider Name"
+  - `asset.mappedAttributes.cloudProperties.region` (STRING) — "Asset Cloud Region"
+  - `asset.mappedAttributes.cloudProperties.resourceCategory` (STRING) — "Asset Resource Category"
+  - `asset.mappedAttributes.cloudProperties.resourceId` (STRING) — "Asset Resource ID"
+  - `asset.mappedAttributes.cloudProperties.resourceName` (STRING) — "Asset Resource Name"
+  - `asset.mappedAttributes.cloudProperties.resourceType` (STRING) — "Asset Resource Type"
+  - `asset.mappedAttributes.containerProperties.url` (STRING) — "Asset Container URL"
+  - `asset.mappedAttributes.isCredentialed` (BOOLEAN) — "Is Credentialed Scan"
+  - `asset.mappedAttributes.name` (STRING) — "Asset Name"
+  - `asset.mappedAttributes.networkInterfaces.FQDN` (STRING) — "Asset FQDNs"
+  - `asset.mappedAttributes.networkInterfaces.ipv4s` (IP) — "Asset IPv4 Addresses"
+  - `asset.mappedAttributes.networkInterfaces.macAddresses` (STRING) — "Asset MAC Addresses"
+  - `asset.mappedAttributes.networkInterfaces.netbios` (STRING) — "Asset Netbios"
+  - `asset.mappedAttributes.repoProperties.url` (STRING) — "Code Repo URL"
+  - `asset.mappedAttributes.vendorFirstDiscoveredOn` (DATE) — "Asset Vendor First Discovered On"
+  - `asset.mappedAttributes.vendorIdentifier` (STRING)
+  - `asset.mappedAttributes.vendorLastDiscoveredOn` (DATE) — "Asset Vendor Last Discovered On"
+  - `asset.mappedAttributes.vendorStatus` (STRING) — "Asset Vendor Status"
+
+#### Built-in User-Managed Attributes
+  - `asset.userManagedAttributes.deviceType` (STRING) — "User-Managed Asset Device Type"
+  - `asset.userManagedAttributes.environment` (STRING) — "User-Managed Asset Environment"
+  - `asset.userManagedAttributes.label` (STRING) — "User-Managed Asset Label"
+  - `asset.userManagedAttributes.location` (STRING) — "User-Managed Asset Location"
+  - `asset.userManagedAttributes.operatingSystem` (STRING) — "User-Managed Asset OS"
+  - `asset.userManagedAttributes.supportedApplication` (STRING) — "User-Managed Asset Supported Application"
+
+### EXPOSURE
+#### Built-in Attributes
+  - `exposure.accountId` (STRING) — "Account"
+  - `exposure.age` (INTEGER) — "Age in days"
+  - `exposure.articles.articleId` (LONG) — "Article ID"
+  - `exposure.assetId` (STRING)
+  - `exposure.assignments.assignedOn` (DATE) — "First Routed On"
+  - `exposure.assignments.assignedTo.assignedOn` (DATE) — "Assigned On"
+  - `exposure.assignments.assignedTo.id` (STRING)
+  - `exposure.assignments.assignedTo.name` (STRING) — "Assigned To"
+  - `exposure.assignments.assignedTo.userType` (ENUM)
+  - `exposure.assignments.firstAssignedMode` (STRING) — "First Routed Mode"
+  - `exposure.assignments.isAssigned` (BOOLEAN) — "Is Routed"
+  - `exposure.assignments.ticketingSystemName` (STRING)
+  - `exposure.assignments.timeToAssign` (INTEGER)
+  - `exposure.compositeAssetId` (STRING)
+  - `exposure.compositeDefinition.id` (LONG)
+  - `exposure.compositeDefinition.name` (STRING)
+  - `exposure.compositeExposureId` (STRING) — "Composite Exposure ID"
+  - `exposure.compositeExposureIdentifiedBy` (STRING)
+  - `exposure.compositeExposureIdentifier` (STRING)
+  - `exposure.compositeMatchState` (STRING)
+  - `exposure.exposureId` (STRING) — "Platform Exposure ID"
+  - `exposure.firstDiscoveredOn` (DATE) — "First Discovered On"
+  - `exposure.firstIngestedOn` (DATE) — "First Ingested On"
+  - `exposure.identifiedBy` (STRING) — "Exposure Identified By"
+  - `exposure.identifier` (STRING) — "Exposure Identifier"
+  - `exposure.installedSoftware.productName` (STRING)
+  - `exposure.installedSoftware.vendorName` (STRING)
+  - `exposure.integration.definitionID` (STRING)
+  - `exposure.integration.instanceID` (LONG)
+  - `exposure.integration.name` (STRING)
+  - `exposure.integration.productName` (STRING)
+  - `exposure.integration.vendorName` (STRING)
+  - `exposure.isIdentitySourcedFrom` (BOOLEAN)
+  - `exposure.lastDiscoveredOn` (DATE) — "Last Discovered On"
+  - `exposure.lastIngestedOn` (DATE) — "Last Ingested On"
+  - `exposure.lastResolvedOn` (DATE) — "Last Resolved On"
+  - `exposure.lastResurfacedOn` (DATE) — "Last Reopened On"
+  - `exposure.lastSeenImportId` (STRING) — "Exposure Last Seen Import ID"
+  - `exposure.lifeCycleState` (STRING) — "Lifecycle State"
+  - `exposure.lifeCycleStateLastUpdatedOn` (DATE)
+  - `exposure.overriddenSeverityScore` (INTEGER) — "Overridden Severity Score"
+  - `exposure.possibleMatchCompositeId` (STRING)
+  - `exposure.precedenceFidelity` (INTEGER)
+  - `exposure.rawExposureDataType` (STRING)
+  - `exposure.rawExposureFieldName` (STRING)
+  - `exposure.remediationTarget.dueDate` (DATE) — "Remediation Due Date"
+  - `exposure.remediationTarget.dueDateCalculatedUsingField` (STRING)
+  - `exposure.remediationTarget.dueDateCalculatedUsingValue` (DATE)
+  - `exposure.remediationTarget.dueDateCreatedOn` (DATE) — "Remediation Due Date First Updated On"
+  - `exposure.remediationTarget.dueDateUpdatedBy` (STRING)
+  - `exposure.remediationTarget.dueDateUpdatedOn` (DATE) — "Remediation Due Date Last Updated On"
+  - `exposure.remediationTarget.generatedDueDate` (DATE)
+  - `exposure.remediationTarget.isDefaultPolicyUsed` (BOOLEAN) — "Default Remediation Policy Applied"
+  - `exposure.remediationTarget.priority` (STRING) — "Remediation Target Priority"
+  - `exposure.remediationTarget.status` (STRING) — "Remediation Status"
+  - `exposure.remediationTarget.targetDays` (INTEGER) — "Remediation Target Days"
+  - `exposure.remediationTarget.userOverriddenDueDate` (DATE)
+  - `exposure.routingDueDate` (DATE)
+  - `exposure.routingTarget.dueDate` (DATE) — "Routing Due Date"
+  - `exposure.routingTarget.dueDateCalculatedUsingField` (STRING)
+  - `exposure.routingTarget.dueDateCalculatedUsingValue` (DATE)
+  - `exposure.routingTarget.dueDateCreatedOn` (DATE) — "Routing Due Date First Updated On"
+  - `exposure.routingTarget.dueDateUpdatedBy` (STRING)
+  - `exposure.routingTarget.dueDateUpdatedOn` (DATE) — "Routing Due Date Last Updated On"
+  - `exposure.routingTarget.generatedDueDate` (DATE)
+  - `exposure.routingTarget.isDefaultPolicyUsed` (BOOLEAN) — "Default Routing Policy Applied"
+  - `exposure.routingTarget.priority` (STRING) — "Routing Target Priority"
+  - `exposure.routingTarget.status` (STRING) — "Routing Status"
+  - `exposure.routingTarget.targetDays` (INTEGER) — "Routing Target Days"
+  - `exposure.routingTarget.userOverriddenDueDate` (DATE)
+  - `exposure.scanSla` (INTEGER)
+  - `exposure.score` (INTEGER)
+  - `exposure.scores.customScores.id` (STRING)
+  - `exposure.scores.customScores.name` (STRING)
+  - `exposure.scores.customScores.score` (DOUBLE)
+  - `exposure.scores.cvssV2Score` (DOUBLE) — "CVSS V2"
+  - `exposure.scores.cvssV3Score` (DOUBLE) — "CVSS V3"
+  - `exposure.scores.cvssV4Score` (DOUBLE) — "CVSS V4"
+  - `exposure.scores.mode` (STRING)
+  - `exposure.scores.overrideScoreReason` (STRING) — "Override Score Reason"
+  - `exposure.scores.remediationPolicyOffset` (INTEGER)
+  - `exposure.scores.remediationScore` (DOUBLE) — "Remediation Score"
+  - `exposure.scores.remediationScoreGrade` (STRING)
+  - `exposure.scores.remediationScoreGradeSlot1` (STRING)
+  - `exposure.scores.remediationScoreGradeSlot2` (STRING)
+  - `exposure.scores.remediationScoreGradeSlot3` (STRING)
+  - `exposure.scores.remediationScoreGradeSlot4` (STRING)
+  - `exposure.scores.remediationScoreGradeSlot5` (STRING)
+  - `exposure.scores.remediationScoreReferenceDate` (DATE)
+  - `exposure.scores.remediationScoreSlot1` (DOUBLE)
+  - `exposure.scores.remediationScoreSlot2` (DOUBLE)
+  - `exposure.scores.remediationScoreSlot3` (DOUBLE)
+  - `exposure.scores.remediationScoreSlot4` (DOUBLE)
+  - `exposure.scores.remediationScoreSlot5` (DOUBLE)
+  - `exposure.scores.riskIndex` (DOUBLE) — "Risk Index"
+  - `exposure.scores.routingPolicyOffset` (INTEGER)
+  - `exposure.scores.routingScore` (DOUBLE) — "Routing Score"
+  - `exposure.scores.routingScoreGrade` (STRING)
+  - `exposure.scores.routingScoreGradeSlot1` (STRING)
+  - `exposure.scores.routingScoreGradeSlot2` (STRING)
+  - `exposure.scores.routingScoreGradeSlot3` (STRING)
+  - `exposure.scores.routingScoreGradeSlot4` (STRING)
+  - `exposure.scores.routingScoreGradeSlot5` (STRING)
+  - `exposure.scores.routingScoreReferenceDate` (DATE)
+  - `exposure.scores.routingScoreSlot1` (DOUBLE)
+  - `exposure.scores.routingScoreSlot2` (DOUBLE)
+  - `exposure.scores.routingScoreSlot3` (DOUBLE)
+  - `exposure.scores.routingScoreSlot4` (DOUBLE)
+  - `exposure.scores.routingScoreSlot5` (DOUBLE)
+  - `exposure.scores.score` (DOUBLE) — "Score"
+  - `exposure.scores.scoreGrade` (STRING)
+  - `exposure.scores.scoreLevel` (ENUM) — "Score Level"
+  - `exposure.scores.ssvc` (STRING) — "SSVC"
+  - `exposure.scores.standardizedVendorSeverityScore` (DOUBLE) — "Standardized Vendor Severity Score"
+  - `exposure.scores.userOverriddenScore` (DOUBLE) — "Overridden Score"
+  - `exposure.service` (STRING)
+  - `exposure.severity` (ENUM)
+  - `exposure.severityScore` (INTEGER) — "Severity Score"
+  - `exposure.standardizedVendorSeverityScore` (INTEGER)
+  - `exposure.status` (STRING) — "Status"
+  - `exposure.statusLastUpdatedOn` (DATE)
+  - `exposure.suppressedBy` (STRING) — "Suppressed By"
+  - `exposure.suppressedByUserId` (STRING)
+  - `exposure.suppressedOn` (DATE)
+  - `exposure.suppressedReason` (STRING) — "Suppressed Reason"
+  - `exposure.suppressedState` (STRING)
+  - `exposure.suppressedUntil` (DATE) — "Suppressed Until"
+  - `exposure.tags.colorType` (ENUM)
+  - `exposure.tags.id` (LONG)
+  - `exposure.tags.isLocked` (BOOLEAN)
+  - `exposure.tags.name` (STRING) — "Tags"
+  - `exposure.timeToAssign` (INTEGER) — "Time to Route"
+  - `exposure.timeToRemediate` (INTEGER) — "Time to Remediate"
+  - `exposure.timeToRemediateInDays` (INTEGER)
+  - `exposure.userRemediation.resolvedBy` (STRING) — "User Resolved By"
+  - `exposure.userRemediation.resolvedOn` (DATE) — "User Resolved On"
+  - `exposure.userRemediation.resolvedReason` (STRING) — "User Resolution Comments"
+  - `exposure.userSuppressedState` (ENUM) — "User Suppressed State"
+  - `exposureImportHistory.fileIds` (STRING)
+  - `exposureImportHistory.fileNames` (STRING) — "Import File Name"
+  - `exposureImportHistory.id` (STRING)
+  - `exposureImportHistory.importDetails.file_id` (STRING)
+  - `exposureImportHistory.importDetails.file_name` (STRING)
+  - `exposureImportHistory.importDetails.hash` (STRING)
+  - `exposureImportHistory.importDetails.import_id` (STRING)
+  - `exposureImportHistory.importDetails.nessus_test_details.plugins` (STRING)
+  - `exposureImportHistory.importId` (STRING) — "Exposure Import ID"
+  - `exposureImportHistory.importName` (STRING) — "Exposure Import Name"
+  - `exposureImportHistory.ingestedOn` (DATE)
+  - `ticketInfo.externalReferenceName` (STRING) — "Ticket ID"
+  - `ticketInfo.groupByKey` (STRING)
+  - `ticketInfo.groupByValue` (STRING)
+  - `ticketInfo.syncErrorInformation.errorCode` (STRING)
+  - `ticketInfo.syncErrorInformation.errorMessage` (STRING)
+  - `ticketInfo.syncErrorInformation.httpErrorCode` (STRING)
+  - `ticketInfo.syncErrorInformation.timeStamp` (STRING)
+  - `ticketInfo.ticketAssignedTo` (STRING)
+  - `ticketInfo.ticketAssociatedOn` (DATE)
+  - `ticketInfo.ticketCreatedDate` (DATE)
+  - `ticketInfo.ticketId` (STRING)
+  - `ticketInfo.ticketIntegrationId` (STRING)
+  - `ticketInfo.ticketLink` (STRING)
+  - `ticketInfo.ticketStatus` (STRING)
+  - `ticketInfo.ticketSyncConfigId` (INTEGER)
+  - `ticketInfo.ticketingSystemAttributes.fieldName` (STRING)
+  - `ticketInfo.ticketingSystemAttributes.fieldValue` (STRING)
+  - `vulnerabilities.affectedSoftwares.cpe23Uri` (STRING)
+  - `vulnerabilities.affectedSoftwares.product` (STRING)
+  - `vulnerabilities.affectedSoftwares.productCategories.category` (STRING)
+  - `vulnerabilities.affectedSoftwares.vendor` (STRING)
+  - `vulnerabilities.baseScore` (DOUBLE) — "Vuln CVSS Base Score"
+  - `vulnerabilities.baseSeverity` (STRING) — "Vuln CVSS Base Severity"
+  - `vulnerabilities.cvssv2.score` (DOUBLE) — "Vuln CVSSv2 Score"
+  - `vulnerabilities.cvssv2.severity` (STRING) — "Vuln CVSSv2 Severity"
+  - `vulnerabilities.cvssv2.vector` (STRING) — "Vuln CVSSv2 Vector"
+  - `vulnerabilities.cvssv3.score` (DOUBLE) — "Vuln CVSSv3 Score"
+  - `vulnerabilities.cvssv3.severity` (STRING) — "Vuln CVSSv3 Severity"
+  - `vulnerabilities.cvssv3.vector` (STRING) — "Vuln CVSSv3 Vector"
+  - `vulnerabilities.cvssv4.score` (DOUBLE) — "Vuln CVSSv4 Score"
+  - `vulnerabilities.cvssv4.severity` (STRING) — "Vuln CVSSv4 Severity"
+  - `vulnerabilities.cvssv4.vector` (STRING) — "Vuln CVSSv4 Vector"
+  - `vulnerabilities.description` (STRING) — "Vuln Description"
+  - `vulnerabilities.epss.lastModifiedDate` (DATE) — "Vuln EPSS Modified Date"
+  - `vulnerabilities.epss.percentile` (STRING) — "Vuln EPSS Percentile"
+  - `vulnerabilities.epss.probability` (DOUBLE) — "Vuln EPSS Probability"
+  - `vulnerabilities.epss.source` (STRING) — "Vuln EPSS Source"
+  - `vulnerabilities.exploitCount` (INTEGER)
+  - `vulnerabilities.exploits.aliases` (STRING)
+  - `vulnerabilities.exploits.attackClassifications` (STRING)
+  - `vulnerabilities.exploits.description` (STRING)
+  - `vulnerabilities.exploits.family` (STRING)
+  - `vulnerabilities.exploits.lastTrendingDate` (DATE)
+  - `vulnerabilities.exploits.subType` (STRING)
+  - `vulnerabilities.exploits.tags` (STRING)
+  - `vulnerabilities.exploits.title` (STRING)
+  - `vulnerabilities.exploits.type` (STRING)
+  - `vulnerabilities.exploits.viThreatId` (STRING)
+  - `vulnerabilities.hasExploit` (BOOLEAN) — "Has Exploit"
+  - `vulnerabilities.hasFix` (BOOLEAN)
+  - `vulnerabilities.hasMalware` (BOOLEAN) — "Has Malware"
+  - `vulnerabilities.hasRansomware` (BOOLEAN) — "Has Ransomware"
+  - `vulnerabilities.hasThreat` (BOOLEAN) — "Has Threat"
+  - `vulnerabilities.hasThreatActor` (BOOLEAN) — "Has Threat Actor"
+  - `vulnerabilities.id` (STRING) — "Vulnerability ID"
+  - `vulnerabilities.isCisaKEV` (BOOLEAN) — "Is CISA KEV"
+  - `vulnerabilities.isExploitedInTheWild` (BOOLEAN) — "Is Securin KEV"
+  - `vulnerabilities.isTrending` (BOOLEAN) — "Is Trending"
+  - `vulnerabilities.isWeaponized` (BOOLEAN) — "Is Weaponized"
+  - `vulnerabilities.lastModifiedDate` (DATE)
+  - `vulnerabilities.lastTrendingDate` (DATE)
+  - `vulnerabilities.malwareCount` (INTEGER)
+  - `vulnerabilities.malwares.aliases` (STRING)
+  - `vulnerabilities.malwares.attackClassifications` (STRING)
+  - `vulnerabilities.malwares.description` (STRING)
+  - `vulnerabilities.malwares.family` (STRING) — "Ransomware Family"
+  - `vulnerabilities.malwares.lastTrendingDate` (DATE)
+  - `vulnerabilities.malwares.subType` (STRING)
+  - `vulnerabilities.malwares.tags` (STRING)
+  - `vulnerabilities.malwares.title` (STRING)
+  - `vulnerabilities.malwares.type` (STRING)
+  - `vulnerabilities.malwares.viThreatId` (STRING)
+  - `vulnerabilities.mitreMappings.techniques.domains` (STRING)
+  - `vulnerabilities.mitreMappings.techniques.id` (STRING) — "Mitre Technique ID"
+  - `vulnerabilities.mitreMappings.techniques.name` (STRING) — "Mitre Technique Name"
+  - `vulnerabilities.mitreMappings.techniques.relatedTechniques.id` (STRING) — "Mitre Related Technique ID"
+  - `vulnerabilities.mitreMappings.techniques.relatedTechniques.name` (STRING) — "Mitre Related Technique Name"
+  - `vulnerabilities.mitreMappings.techniques.relatedTechniques.nature` (STRING) — "Mitre Related Technique Nature"
+  - `vulnerabilities.mitreMappings.techniques.relatedTechniques.status` (STRING)
+  - `vulnerabilities.mitreMappings.techniques.status` (STRING)
+  - `vulnerabilities.mitreMappings.techniques.tactics.domains` (STRING)
+  - `vulnerabilities.mitreMappings.techniques.tactics.id` (STRING) — "Mitre Tactic ID"
+  - `vulnerabilities.mitreMappings.techniques.tactics.name` (STRING) — "Mitre Tactic Name"
+  - `vulnerabilities.mitreMappings.techniques.tactics.status` (STRING)
+  - `vulnerabilities.newsArticles.articles.publishedDate` (DATE) — "News Article Published Date"
+  - `vulnerabilities.newsArticles.articles.source.name` (STRING) — "News Article Source"
+  - `vulnerabilities.newsArticles.articles.source.url` (STRING)
+  - `vulnerabilities.newsArticles.articles.title` (STRING) — "News Article Title"
+  - `vulnerabilities.prioritizedBy` (STRING)
+  - `vulnerabilities.publishedDate` (DATE) — "Vuln Published Date"
+  - `vulnerabilities.ransomwareCount` (INTEGER)
+  - `vulnerabilities.riskIndex.index` (DOUBLE) — "Vuln Risk Index"
+  - `vulnerabilities.riskIndex.severity` (STRING) — "Vuln Risk Index Severity"
+  - `vulnerabilities.securinWarnedDate` (DATE)
+  - `vulnerabilities.sources.name` (STRING)
+  - `vulnerabilities.sources.url` (STRING)
+  - `vulnerabilities.tags` (STRING) — "Vuln Tags"
+  - `vulnerabilities.threatActors.associatedGroups` (STRING) — "Associated Threat Actors"
+  - `vulnerabilities.threatActors.name` (STRING) — "Threat Actor"
+  - `vulnerabilities.threats.aliases` (STRING) — "Threat Aliases"
+  - `vulnerabilities.threats.attackClassifications` (STRING) — "Attack Classifications"
+  - `vulnerabilities.threats.description` (STRING)
+  - `vulnerabilities.threats.family` (STRING) — "Threat Family"
+  - `vulnerabilities.threats.isVerified` (BOOLEAN)
+  - `vulnerabilities.threats.lastModifiedDate` (DATE)
+  - `vulnerabilities.threats.lastModifiedMonth` (STRING)
+  - `vulnerabilities.threats.lastModifiedYear` (STRING)
+  - `vulnerabilities.threats.lastTrendingDate` (DATE)
+  - `vulnerabilities.threats.publishedDate` (DATE) — "Threat Published Date"
+  - `vulnerabilities.threats.publishedMonth` (STRING) — "Threat Published Month"
+  - `vulnerabilities.threats.publishedYear` (STRING) — "Threat Published Year"
+  - `vulnerabilities.threats.sources.id` (STRING)
+  - `vulnerabilities.threats.sources.lastModifiedDate` (DATE)
+  - `vulnerabilities.threats.sources.lastModifiedMonth` (STRING)
+  - `vulnerabilities.threats.sources.lastModifiedYear` (STRING)
+  - `vulnerabilities.threats.sources.name` (STRING) — "Threat Source Name"
+  - `vulnerabilities.threats.sources.publishedDate` (DATE)
+  - `vulnerabilities.threats.sources.publishedMonth` (STRING)
+  - `vulnerabilities.threats.sources.publishedYear` (STRING)
+  - `vulnerabilities.threats.sources.url` (STRING) — "Threat Source Url"
+  - `vulnerabilities.threats.subType` (STRING) — "Threat Sub Type"
+  - `vulnerabilities.threats.tags` (STRING) — "Threat Tags"
+  - `vulnerabilities.threats.title` (STRING) — "Threat Title"
+  - `vulnerabilities.threats.type` (STRING) — "Threat Type"
+  - `vulnerabilities.threats.verifiedBy` (STRING)
+  - `vulnerabilities.threats.viThreatId` (STRING)
+  - `vulnerabilities.title` (STRING) — "Vuln Title"
+  - `vulnerabilities.weaknesses.id` (STRING)
+  - `weaknesses.alternateTerms.description` (STRING)
+  - `weaknesses.alternateTerms.term` (STRING)
+  - `weaknesses.description` (STRING)
+  - `weaknesses.id` (STRING) — "Weakness IDs"
+  - `weaknesses.likelihoodOfExploit` (STRING)
+  - `weaknesses.mitreTop25` (STRING)
+  - `weaknesses.modesOfIntroduction.note` (STRING)
+  - `weaknesses.modesOfIntroduction.phase` (STRING)
+  - `weaknesses.owaspTop10` (STRING)
+  - `weaknesses.relatedAttackPatterns.id` (STRING)
+  - `weaknesses.relatedWeaknesses.abstraction` (STRING)
+  - `weaknesses.relatedWeaknesses.chainId` (STRING)
+  - `weaknesses.relatedWeaknesses.id` (STRING)
+  - `weaknesses.relatedWeaknesses.nature` (STRING)
+  - `weaknesses.relatedWeaknesses.ordinal` (STRING)
+  - `weaknesses.relatedWeaknesses.title` (STRING)
+  - `weaknesses.relatedWeaknesses.type` (STRING)
+  - `weaknesses.relatedWeaknesses.viewId` (STRING)
+  - `weaknesses.title` (STRING)
+  - `weaknesses.vrs.score` (DOUBLE)
+  - `weaknesses.vrs.severity` (STRING)
+
+#### Built-in Mapped Attributes
+  - `exposure.mappedAttributes.appHttpProperties.httpMethod` (STRING) — "HTTP Method"
+  - `exposure.mappedAttributes.appHttpProperties.path` (STRING) — "Path"
+  - `exposure.mappedAttributes.appHttpProperties.requestPayload` (STRING) — "Request Payload"
+  - `exposure.mappedAttributes.appHttpProperties.responsePayload` (STRING) — "Response Payload"
+  - `exposure.mappedAttributes.containerProperties.image` (STRING) — "Container Image"
+  - `exposure.mappedAttributes.containerProperties.imageName` (STRING) — "Container Image Name"
+  - `exposure.mappedAttributes.containerProperties.imageTag` (STRING) — "Container Image Tag"
+  - `exposure.mappedAttributes.dependencyProperties.dependency` (STRING) — "Dependency"
+  - `exposure.mappedAttributes.dependencyProperties.licenseName` (STRING) — "License Name"
+  - `exposure.mappedAttributes.dependencyProperties.purl.name` (STRING) — "Dependency Package Name"
+  - `exposure.mappedAttributes.dependencyProperties.purl.namespace` (STRING) — "Dependency Package Namespace"
+  - `exposure.mappedAttributes.dependencyProperties.purl.qualifiers` (STRING) — "Dependency Package Qualifiers"
+  - `exposure.mappedAttributes.dependencyProperties.purl.scheme` (STRING) — "Dependency Package Scheme"
+  - `exposure.mappedAttributes.dependencyProperties.purl.subpath` (STRING)
+  - `exposure.mappedAttributes.dependencyProperties.purl.type` (STRING) — "Dependency Package Type"
+  - `exposure.mappedAttributes.dependencyProperties.purl.version` (STRING) — "Dependency Package Version"
+  - `exposure.mappedAttributes.description` (STRING) — "Description"
+  - `exposure.mappedAttributes.diskPaths` (STRING) — "Diskpaths"
+  - `exposure.mappedAttributes.exposureUrl` (STRING) — "Exposure URL"
+  - `exposure.mappedAttributes.installedSoftware.endOfSupport` (STRING) — "End of Support"
+  - `exposure.mappedAttributes.installedSoftware.endOfSupportDate` (STRING) — "End of Support Date"
+  - `exposure.mappedAttributes.installedSoftware.endOfSupportStatus` (STRING) — "End of Support Status"
+  - `exposure.mappedAttributes.installedSoftware.name` (STRING) — "Installed Software Name"
+  - `exposure.mappedAttributes.installedSoftware.vendor` (STRING) — "Installed Software Vendor"
+  - `exposure.mappedAttributes.installedSoftware.version` (STRING) — "Installed Software Version"
+  - `exposure.mappedAttributes.port` (INTEGER) — "Port"
+  - `exposure.mappedAttributes.protocol` (STRING) — "Protocol"
+  - `exposure.mappedAttributes.registryPaths` (STRING) — "Registrypaths"
+  - `exposure.mappedAttributes.service` (STRING) — "Service"
+  - `exposure.mappedAttributes.sourceCode.codeSnippet` (STRING) — "Code snippet"
+  - `exposure.mappedAttributes.sourceCode.columnNumber` (DOUBLE) — "Column Number"
+  - `exposure.mappedAttributes.sourceCode.endLineNumber` (STRING) — "End Line Number"
+  - `exposure.mappedAttributes.sourceCode.fileName` (STRING) — "Filename"
+  - `exposure.mappedAttributes.sourceCode.filePath` (STRING) — "Exposure File Path"
+  - `exposure.mappedAttributes.sourceCode.programmingLanguage` (STRING) — "Programming Language"
+  - `exposure.mappedAttributes.sourceCode.startLineNumber` (STRING) — "Start Line Number"
+  - `exposure.mappedAttributes.sourceRepo.branchName` (STRING) — "Branch Name"
+  - `exposure.mappedAttributes.title` (STRING) — "Title"
+  - `exposure.mappedAttributes.type` (STRING) — "Exposure Type"
+  - `exposure.mappedAttributes.vendorFirstDiscoveredOn` (DATE) — "Vendor First Discovered On"
+  - `exposure.mappedAttributes.vendorIdentifier` (STRING) — "Exposure Vendor Identifier"
+  - `exposure.mappedAttributes.vendorLastDiscoveredOn` (DATE) — "Vendor Last Discovered On"
+  - `exposure.mappedAttributes.vendorRemediation` (STRING) — "Vendor Remediation"
+  - `exposure.mappedAttributes.vendorResolvedOn` (DATE) — "Vendor Resolved On"
+  - `exposure.mappedAttributes.vendorSeverity` (STRING) — "Vendor Severity"
+  - `exposure.mappedAttributes.vendorSeverityList` (STRING)
+  - `exposure.mappedAttributes.vendorStatus` (STRING) — "Vendor Status"
+  - `exposure.mappedAttributes.vendorSuppressedState` (STRING) — "Vendor Suppressed State"
+  - `exposure.mappedAttributes.vulnerabilityIds` (STRING) — "Vendor Vulnerability ID"
+  - `exposure.mappedAttributes.weaknessIds` (STRING) — "Vendor Weakness ID"
+
+#### Built-in User-Managed Attributes
+  - `exposure.userManagedAttributes.operatingSystem` (STRING) — "User-Managed Exposure OS"
+  - `exposure.userManagedAttributes.patchGroup` (STRING) — "User-Managed Exposure Patch Group"
+  - `exposure.userManagedAttributes.shortDescription` (STRING) — "User-Managed Exposure Short Description"
+
+### VULNERABILITY
+#### Vulnerability Built-in
+  - `affectedIndustries` (STRING) — "Affected Industries"
+  - `affectedProductCount` (INTEGER) — "No of Affected Products"
+  - `affectedSoftwareConfigurations.otherAffectedSoftware.component` (STRING)
+  - `affectedSoftwareConfigurations.otherAffectedSoftware.package` (STRING)
+  - `affectedSoftwareConfigurations.otherAffectedSoftware.platform` (STRING)
+  - `affectedSoftwareConfigurations.otherAffectedSoftware.product` (STRING)
+  - `affectedSoftwareConfigurations.otherAffectedSoftware.productCategories.category` (STRING)
+  - `affectedSoftwareConfigurations.otherAffectedSoftware.productCategories.subCategory` (STRING)
+  - `affectedSoftwareConfigurations.otherAffectedSoftware.vendor` (STRING)
+  - `affectedSoftwareConfigurations.otherAffectedSoftware.versionEndExcluding` (STRING)
+  - `affectedSoftwareConfigurations.otherAffectedSoftware.versionEndIncluding` (STRING)
+  - `affectedSoftwareConfigurations.otherAffectedSoftware.versionStartExcluding` (STRING)
+  - `affectedSoftwareConfigurations.otherAffectedSoftware.versionStartIncluding` (STRING)
+  - `affectedSoftwareConfigurations.packages.ecosystem` (STRING) — "Affected Package Ecosystem"
+  - `affectedSoftwareConfigurations.packages.matchingPurls.purl` (STRING) — "Affected Package Matching Purl"
+  - `affectedSoftwareConfigurations.packages.name` (STRING) — "Affected Package"
+  - `affectedSoftwareConfigurations.packages.purl` (STRING) — "Affected Package Purl"
+  - `affectedSoftwareConfigurations.packages.title` (STRING) — "Affected Package Title"
+  - `affectedSoftwareConfigurations.packages.versionEndExcluding` (STRING) — "Affected Package Version End Excluding"
+  - `affectedSoftwareConfigurations.packages.versionEndIncluding` (STRING)
+  - `affectedSoftwareConfigurations.packages.versionStartExcluding` (STRING) — "Affected Package Version Start Excluding"
+  - `affectedSoftwareConfigurations.packages.versionStartIncluding` (STRING)
+  - `affectedSoftwareConfigurations.softwareConfigurations.cpe23Uri` (STRING) — "CPE23"
+  - `affectedSoftwareConfigurations.softwareConfigurations.matchingSoftwareConfigurations.cpe23Uri` (STRING) — "Matching CPE23"
+  - `affectedSoftwareConfigurations.softwareConfigurations.matchingSoftwareConfigurations.effectiveEOLDate` (DATE) — "End of Life Effective Date"
+  - `affectedSoftwareConfigurations.softwareConfigurations.matchingSoftwareConfigurations.isEOL` (BOOLEAN) — "Is End of Life"
+  - `affectedSoftwareConfigurations.softwareConfigurations.product` (STRING) — "Affected Software Product"
+  - `affectedSoftwareConfigurations.softwareConfigurations.productCategories.category` (STRING) — "Affected Software Product Category"
+  - `affectedSoftwareConfigurations.softwareConfigurations.productCategories.subCategory` (STRING) — "Affected Software Product Subcategory"
+  - `affectedSoftwareConfigurations.softwareConfigurations.runningOnOrWith` (BOOLEAN) — "Running On Or With"
+  - `affectedSoftwareConfigurations.softwareConfigurations.softwareConfigurationGroup` (STRING) — "Affected Software Config Group"
+  - `affectedSoftwareConfigurations.softwareConfigurations.title` (STRING) — "Affected Software Title"
+  - `affectedSoftwareConfigurations.softwareConfigurations.vendor` (STRING)
+  - `affectedSoftwareConfigurations.softwareConfigurations.versionEndExcluding` (STRING) — "Affected Software Version End Excluding"
+  - `affectedSoftwareConfigurations.softwareConfigurations.versionEndIncluding` (STRING) — "Affected Software Version End Including"
+  - `affectedSoftwareConfigurations.softwareConfigurations.versionStartExcluding` (STRING) — "Affected Software Version Start Excluding"
+  - `affectedSoftwareConfigurations.softwareConfigurations.versionStartIncluding` (STRING) — "Affected Software Version Start Including"
+  - `affectedSoftwareConfigurations.softwareConfigurations.vulnerable` (BOOLEAN) — "Is Vulnerable"
+  - `aliases` (STRING) — "Aliases"
+  - `assignerEmail` (STRING) — "Assigner Email"
+  - `assignerName` (STRING) — "Assigner Name"
+  - `cisaKEVAddedDate` (DATE) — "Cisa KEV Added Date"
+  - `cisaKEVCatalogEntry.addedDate` (DATE)
+  - `cisaKEVCatalogEntry.affectedProduct` (STRING) — "Cisa KEV Affected Product"
+  - `cisaKEVCatalogEntry.affectedVendor` (STRING) — "Cisa KEV Affected Vendor"
+  - `cisaKEVCatalogEntry.dueDate` (DATE) — "Cisa KEV Due Date"
+  - `cisaKEVCatalogEntry.isUsedInRansomwareCampaign` (BOOLEAN) — "Cisa KEV Is Used In Ransomware Campaign"
+  - `cisaKEVCatalogEntry.requiredAction` (STRING) — "Cisa KEV Required Action"
+  - `cisaKEVLatency` (INTEGER) — "Cisa Latency In Days"
+  - `cvssScore` (DOUBLE) — "CVSS Base Score"
+  - `cvssSeverity` (STRING) — "CVSS Base Severity"
+  - `cvssv2.accessComplexity` (STRING) — "CVSSv2 Access Complexity"
+  - `cvssv2.accessVector` (STRING) — "CVSSv2 Access Vector"
+  - `cvssv2.authentication` (STRING) — "CVSSv2 Authentication"
+  - `cvssv2.availabilityImpact` (STRING) — "CVSSv2 Availability Impact"
+  - `cvssv2.confidentialityImpact` (STRING) — "CVSSv2 Confidentiality Impact"
+  - `cvssv2.exploitabilityScore` (DOUBLE) — "CVSSv2 Exploitability Score"
+  - `cvssv2.impactScore` (DOUBLE) — "CVSSv2 Impact Score"
+  - `cvssv2.integrityImpact` (STRING) — "CVSSv2 Integrity Impact"
+  - `cvssv2.score` (DOUBLE) — "CVSSv2 Score"
+  - `cvssv2.severity` (STRING) — "CVSSv2 Severity"
+  - `cvssv2.source` (STRING) — "CVSSv2 Source"
+  - `cvssv2.temporalMetrics.exploitability` (STRING) — "CVSSv2 Exploitability"
+  - `cvssv2.temporalMetrics.remediationLevel` (STRING) — "CVSSv2 Remediation Level"
+  - `cvssv2.temporalMetrics.reportConfidence` (STRING) — "CVSSv2 Report Confidence"
+  - `cvssv2.temporalMetrics.vector` (STRING) — "CVSSv2 Temporal Vector"
+  - `cvssv2.userInteraction` (STRING) — "CVSSv2 User Interaction"
+  - `cvssv2.vector` (STRING) — "CVSSv2 Vector"
+  - `cvssv2.version` (STRING) — "CVSSv2 Version"
+  - `cvssv3.attackComplexity` (STRING) — "CVSSv3 Attack Complexity"
+  - `cvssv3.attackVector` (STRING) — "CVSSv3 Attack Vector"
+  - `cvssv3.availabilityImpact` (STRING) — "CVSSv3 Availability Impact"
+  - `cvssv3.confidentialityImpact` (STRING) — "CVSSv3 Confidentiality Impact"
+  - `cvssv3.exploitabilityScore` (DOUBLE) — "CVSSv3 Exploitability Score"
+  - `cvssv3.impactScore` (DOUBLE) — "CVSSv3 Impact Score"
+  - `cvssv3.integrityImpact` (STRING) — "CVSSv3 Integrity Impact"
+  - `cvssv3.privilegesRequired` (STRING) — "CVSSv3 Privileges Required"
+  - `cvssv3.scope` (STRING) — "CVSSv3 Scope"
+  - `cvssv3.score` (DOUBLE) — "CVSSv3 Score"
+  - `cvssv3.severity` (STRING) — "CVSSv3 Severity"
+  - `cvssv3.source` (STRING) — "CVSSv3 Source"
+  - `cvssv3.temporalMetrics.exploitability` (STRING) — "CVSSv3 Exploit Code Maturity"
+  - `cvssv3.temporalMetrics.remediationLevel` (STRING) — "CVSSv3 Remediation Level"
+  - `cvssv3.temporalMetrics.reportConfidence` (STRING) — "CVSSv3 Report Confidence"
+  - `cvssv3.temporalMetrics.vector` (STRING) — "CVSSv3 Temporal Vector"
+  - `cvssv3.userInteraction` (STRING) — "CVSSv3 User Interaction"
+  - `cvssv3.vector` (STRING) — "CVSSv3 Vector"
+  - `cvssv3.version` (STRING) — "CVSSv3 Version"
+  - `cvssv4.attackComplexity` (STRING) — "CVSSv4 Attack Complexity"
+  - `cvssv4.attackRequirements` (STRING) — "CVSSv4 Attack Requirements"
+  - `cvssv4.attackVector` (STRING) — "CVSSv4 Attack Vector"
+  - `cvssv4.privilegesRequired` (STRING) — "CVSSv4 Privileges Required"
+  - `cvssv4.score` (DOUBLE) — "CVSSv4 Score"
+  - `cvssv4.severity` (STRING) — "CVSSv4 Severity"
+  - `cvssv4.source` (STRING) — "CVSSv4 Source"
+  - `cvssv4.subsequentSystemAvailabilityImpact` (STRING) — "CVSSv4 Subsequent System Availability Impact"
+  - `cvssv4.subsequentSystemConfidentialityImpact` (STRING) — "CVSSv4 Subsequent System Confidentiality Impact"
+  - `cvssv4.subsequentSystemIntegrityImpact` (STRING) — "CVSSv4 Subsequent System Integrity Impact"
+  - `cvssv4.supplementalMetrics.automatable` (STRING) — "CVSSv4 Automatable"
+  - `cvssv4.supplementalMetrics.providerUrgency` (STRING) — "CVSSv4 Provider Urgency"
+  - `cvssv4.supplementalMetrics.recovery` (STRING) — "CVSSv4 Recovery"
+  - `cvssv4.supplementalMetrics.safety` (STRING) — "CVSSv4 Safety"
+  - `cvssv4.supplementalMetrics.valueDensity` (STRING) — "CVSSv4 Value Density"
+  - `cvssv4.supplementalMetrics.vulnerabilityResponseEffort` (STRING) — "CVSSv4 Vulnerability Response Effort"
+  - `cvssv4.threatMetrics.exploitMaturity` (STRING) — "CVSSv4 Exploit Maturity"
+  - `cvssv4.userInteraction` (STRING) — "CVSSv4 User Interaction"
+  - `cvssv4.vector` (STRING) — "CVSSv4 Vector"
+  - `cvssv4.version` (STRING) — "CVSSv4 Version"
+  - `cvssv4.vulnerableSystemAvailabilityImpact` (STRING) — "CVSSv4 Vulnerable System Availability Impact"
+  - `cvssv4.vulnerableSystemConfidentialityImpact` (STRING) — "CVSSv4 Vulnerable System Confidentiality Impact"
+  - `cvssv4.vulnerableSystemIntegrityImpact` (STRING) — "CVSSv4 Vulnerable System Integrity Impact"
+  - `description` (STRING) — "Description"
+  - `detectionRuleCount` (INTEGER) — "No of Detection Rules"
+  - `detectionRules.author` (STRING) — "Detection Rule Author"
+  - `detectionRules.description` (STRING) — "Detection Rule Description"
+  - `detectionRules.name` (STRING) — "Detection Rule Name"
+  - `detectionRules.source.name` (STRING) — "Detection Rule Source"
+  - `detectionRules.source.url` (STRING) — "Detection Rule URL"
+  - `detectionRules.type` (STRING) — "Detection Rule Type"
+  - `discussionCount` (INTEGER) — "No of Discussions"
+  - `epss.lastModifiedDate` (DATE) — "EPSS Modifed Date"
+  - `epss.percentile` (STRING) — "EPSS Percentile"
+  - `epss.probability` (DOUBLE) — "EPSS Probability"
+  - `epss.source` (STRING) — "EPSS Source"
+  - `exploitCount` (INTEGER) — "No of Exploits"
+  - `exploitPublishedDate` (DATE) — "Exploit Published Date"
+  - `firstSeenDate` (DATE) — "First Seen Date"
+  - `fixPublishedDate` (DATE) — "Fix Published Date"
+  - `fixes.publishedDate` (DATE) — "Fix Source Published Date"
+  - `fixes.references.name` (STRING) — "Fix Reference Name"
+  - `fixes.references.source` (STRING) — "Fix Reference Source"
+  - `fixes.references.tags` (STRING) — "Fix Reference Tags"
+  - `fixes.references.url` (STRING) — "Fix reference Url"
+  - `fixes.sources.name` (STRING) — "Fix Source Name"
+  - `fixes.sources.url` (STRING) — "Fix Source Url"
+  - `fixes.sources.urlStatus` (STRING)
+  - `fixes.sources.urlStatusEffectiveDate` (DATE)
+  - `fixes.type` (STRING) — "Fix Type"
+  - `hasAttackSignature` (BOOLEAN) — "Has Attack Signature"
+  - `hasCodeSnippet` (BOOLEAN) — "Has Code Snippet"
+  - `hasExploit` (BOOLEAN) — "Has Exploit"
+  - `hasFix` (BOOLEAN) — "Has Fix"
+  - `hasMalware` (BOOLEAN) — "Has Malware"
+  - `hasPOC` (BOOLEAN) — "Has Proof Of Concept"
+  - `hasPenTesterFramework` (BOOLEAN) — "Early Warning Indicators"
+  - `hasRansomware` (BOOLEAN) — "Has Ransomware"
+  - `hasThreatActor` (BOOLEAN) — "Has Threat Actor"
+  - `impactType` (STRING) — "Impact Type"
+  - `isCisaKEV` (BOOLEAN) — "Is Cisa KEV"
+  - `isDiscussed` (BOOLEAN) — "Is Discussed"
+  - `isExploitedInTheWild` (BOOLEAN) — "Is Securin KEV"
+  - `isPrioritized` (BOOLEAN) — "Is Prioritized"
+  - `isTrending` (BOOLEAN) — "Is Trending"
+  - `isWeaponized` (BOOLEAN) — "Is Weaponized"
+  - `lastModifiedDate` (DATE) — "Last Modified Date"
+  - `lastSeenDate` (DATE) — "Last Seen Date"
+  - `lastTrendingDate` (DATE) — "Last Trending On"
+  - `malwareCount` (INTEGER) — "No of Malware"
+  - `mitreMappings.techniques.domains` (STRING) — "Mitre Technique Domains"
+  - `mitreMappings.techniques.id` (STRING) — "Mitre Technique ID"
+  - `mitreMappings.techniques.name` (STRING) — "Mitre Technique Name"
+  - `mitreMappings.techniques.relatedTechniques.id` (STRING) — "Mitre Related Technique ID"
+  - `mitreMappings.techniques.relatedTechniques.name` (STRING) — "Mitre Related Technique Name"
+  - `mitreMappings.techniques.relatedTechniques.nature` (STRING) — "Mitre Related Technique Nature"
+  - `mitreMappings.techniques.relatedTechniques.status` (STRING) — "Mitre Related Technique Status"
+  - `mitreMappings.techniques.status` (STRING) — "Mitre Technique Status"
+  - `mitreMappings.techniques.tactics.domains` (STRING) — "Mitre Tactic Domains"
+  - `mitreMappings.techniques.tactics.id` (STRING) — "Mitre Tactic ID"
+  - `mitreMappings.techniques.tactics.name` (STRING) — "Mitre Tactic Name"
+  - `mitreMappings.techniques.tactics.status` (STRING) — "Mitre Tactic Status"
+  - `newsArticles.articles.articleId` (STRING) — "Article ID"
+  - `newsArticles.articles.content` (STRING)
+  - `newsArticles.articles.lastModifiedDate` (DATE)
+  - `newsArticles.articles.matchGroups.matchStrings` (STRING)
+  - `newsArticles.articles.matchGroups.name` (STRING)
+  - `newsArticles.articles.matchGroups.type` (STRING)
+  - `newsArticles.articles.priorityPoints` (DOUBLE)
+  - `newsArticles.articles.publishedDate` (DATE) — "Article Published Date"
+  - `newsArticles.articles.source.name` (STRING)
+  - `newsArticles.articles.source.url` (STRING)
+  - `newsArticles.articles.source.urlStatus` (STRING)
+  - `newsArticles.articles.source.urlStatusEffectiveDate` (DATE)
+  - `newsArticles.articles.title` (STRING)
+  - `newsArticles.articles.type` (STRING)
+  - `newsArticles.latestPublishedDate` (DATE)
+  - `newsArticles.matchGroups.matchStrings` (STRING)
+  - `newsArticles.matchGroups.name` (STRING)
+  - `newsArticles.matchGroups.type` (STRING)
+  - `newsArticles.priorityPoints` (DOUBLE)
+  - `nvdData.vulnerabilityPublishedDate` (DATE) — "NVD Published Date"
+  - `nvdData.vulnerabilityStatus` (STRING) — "NVD Status"
+  - `nvdLatency` (INTEGER) — "NVD Latency In Days"
+  - `pluginCount` (INTEGER) — "No of Plugins"
+  - `plugins.category` (STRING) — "Plugin Category"
+  - `plugins.description` (STRING) — "Plugin Description"
+  - `plugins.id` (STRING) — "Plugin ID"
+  - `plugins.lastModifiedDate` (DATE) — "Plugin Modified Date"
+  - `plugins.publishedDate` (DATE) — "Plugin Published Date"
+  - `plugins.scannerName` (STRING) — "Scanner Name"
+  - `plugins.severity` (STRING) — "Plugin Severity"
+  - `plugins.sources.name` (STRING) — "Plugin Source"
+  - `plugins.sources.url` (STRING) — "Plugin Url"
+  - `plugins.sources.urlStatus` (STRING)
+  - `plugins.sources.urlStatusEffectiveDate` (DATE)
+  - `plugins.status` (STRING) — "Plugin Status"
+  - `plugins.title` (STRING) — "Plugin Title"
+  - `posts.author` (STRING) — "Post Author"
+  - `posts.content` (STRING) — "Post Content"
+  - `posts.hasCodeSnippet` (BOOLEAN)
+  - `posts.isTranslated` (BOOLEAN)
+  - `posts.language` (STRING)
+  - `posts.lastModifiedDate` (DATE)
+  - `posts.publishedDate` (DATE)
+  - `posts.source.name` (STRING)
+  - `posts.source.url` (STRING)
+  - `posts.source.urlStatus` (STRING)
+  - `posts.source.urlStatusEffectiveDate` (DATE)
+  - `posts.title` (STRING) — "Post Title"
+  - `posts.translatedPost.content` (STRING)
+  - `posts.translatedPost.language` (STRING)
+  - `posts.translatedPost.title` (STRING)
+  - `posts.type` (STRING) — "Post Type"
+  - `prioritizedBy` (STRING) — "Prioritized By"
+  - `products` (STRING) — "Affected Products"
+  - `publishedDate` (DATE) — "Published Date"
+  - `ransomwareCount` (INTEGER) — "No of Ransomware"
+  - `references.name` (STRING) — "Reference Name"
+  - `references.source` (STRING) — "Reference Source"
+  - `references.tags` (STRING) — "Reference Tags"
+  - `references.title` (STRING) — "Reference Title"
+  - `references.url` (STRING) — "Reference Url"
+  - `references.urlStatus` (STRING)
+  - `references.urlStatusEffectiveDate` (DATE)
+  - `requesterEmail` (STRING) — "Requester Email"
+  - `riskIndex.changeLog.index` (DOUBLE)
+  - `riskIndex.changeLog.modifiedDate` (DATE)
+  - `riskIndex.changeLog.reasonForChange.commentaries` (STRING)
+  - `riskIndex.changeLog.reasonForChange.type` (STRING)
+  - `riskIndex.changeLog.severity` (STRING)
+  - `riskIndex.contributingFactors` (STRING) — "Risk Index Contributing Factors"
+  - `riskIndex.index` (DOUBLE) — "Risk Index"
+  - `riskIndex.lastModifiedDate` (DATE) — "Risk Index Modified Date"
+  - `riskIndex.severity` (STRING) — "Risk Index Severity"
+  - `securinKEVAddedDate` (DATE) — "Securin KEV Added Date"
+  - `securinWarnedDate` (DATE) — "Securin Warned Date"
+  - `sources.name` (STRING) — "Source"
+  - `sources.url` (STRING) — "Source Url"
+  - `sources.urlStatus` (STRING)
+  - `sources.urlStatusEffectiveDate` (DATE)
+  - `status` (STRING) — "Status"
+  - `tags` (STRING) — "Tags"
+  - `threatActorCount` (INTEGER) — "No of Threat Actors"
+  - `threatActors.associatedGroups` (STRING) — "Threat Actor Associated Groups"
+  - `threatActors.isNationStateSponsored` (BOOLEAN) — "Threat Actor Nation State Sponsored"
+  - `threatActors.name` (STRING) — "Threat Actor Name"
+  - `threatActors.originCountry` (STRING) — "Threat Actor Origin Country"
+  - `threatActors.targetedCountries` (STRING) — "Threat Actor Target Geographies"
+  - `threatActors.targetedIndustries` (STRING) — "Threat Actor Targeted Industries"
+  - `threatCount` (INTEGER) — "No of Threats"
+  - `threats.aliases` (STRING) — "Threat Aliases"
+  - `threats.attackClassifications` (STRING) — "Attack Classifications"
+  - `threats.description` (STRING) — "Threat Description"
+  - `threats.exploitationDate` (DATE) — "Exploitation Date"
+  - `threats.family` (STRING) — "Threat Family"
+  - `threats.isVerified` (BOOLEAN) — "Is Threat Verified"
+  - `threats.lastModifiedDate` (DATE) — "Threat Modified Date"
+  - `threats.lastModifiedMonth` (STRING) — "Threat Modified Month"
+  - `threats.lastModifiedYear` (STRING) — "Threat Modified Year"
+  - `threats.lastTrendingDate` (DATE) — "Threat Last Trending Date"
+  - `threats.publishedDate` (DATE) — "Threat Published Date"
+  - `threats.publishedMonth` (STRING) — "Threat Published Month"
+  - `threats.publishedYear` (STRING) — "Threat Published Year"
+  - `threats.sources.exploitationDate` (DATE)
+  - `threats.sources.id` (STRING) — "Threat Source ID"
+  - `threats.sources.lastModifiedDate` (DATE) — "Threat Source Modified Date"
+  - `threats.sources.lastModifiedMonth` (STRING) — "Threat Source Modified Month"
+  - `threats.sources.lastModifiedYear` (STRING) — "Threat Source Modified Year"
+  - `threats.sources.name` (STRING) — "Threat Source Name"
+  - `threats.sources.publishedDate` (DATE) — "Threat Source Published Date"
+  - `threats.sources.publishedMonth` (STRING) — "Threat Source Published Month"
+  - `threats.sources.publishedYear` (STRING) — "Threat Source Published Year"
+  - `threats.sources.url` (STRING) — "Threat Source Url"
+  - `threats.sources.urlStatus` (STRING)
+  - `threats.sources.urlStatusEffectiveDate` (DATE)
+  - `threats.subType` (STRING) — "Threat Sub Type"
+  - `threats.tags` (STRING) — "Threat Tags"
+  - `threats.title` (STRING) — "Threat Title"
+  - `threats.type` (STRING) — "Threat Type"
+  - `threats.verifiedBy` (STRING) — "Verified By"
+  - `threats.viThreatId` (STRING) — "Threat ID"
+  - `title` (STRING) — "Vulnerability Title"
+  - `vendorComments.commentary` (STRING) — "Vendor Comments"
+  - `vendorComments.issuedDate` (DATE)
+  - `vendorComments.vendor` (STRING) — "Comments Issued By"
+  - `vendors` (STRING) — "Affected Vendors"
+  - `viCreatedDate` (DATE) — "Securin Created Date"
+  - `viUpdatedDate` (DATE) — "Securin Updated Date"
+  - `vulnerabilityId` (STRING) — "Vulnerability ID"
+  - `vulnerabilityType` (STRING) — "Vulnerability Type"
+  - `weaknessCount` (INTEGER) — "No of CWEs"
+  - `weaknesses.id` (STRING) — "CWE ID"
+  - `weaknesses.title` (STRING) — "CWE Title"
+  - `weaknesses.type` (STRING) — "CWE Type"
+
+### COMPONENT
+#### Component Built-in
+  - `authors.email` (STRING) — "Contributor Email"
+  - `authors.name` (STRING) — "Contributor Name"
+  - `authors.type` (STRING) — "Contributor Type"
+  - `authors.url` (STRING) — "Contributor URL"
+  - `componentId` (STRING) — "Component ID"
+  - `defaultStableVersion` (STRING) — "Default Stable Version"
+  - `dependencyComponentCount` (INTEGER)
+  - `dependencyGraph.fromVertex` (INTEGER)
+  - `dependencyGraph.toVertex` (INTEGER)
+  - `dependentComponentCount` (INTEGER)
+  - `description` (STRING) — "Description"
+  - `directExposureCount` (INTEGER) — "Direct Exposure Count"
+  - `ecosystem` (STRING) — "Ecosystem"
+  - `exposureCount` (INTEGER) — "No of Exposures"
+  - `exposures.description` (STRING) — "Exposure Description"
+  - `exposures.evidences.actionabilityScore` (DOUBLE)
+  - `exposures.evidences.affectedGroups` (STRING)
+  - `exposures.evidences.aggravatingFactors` (STRING)
+  - `exposures.evidences.biasCategories` (STRING) — "Bias Categories"
+  - `exposures.evidences.biasSeverity` (STRING) — "Bias Severity"
+  - `exposures.evidences.biasStatus` (STRING) — "Bias Status"
+  - `exposures.evidences.biasType` (STRING) — "Bias Type"
+  - `exposures.evidences.businessImpact` (STRING) — "Business Impact"
+  - `exposures.evidences.codeReference` (STRING)
+  - `exposures.evidences.codeSnippet` (STRING) — "Code Snippet"
+  - `exposures.evidences.complianceStatus` (STRING) — "Compliance Status"
+  - `exposures.evidences.contentCategory` (STRING)
+  - `exposures.evidences.contextualFactors` (STRING)
+  - `exposures.evidences.contextualLegitimacy` (STRING)
+  - `exposures.evidences.evidenceQuality` (STRING)
+  - `exposures.evidences.falsePositiveAnalysis` (STRING) — "False Positive Analysis"
+  - `exposures.evidences.falsePositiveCheck` (STRING) — "False Positive Check"
+  - `exposures.evidences.falsePositiveRisk` (STRING) — "False Positive Risk"
+  - `exposures.evidences.fileName` (STRING)
+  - `exposures.evidences.fixedVersion` (STRING)
+  - `exposures.evidences.harmLevel` (STRING) — "Harm Level"
+  - `exposures.evidences.imageName` (STRING)
+  - `exposures.evidences.impactAssessment` (STRING) — "Impact Assessment"
+  - `exposures.evidences.individualHarmPotential` (STRING) — "Individual Harm Potential"
+  - `exposures.evidences.informationType` (STRING)
+  - `exposures.evidences.installedVersion` (STRING)
+  - `exposures.evidences.instructionCategory` (STRING)
+  - `exposures.evidences.intentAssessment` (STRING) — "Intent Assessment"
+  - `exposures.evidences.intersectionalFactors` (STRING)
+  - `exposures.evidences.leakDetected` (STRING) — "Leak Detected"
+  - `exposures.evidences.leakSeverity` (STRING) — "Leak Severity"
+  - `exposures.evidences.legitimateContext` (STRING)
+  - `exposures.evidences.legitimatePurpose` (STRING)
+  - `exposures.evidences.lineNumberRanges.endLine` (STRING)
+  - `exposures.evidences.lineNumberRanges.startLine` (STRING)
+  - `exposures.evidences.mitigatingFactors` (STRING) — "Mitigating Factors"
+  - `exposures.evidences.mitigationStrategies` (STRING) — "Mitigation Strategies"
+  - `exposures.evidences.packageLicence` (STRING) — "Associated Package License"
+  - `exposures.evidences.packageLicenceUrl` (STRING) — "Associated Package License URL"
+  - `exposures.evidences.packageName` (STRING) — "Associated Package"
+  - `exposures.evidences.potentialHarm` (STRING) — "Potential Harm"
+  - `exposures.evidences.primaryConcern` (STRING) — "Primary Concern"
+  - `exposures.evidences.primaryViolations` (STRING) — "Primary Violations"
+  - `exposures.evidences.publicAvailability` (STRING)
+  - `exposures.evidences.purl` (STRING) — "Associated PURL"
+  - `exposures.evidences.references` (STRING) — "Evidence References"
+  - `exposures.evidences.regulatoryFrameworks` (STRING) — "Regulatory Frameworks"
+  - `exposures.evidences.regulatoryUncertainty` (STRING) — "Regulatory Uncertainty"
+  - `exposures.evidences.remediation` (STRING) — "Remediation"
+  - `exposures.evidences.safeguardsPresent` (STRING) — "Safeguards Present"
+  - `exposures.evidences.safetyRisk` (STRING) — "Safety Risk"
+  - `exposures.evidences.secret` (STRING)
+  - `exposures.evidences.severity` (STRING)
+  - `exposures.evidences.specificConcerns` (STRING)
+  - `exposures.evidences.specificRisks` (STRING) — "Specific Risks"
+  - `exposures.evidences.status` (STRING) — "Ethical Status"
+  - `exposures.evidences.tags` (STRING) — "Evidence Tags"
+  - `exposures.evidences.toxicityLevel` (STRING) — "Toxicity Level"
+  - `exposures.evidences.violationSeverity` (STRING) — "Violation Severity"
+  - `exposures.exposureId` (STRING)
+  - `exposures.origin` (STRING) — "Exposure Origin Component"
+  - `exposures.plugin.category` (STRING) — "Plugin Category"
+  - `exposures.plugin.description` (STRING) — "Plugin Description"
+  - `exposures.plugin.generativeAIResponses.prompt` (STRING)
+  - `exposures.plugin.generativeAIResponses.response` (STRING)
+  - `exposures.plugin.id` (STRING) — "Plugin ID"
+  - `exposures.plugin.subType` (STRING) — "Plugin Subtype"
+  - `exposures.plugin.title` (STRING) — "Plugin Title"
+  - `exposures.plugin.type` (STRING) — "Plugin Type"
+  - `exposures.recommendations` (STRING) — "Recommendations"
+  - `exposures.riskIndex.index` (DOUBLE) — "Risk Index"
+  - `exposures.riskIndex.severity` (STRING) — "Risk Index Severity"
+  - `exposures.scannerName` (STRING) — "Scanner Name"
+  - `exposures.scannerType` (STRING) — "Scanner Type"
+  - `exposures.taxonomies.entries.id` (STRING) — "Taxonomy Entry ID"
+  - `exposures.taxonomies.entries.title` (STRING) — "Taxonomy Entry Title"
+  - `exposures.taxonomies.name` (STRING) — "Taxonomy Name"
+  - `exposures.taxonomies.source` (STRING) — "Taxonomy Source"
+  - `exposures.taxonomies.year` (INTEGER) — "Taxonomy Year"
+  - `exposures.title` (STRING) — "Exposure Title"
+  - `exposures.vulnerabilities.cvssv2.score` (DOUBLE)
+  - `exposures.vulnerabilities.cvssv2.severity` (STRING)
+  - `exposures.vulnerabilities.cvssv2.version` (STRING)
+  - `exposures.vulnerabilities.cvssv3.score` (DOUBLE)
+  - `exposures.vulnerabilities.cvssv3.severity` (STRING)
+  - `exposures.vulnerabilities.cvssv3.version` (STRING)
+  - `exposures.vulnerabilities.cvssv4.score` (DOUBLE)
+  - `exposures.vulnerabilities.cvssv4.severity` (STRING)
+  - `exposures.vulnerabilities.cvssv4.version` (STRING)
+  - `exposures.vulnerabilities.id` (STRING)
+  - `exposures.vulnerabilities.riskIndex.index` (DOUBLE)
+  - `exposures.vulnerabilities.riskIndex.severity` (STRING)
+  - `exposures.vulnerabilities.vertices` (INTEGER)
+  - `exposures.weaknesses.id` (STRING)
+  - `exposures.weaknesses.riskIndex.index` (DOUBLE)
+  - `exposures.weaknesses.riskIndex.severity` (STRING)
+  - `exposures.weaknesses.title` (STRING)
+  - `exposures.weaknesses.type` (STRING)
+  - `hasEnhancedData` (BOOLEAN) — "Has Enhanced Data"
+  - `indirectExposureCount` (INTEGER) — "Indirect Exposure Count"
+  - `lastModifiedDate` (DATE)
+  - `latestVersion` (STRING) — "Latest Version"
+  - `licenses.content` (STRING) — "License Text"
+  - `licenses.id` (STRING) — "License Id"
+  - `licenses.name` (STRING) — "License  Name"
+  - `licenses.origin` (STRING) — "License Origin"
+  - `licenses.url` (STRING) — "License URL"
+  - `meta.architecture` (STRING)
+  - `meta.baseModelTrainedWithCustomerData` (STRING)
+  - `meta.capabilities` (STRING)
+  - `meta.countryOfOrigin` (STRING)
+  - `meta.customerDataSharedWithVendor` (STRING)
+  - `meta.dataDeletionPolicy` (STRING)
+  - `meta.languages` (STRING) — "Implementation Languages"
+  - `meta.licensingModel` (STRING)
+  - `meta.sourceCodeManagement` (STRING)
+  - `meta.tools` (STRING)
+  - `meta.trainingDataAnonymized` (STRING)
+  - `meta.type` (STRING)
+  - `name` (STRING) — "Component Name"
+  - `publishedDate` (DATE) — "Published Date"
+  - `purl` (STRING) — "PURL"
+  - `references.tags` (STRING)
+  - `references.url` (STRING)
+  - `relatedComponentCount` (INTEGER)
+  - `relatedComponentDisclaimer` (STRING)
+  - `relatedComponents.directExposureCount` (INTEGER) — "Related Component Direct Exposure Count"
+  - `relatedComponents.ecosystem` (STRING) — "Related Component Ecosystem"
+  - `relatedComponents.indirectExposureCount` (INTEGER) — "Related Component Indirect Exposure Count"
+  - `relatedComponents.name` (STRING) — "Related Component Name"
+  - `relatedComponents.path` (STRING) — "Related Component Path"
+  - `relatedComponents.purl` (STRING) — "Related Component PURL"
+  - `relatedComponents.relationshipNature` (STRING) — "Relationship Nature"
+  - `relatedComponents.relationshipType` (STRING) — "Relationship Type"
+  - `relatedComponents.scope` (STRING) — "Related Component Scope"
+  - `relatedComponents.targetFramework` (STRING) — "Related Component Target Framework"
+  - `relatedComponents.totalExposureCount` (INTEGER) — "Related Component Exposure Count"
+  - `relatedComponents.version` (STRING) — "Related Component Version"
+  - `relatedComponents.vertex` (INTEGER) — "Related Component Vertex"
+  - `riskAssessment.riskMetrics.name` (STRING)
+  - `riskAssessment.riskMetrics.score` (DOUBLE)
+  - `riskAssessment.riskMetrics.severity` (STRING)
+  - `riskAssessment.score` (DOUBLE) — "Score"
+  - `riskAssessment.severity` (STRING) — "Severity"
+  - `securinCreatedDate` (DATE)
+  - `securinUpdatedDate` (DATE) — "Securin Updated Date"
+  - `sources.ids` (STRING)
+  - `sources.name` (STRING)
+  - `sources.url` (STRING)
+  - `title` (STRING) — "Title"
+  - `type` (STRING) — "Type"
+  - `version` (STRING) — "Version"
+
+### WEAKNESS
+#### Weakness Built-in
+  - `abstraction` (STRING) — "Abstraction"
+  - `alternateTerms.term` (STRING) — "Term"
+  - `description` (STRING) — "Description"
+  - `lastUpdatedDate` (DATE) — "Updated Date"
+  - `likelihoodOfExploit` (STRING) — "Exploitability"
+  - `potentialMitigations.descriptions` (STRING) — "Mitigation"
+  - `potentialMitigations.effectiveness` (STRING) — "Effectiveness"
+  - `potentialMitigations.effectivenessNotes` (STRING) — "Note"
+  - `potentialMitigations.id` (STRING) — "Mitigation ID"
+  - `potentialMitigations.phases` (STRING) — "Phases"
+  - `potentialMitigations.strategy` (STRING) — "Strategy"
+  - `references.authors` (STRING) — "Author"
+  - `references.edition` (STRING) — "Edition"
+  - `references.id` (STRING) — "Reference ID"
+  - `references.publication` (STRING) — "Publication"
+  - `references.publicationDay` (INTEGER) — "Publication Day"
+  - `references.publicationMonth` (INTEGER) — "Publication Month"
+  - `references.publicationYear` (INTEGER) — "Publication Year"
+  - `references.publisher` (STRING) — "Publisher"
+  - `references.section` (STRING) — "Section"
+  - `references.title` (STRING) — "Reference Title"
+  - `references.url` (STRING) — "Reference Url"
+  - `relatedAttackPatterns.id` (INTEGER) — "Attack Pattern ID"
+  - `relatedWeaknesses.abstraction` (STRING) — "Related Abstraction"
+  - `relatedWeaknesses.chainId` (STRING)
+  - `relatedWeaknesses.id` (STRING) — "Related Weakness ID"
+  - `relatedWeaknesses.nature` (STRING) — "Relationship"
+  - `relatedWeaknesses.ordinal` (STRING) — "Ordinal"
+  - `relatedWeaknesses.title` (STRING) — "Related Weakness Title"
+  - `relatedWeaknesses.type` (STRING) — "Related Weakness Type"
+  - `relatedWeaknesses.viewId` (STRING) — "View ID"
+  - `riskIndex.index` (DOUBLE) — "Risk Index"
+  - `riskIndex.lastModifiedDate` (DATE) — "Risk Index Modified Date"
+  - `riskIndex.severity` (STRING) — "Risk Index Severity"
+  - `sources.name` (STRING) — "Source"
+  - `sources.url` (STRING) — "Source Url"
+  - `status` (STRING) — "Status"
+  - `structure` (STRING) — "Structure"
+  - `submissionDate` (DATE) — "Submission Date"
+  - `taxonomies.name` (STRING) — "Taxonomy"
+  - `taxonomies.rank` (INTEGER) — "Taxonomy Rank"
+  - `taxonomies.source` (STRING) — "Taxonomy Source"
+  - `taxonomies.vulnerabilities.category` (STRING) — "Taxonomy Category"
+  - `taxonomies.vulnerabilities.title` (STRING) — "Taxonomy Title"
+  - `taxonomies.year` (INTEGER) — "Taxonomy Year"
+  - `title` (STRING) — "Weakness Title"
+  - `type` (STRING) — "Weakness Type"
+  - `viCreatedDate` (DATE) — "Securin Created Date"
+  - `viUpdatedDate` (DATE) — "Securin Updated Date"
+  - `vulnerabilities.id` (STRING) — "Vulnerability ID"
+  - `vulnerabilityCount` (INTEGER) — "No of Vulnerabilities"
+  - `weaknessId` (STRING) — "Weakness ID"
+
+---
+
+_Field paths above were rendered from the on-disk cache at
+`dynein/data/apiFields/*_apiFields.json`, which is refreshed in the
+background after every request._
