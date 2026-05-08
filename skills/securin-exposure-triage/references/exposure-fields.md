@@ -84,12 +84,31 @@ These are powerful for dashboards — call `aggregateExposureData` with a TERMS/
 
 - `exposure.scores.scoreLevel`
 - `exposure.status`
-- `exposure.workspaceId`
+- `asset.workspaces.name` — ✅ workspace grouping (use this; `exposure.workspaceId` returns 500)
 - `exposure.mappedAttributes.type`
 - `exposure.remediationTarget.status`
 - `exposure.remediationTarget.priority`
 
 Call `getGroupByFields(entityType='EXPOSURE')` for the canonical list.
+
+## `aggregateExposureData` — correct aggs shape
+
+`function` is a string, key is `field` (not `apiPath`), `subAggs` COUNT is required:
+
+```json
+{
+  "aggs": [{
+    "name": "bySeverity",
+    "function": "TERMS",
+    "field": "exposure.scores.scoreLevel",
+    "size": 10,
+    "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]
+  }]
+}
+```
+
+❌ `"function": {"type": "TERMS", ...}` — function must be a string, not an object
+❌ `"apiPath"` — always use `"field"`
 
 ## Sort keys
 
@@ -97,7 +116,7 @@ Default: `exposures.scores.score:desc`. Other useful sorts:
 - `exposure.remediationTarget.dueDate:asc` (closest breach first)
 - `exposures.scores.score:desc,exposure.remediationTarget.dueDate:asc` (risk-primary, SLA-tiebreak)
 
-Use `getSortFields: true` on any search/hybrid call to list valid sortable paths.
+Call `getApiFields(entityType=["EXPOSURE"])` to discover all sortable fields.
 
 ## Custom attributes
 
