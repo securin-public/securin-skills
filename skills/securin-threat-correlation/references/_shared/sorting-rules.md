@@ -59,7 +59,6 @@ For aggregation buckets (inside `aggs[].sort`):
 - `securin-cve-enrichment`: N/A (single-record lookup). When listing affected products: `cvssScore:desc`.
 - `securin-asset-triage`: **`asset.scores.overallScore:desc,asset.criticality:desc`**
 - `securin-exposure-triage`: **`exposure.scores.score:desc,exposure.remediationTarget.dueDate:asc`**
-- `securin-product-triage`: products by name asc; components by **`riskAssessment.score:desc`**
 - `securin-threat-correlation`: matched exposures → `exposure.scores.score:desc`; CVEs → `riskIndex.index:desc`
 - `securin-remediation-guidance`: single-exposure focus, N/A.
 - `securin-zero-day-exposure-analysis`: **`exposure.scores.score:desc,exposure.firstIngestedOn:desc`**

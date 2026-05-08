@@ -35,7 +35,6 @@
 | `securin-threat-correlation` | *"Am I affected by LockBit?"* — Maps a CVE, threat actor, or ransomware group to your environment with a clear verdict. |
 | `securin-asset-triage` | *"Break down assets by criticality and workspace."* — Search, filter, and aggregate your asset inventory. |
 | `securin-exposure-triage` | *"Show open criticals breaching SLA."* — Ranked exposure lists or aggregated views. |
-| `securin-product-triage` | *"What versions of Apache do we have?"* — Product catalog and component inventory. |
 | `securin-remediation-guidance` | *"How do I fix exposure 12345?"* — Actionable fix plans with vendor advisories and ticket bodies. |
 | `securin-tool-search` | Fallback when no other skill fits — searches all 40+ MCP tools. |
 
