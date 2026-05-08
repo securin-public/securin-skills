@@ -7,7 +7,7 @@ Every skill in this plugin MUST run this preflight as **Step 0** before any data
 Before you call any `search*Data`, `aggregate*Data`, or account-scoped `get*` tool, you MUST:
 
 1. Know the account-id to scope the request to.
-2. Trust that the caller's token has access (verified indirectly through `getUserProfile`).
+2. Trust that the caller's token has access once you have the account-id — no tool call needed to verify this.
 
 ## Step-by-step (revised per schema)
 
@@ -17,16 +17,11 @@ In priority order:
 
 1. **From the user's message.** If the user said "in account 42" or "use `acc-123`", use it.
 2. **From earlier in this turn.** Reuse the resolved account-id. Re-prompt only if the user pivots.
-3. **From `getUserProfile`.** The authoritative source. This is how we discover the accounts the caller's bearer token can see.
-   - Parse the returned profile for the `accounts[]` (or equivalent) field.
-   - If exactly **one** account → use it silently.
-   - If **more than one** → list them by name + id and call `AskUserQuestion` to pick one (or multiple, if the workflow supports multi-account). Use `getAccountDetails` if you need display names for the picker.
-   - If **zero** → surface the auth error and stop. Do not guess.
-4. **Fallback: `listAccounts(account-id=<parent>)`** — only relevant when the caller is a management / partner account wanting to operate on a sub-account. Requires the parent `account-id` already.
+3. **Ask the user directly.** If the account-id was not provided and is not cached, stop and ask: "Which account ID should I use?" Do **not** call any tool to discover accounts — large deployments return thousands of entries and block the workflow.
 
 ### 2. Validate access — the right way
 
-✅ **For account access, trust `getUserProfile`**: the accounts it returns are, by definition, accessible to the caller's token. No separate access check is required.
+✅ **For account access:** once the user provides an account-id, trust it — no tool call is needed to validate access. `getUserProfileByAccountId` is available only if you need to fetch the user's display name or role for the response.
 
 ✅ **For per-resource permissions** (e.g., "can the caller *edit* this saved view?"), use:
 - `getEffectiveAccess` — full permission snapshot.
@@ -72,8 +67,8 @@ Inspect the response and check the `merged.value` field:
 
 | Tool | Purpose |
 |---|---|
-| `getUserProfile` | **Primary.** Returns the caller's profile + accessible accounts. |
-| `getUserProfileByAccountId` / `getUserProfileByDefaultAccount` | Alternate profile views by specific scope. |
+| `getUserProfileByAccountId` | Validate access for a known account-id. |
+| `getUserProfileByDefaultAccount` | Use only when a single default account is expected. |
 | `getAccountDetails` | Enrich an account-id with display name for pickers. |
 | `listAccounts` | List sub-accounts of a parent (partner/management use only). |
 | `getEffectiveAccess` / `getEffectiveAccessPermissions` | Full permission snapshot. |
@@ -82,9 +77,9 @@ Inspect the response and check the `merged.value` field:
 
 ## Boilerplate the user sees
 
-> "I have access to 3 accounts on this token: **Acme Corp** (`42`), **Acme EU** (`43`), **Lab** (`99`). Which should I use?"
+> "To proceed I need an account ID — please share it (e.g. `42` or `acc-123`)."
 
-> "Using account `42` (Acme Corp) — confirmed via `getUserProfile`. Proceeding."
+> "Using account `42` (Acme Corp) — confirmed via `getUserProfileByAccountId`. Proceeding."
 
 ## Don't
 
