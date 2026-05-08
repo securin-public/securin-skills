@@ -12,7 +12,7 @@
       "name": "securin-platform",
       "source": "./",
       "description": "Securin Platform workflows for triage, CVE enrichment, threat correlation, and remediation guidance — plus 300+ MCP tools for the Securin API.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "Securin",
         "url": "https://www.securin.io"
