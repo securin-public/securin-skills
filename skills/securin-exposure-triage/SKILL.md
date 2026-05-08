@@ -207,47 +207,6 @@ Run `aggregateExposureData` once per dimension (two calls):
 }
 ```
 
-### "Exposures tied to CISA KEV CVEs in prod"
-```json
-{
-  "filters": "exposure.status = 'Open' AND vulnerabilities.isCisaKEV = true AND asset.workspaceId in (<prod-ws-ids>)",
-  "aggs": [{"name": "bySeverity", "function": "TERMS", "field": "exposure.scores.scoreLevel", "size": 10,
-            "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]}]
-}
-```
-
-### "New vs closed exposures over time"
-
-Use `aggregateExposureData` with `DATE_HISTOGRAM`. Run two calls: one on `exposure.firstDiscoveredOn` (opened), one on `exposure.lastResolvedOn` (closed):
-```json
-// Call 1 — opened per month
-{
-  "aggs": [{
-    "function": "DATE_HISTOGRAM",
-    "name": "Opened",
-    "field": "exposure.firstDiscoveredOn",
-    "interval": "Month",
-    "isFixedInterval": false,
-    "extendedBounds": {"min": "<start-date>T00:00:00Z", "max": "now"},
-    "hardBounds": {"min": "<start-date>T00:00:00Z"},
-    "aggs": [{"function": "COUNT", "name": "count", "field": "exposure.exposureId"}]
-  }]
-}
-
-// Call 2 — closed per month
-{
-  "aggs": [{
-    "function": "DATE_HISTOGRAM",
-    "name": "Closed",
-    "field": "exposure.lastResolvedOn",
-    "interval": "Month",
-    "isFixedInterval": false,
-    "extendedBounds": {"min": "<start-date>T00:00:00Z", "max": "now"},
-    "hardBounds": {"min": "<start-date>T00:00:00Z"},
-    "aggs": [{"function": "COUNT", "name": "count", "field": "exposure.exposureId", "filters": "exposure.status = 'Closed'"}]
-  }]
-}
-```
 
 
 ## Scope guard (CC-3)
