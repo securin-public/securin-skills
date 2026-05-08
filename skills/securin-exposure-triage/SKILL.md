@@ -12,9 +12,7 @@ description: >
 
 # Exposure Triage
 
-## Purpose
-
-Ad-hoc search, filtering, and aggregation of the user's **exposures** — instances of vulnerabilities, misconfigurations, or findings discovered in their environment. Translate questions like "show me all open critical exposures breaching SLA" into the correct `search*Data` / `aggregate*Data` / `hybrid*Data` call with proper scoping and deep links.
+Ad-hoc search, filtering, and aggregation of the user's **exposures** — instances of vulnerabilities, misconfigurations, or findings discovered in their environment. Translate questions like "show me all open critical exposures breaching SLA" into the correct `search*Data` / `aggregate*Data` call with proper scoping and deep links.
 
 An *exposure* is an instance (e.g., "CVE-2024-3400 on host web-01"). A *vulnerability* is the global CVE record. This skill is about exposures; use `securin-cve-enrichment` for vulnerability intel.
 
@@ -40,17 +38,15 @@ See [_shared/account-preflight.md](references/_shared/account-preflight.md). Res
 
 ### Primary
 - `searchExposureData` — flat list
-- `aggregateExposureData` — single-field bucketed count
-- `hybridExposureData` — compound-filter + aggregation (requires `groupByField`)
-- `searchViStatsData` — vulnerability-instance stats (time series, trend aggregations)
-- `aggregateVulnerabilityTimelineData` / `searchVulnerabilityTimelineData` / `hybridVulnerabilityTimelineData` — time-series shape
+- `aggregateExposureData` — bucketed count (TERMS) and time-bucketed histogram (DATE_HISTOGRAM)
+- `aggregateVulnerabilityTimelineData` / `searchVulnerabilityTimelineData` — historical vulnerability state changes over time (if available for account; fall back to DATE_HISTOGRAM if 404)
 
 ### Supporting
 - `getApiFields` with `entityType: ["EXPOSURE"]` — field discovery
 - `getGroupByFields` — valid aggregation dimensions
 - `getTopValues` — enum values for a field
 - `getDefaultViewForGroupByField` — platform's default column set for a grouping
-- `filterToChip` / `filtersToChip` / `validateFilter` — FQL construction + validation
+- `validateFilter` — FQL construction + validation
 - `getEffectiveAccessWorkspaces` — workspace scoping
 
 ### Deep links (CC-2)
@@ -68,8 +64,7 @@ See [_shared/deep-links.md](references/_shared/deep-links.md).
 |---|---|---|
 | Flat list | "List open critical exposures" | `searchExposureData` |
 | Single-field bucket | "Exposures by severity" | `aggregateExposureData` |
-| Compound filter + aggregation | "Open critical on prod, grouped by workspace" | `hybridExposureData` + `groupByField` |
-| Time series | "Exposures created per week over 6 months" | `searchViStatsData` / `*VulnerabilityTimelineData` |
+| Time series | "Exposures created per week over 6 months" | `aggregateVulnerabilityTimelineData` or `aggregateExposureData` DATE_HISTOGRAM |
 | Aggregation with per-bucket deep links | "Bucket counts, clickable" | `aggregateByDeepLink` |
 
 ### Step 2 — Discover fields if uncertain
@@ -87,10 +82,10 @@ See [_shared/fql-grammar.md](references/_shared/fql-grammar.md). Exposure-specif
 ```text
 exposure.status = 'Open'
 exposure.scores.scoreLevel = 'Critical'
-"exposure.scores.overallScore" >= 7.0
+"exposure.scores.overallScore" >= 7.0  # filter-only — NOT a valid sort key; sort uses exposures.scores.score:desc
 "exposure.firstSeenAt" >= "2026-01-01T00:00:00Z"
 exposure.remediationTarget.status = 'Overdue'
-exposure.assignedTo = 'team:remediation'
+exposure.assignments.assignedTo.name = 'team:remediation'
 exposure.mappedAttributes.vulnerabilityIds = 'CVE-2024-3400'
 exposure.mappedAttributes.type like 'Vulnerability'
 ```
@@ -98,8 +93,13 @@ exposure.mappedAttributes.type like 'Vulnerability'
 Cross-entity filters (exposure → vuln / asset):
 
 ```text
+# Exposures tied to a specific CVE — correct cross-entity field is vulnerabilities.id
+vulnerabilities.id = 'CVE-2024-3400'
+# ❌ vulnerabilities.vulnerabilityId  → 400 Invalid field
+# ❌ vulnerabilities.cveId           → 400 Invalid field
+
 # Exposures tied to exploited vulnerabilities
-vulnerabilities.exploitation.isCisaKev = true
+vulnerabilities.isCisaKEV = true
 
 # Exposures on exposed-to-internet assets (source-model account)
 asset.reachability = 'Exposed'
@@ -110,10 +110,52 @@ compositeAsset.reachability = 'Exposed'
 
 ### Step 4 — Pick and call the right tool
 
-Classification from Step 1. Key rules:
-
-- For time series: `searchViStatsData` exposes pre-aggregated stats; for flexible time buckets use the `*VulnerabilityTimelineData` family.
+- For time series: try `aggregateVulnerabilityTimelineData` / `searchVulnerabilityTimelineData` first. If those return 404, fall back to `aggregateExposureData` with `DATE_HISTOGRAM`.
 - For per-bucket deep links, prefer `aggregateByDeepLink`.
+
+#### `aggregateExposureData` — correct request shape
+
+`function` is a **string**, `field` is the key (not `apiPath`), and a `subAggs` COUNT is required:
+
+```json
+{
+  "filters": "exposure.status = 'Open'",
+  "aggs": [{
+    "name": "bySeverity",
+    "function": "TERMS",
+    "field": "exposure.scores.scoreLevel",
+    "size": 10,
+    "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]
+  }]
+}
+```
+
+Common mistakes that cause 400/500:
+- ❌ `"function": {"type": "TERMS", "field": "..."}` — function must be a string, not an object
+- ❌ `"apiPath": "..."` — key must be `"field"`, not `"apiPath"`
+- ❌ `"field": "exposure.workspaceId"` — returns 500; use `"asset.workspaces.name"` for workspace grouping
+
+#### `aggregateExposureData` with `DATE_HISTOGRAM` — time series shape
+
+Different structure from TERMS: nested aggs use `"aggs"` (not `"subAggs"`), and `interval` must be **Title Case**. `isFixedInterval`, `extendedBounds`, and `hardBounds` are required:
+
+```json
+{
+  "aggs": [{
+    "function": "DATE_HISTOGRAM",
+    "name": "openedByMonth",
+    "field": "exposure.firstDiscoveredOn",
+    "interval": "Month",
+    "isFixedInterval": false,
+    "extendedBounds": {"min": "2025-11-01T00:00:00Z", "max": "now"},
+    "hardBounds": {"min": "2025-11-01T00:00:00Z"},
+    "aggs": [{"function": "COUNT", "name": "count", "field": "exposure.exposureId"}]
+  }]
+}
+```
+
+Valid `interval` values (Title Case only): `"Day"`, `"Week"`, `"Month"`, `"Quarter"`, `"Year"`.
+❌ `"month"`, `"MONTH"`, `"1M"`, `"MONTHLY"` all return 400.
 
 ### Step 5 — Deep links (CC-2)
 
@@ -148,35 +190,24 @@ sort: "exposures.scores.score:desc"
 
 ### "Break down exposures by severity and workspace"
 
-Compound filter + two dimensions → `hybridExposureData`:
-```text
-hybridExposureData
-filter: exposure.status = 'Open'
-groupByField: exposure.workspaceId   # primary
-aggs: [{type: "count", by: "exposure.scores.scoreLevel"}]
+Run `aggregateExposureData` once per dimension (two calls):
+```json
+// Call 1 — by severity
+{
+  "filters": "exposure.status = 'Open'",
+  "aggs": [{"name": "bySeverity", "function": "TERMS", "field": "exposure.scores.scoreLevel", "size": 10,
+            "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]}]
+}
+
+// Call 2 — by workspace (use asset.workspaces.name — exposure.workspaceId returns 500)
+{
+  "filters": "exposure.status = 'Open'",
+  "aggs": [{"name": "byWorkspace", "function": "TERMS", "field": "asset.workspaces.name", "size": 25,
+            "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]}]
+}
 ```
 
-### "Exposures tied to CISA KEV CVEs in prod"
-```text
-hybridExposureData
-filter: exposure.status = 'Open'
-        AND vulnerabilities.exploitation.isCisaKev = true
-        AND exposure.workspaceId in [<prod-ws-ids>]
-groupByField: "exposure.scores.scoreLevel"
-```
 
-### "New vs closed exposures over time"
-
-Use `*VulnerabilityTimelineData` or `searchViStatsData`:
-```text
-hybridVulnerabilityTimelineData
-filter: exposure.firstSeenAt >= today() - 180
-groupByField: "exposure.state"   # created vs closed
-```
-
-### "MTTR by severity"
-
-Exposures have `remediationDate - firstSeenAt` → query both, compute client-side, or check if the platform exposes an `exposure.timeToRemediate` field via `getApiFields`.
 
 ## Scope guard (CC-3)
 
@@ -190,7 +221,7 @@ Exposures have `remediationDate - firstSeenAt` → query both, compute client-si
 
 - **Empty result on cross-entity filter** — check asset prefix (`asset.*` vs `compositeAsset.*`) matches the account's data model.
 - **Custom statuses** — accounts can customize the exposure state machine; use `getTopValues(field="exposure.status")` to enumerate.
-- **Very wide time windows** — lean on `searchViStatsData` or aggregation rather than raw listing.
+- **Very wide time windows** — lean on `aggregateExposureData` (TERMS or DATE_HISTOGRAM) rather than raw listing.
 - **Tags / custom attributes** — `exposure.tags`, `exposure.customAttributes.*` are discoverable via `getApiFields`.
 
 ## Visual output (CC-4)

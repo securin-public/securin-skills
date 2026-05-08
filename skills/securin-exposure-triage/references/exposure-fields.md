@@ -73,18 +73,18 @@ These are powerful for dashboards — call `aggregateExposureData` with a TERMS/
 |---|---|---|
 | `vulnerabilities.id` | VULNERABILITY | `vulnerabilities.id = 'CVE-2024-3400'` |
 | `vulnerabilities.tags` | VULNERABILITY | `vulnerabilities.tags = 'Zero Day'` |
-| `vulnerabilities.exploitation.isCisaKev` | VULNERABILITY | `vulnerabilities.exploitation.isCisaKev = true` |
+| `vulnerabilities.isCisaKEV` | VULNERABILITY | `vulnerabilities.isCisaKEV = true` |
 | `asset.criticality` / `compositeAsset.criticality` | ASSET | integer (1–5 scale) |
 | `asset.reachability` / `compositeAsset.reachability` | ASSET | `'Exposed'` / `'NotExposed'` |
-| `asset.workspaceId` / `compositeAsset.workspaceId` | ASSET | `in [...]` |
+| `asset.workspaceId` / `compositeAsset.workspaceId` | ASSET | `in (...)` |
 
-> **Namespace reminder:** `vulnerabilities.*` is valid **only** in exposure queries. In `searchVulnerabilityData`, use bare paths (`vulnerabilityId`, `tags`, `exploitation.isCisaKev`). See [_shared/fql-grammar.md](_shared/fql-grammar.md).
+> **Namespace reminder:** `vulnerabilities.*` is valid **only** in exposure queries. In `searchVulnerabilityData`, use bare paths (`vulnerabilityId`, `tags`, `isCisaKEV`). See [_shared/fql-grammar.md](_shared/fql-grammar.md).
 
 ## Aggregation dimensions (common)
 
 - `exposure.scores.scoreLevel`
 - `exposure.status`
-- `exposure.workspaceId`
+- `asset.workspaces.name` — ✅ workspace grouping (use this; `exposure.workspaceId` returns 500)
 - `exposure.mappedAttributes.type`
 - `exposure.remediationTarget.status`
 - `exposure.remediationTarget.priority`
@@ -96,13 +96,3 @@ Call `getGroupByFields(entityType='EXPOSURE')` for the canonical list.
 Default: `exposures.scores.score:desc`. Other useful sorts:
 - `exposure.remediationTarget.dueDate:asc` (closest breach first)
 - `exposures.scores.score:desc,exposure.remediationTarget.dueDate:asc` (risk-primary, SLA-tiebreak)
-
-Use `getSortFields: true` on any search/hybrid call to list valid sortable paths.
-
-## Custom attributes
-
-Discover with:
-```text
-getApiFields(entityType=['EXPOSURE'])
-```
-Then filter with the full path.
