@@ -32,14 +32,15 @@ An *exposure* is an instance (e.g., "CVE-2024-3400 on host web-01"). A *vulnerab
 
 See [_shared/account-preflight.md](references/_shared/account-preflight.md). Resolve account-id(s) and validate access before any query. If the question implies a workspace subset, resolve workspace-ids too.
 
-> Note: the exposure index is **not** affected by the composite-vs-source data model (that flag only affects assets). But cross-entity exposure filters that reference asset fields still need the correct asset prefix — see [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md).
+Also before you use this SKILL, its MANDATORY for you to read through all the files inside [References folder](references/). This also includes all the files inside [Shared references folder](references/_shared/). It is also COMPELSORY to try and use [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) instead of calling the `getApiFields` tool. ONLY use the tool as a fall back mechanism. 
 
 ## Suggested tools
 
 ### Primary
 - `searchExposureData` — flat list
-- `aggregateExposureData` — bucketed count (TERMS) and time-bucketed histogram (DATE_HISTOGRAM)
-- `aggregateVulnerabilityTimelineData` / `searchVulnerabilityTimelineData` — historical vulnerability state changes over time (if available for account; fall back to DATE_HISTOGRAM if 404)
+- `aggregateVulnerabilityTimelineData` / `searchVulnerabilityTimelineData` — historical vulnerability state changes over time (if available for account)
+
+> ⚠️ **`aggregateExposureData` is currently broken** — the MCP server sends `"function": {"type": "TERMS"}` (object) but the backend API requires `"function": "TERMS"` (string). Every call returns 400. Do not attempt to use it. Use `searchExposureData` and summarise counts from results instead.
 
 ### Supporting
 - `getApiFields` with `entityType: ["EXPOSURE"]` — field discovery
@@ -63,8 +64,8 @@ See [_shared/deep-links.md](references/_shared/deep-links.md).
 | Shape | Example | Tool |
 |---|---|---|
 | Flat list | "List open critical exposures" | `searchExposureData` |
-| Single-field bucket | "Exposures by severity" | `aggregateExposureData` |
-| Time series | "Exposures created per week over 6 months" | `aggregateVulnerabilityTimelineData` or `aggregateExposureData` DATE_HISTOGRAM |
+| Count/summary | "How many exposures by severity?" | `searchExposureData` — fetch results and summarise counts from the response |
+| Time series | "Exposures created per week over 6 months" | `aggregateVulnerabilityTimelineData` / `searchVulnerabilityTimelineData` |
 | Aggregation with per-bucket deep links | "Bucket counts, clickable" | `aggregateByDeepLink` |
 
 ### Step 2 — Discover fields if uncertain
@@ -115,7 +116,7 @@ compositeAsset.reachability = 'Exposed'
 
 #### `aggregateExposureData` — correct request shape
 
-`function` is a **string**, `field` is the key (not `apiPath`), and a `subAggs` COUNT is required:
+`function` is a **string** and `field` is the key (not `apiPath`):
 
 ```json
 {
@@ -124,8 +125,7 @@ compositeAsset.reachability = 'Exposed'
     "name": "bySeverity",
     "function": "TERMS",
     "field": "exposure.scores.scoreLevel",
-    "size": 10,
-    "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]
+    "size": 10
   }]
 }
 ```
@@ -135,9 +135,11 @@ Common mistakes that cause 400/500:
 - ❌ `"apiPath": "..."` — key must be `"field"`, not `"apiPath"`
 - ❌ `"field": "exposure.workspaceId"` — returns 500; use `"asset.workspaces.name"` for workspace grouping
 
+> **Known MCP limitation:** `aggregateExposureData` may fail with a schema validation error (`Expected object, received string` for `function`). If this happens, skip the aggregation — use `searchExposureData` for the data and summarise counts from the results directly. Do not retry with different object shapes for `function`; they all return 400 from the backend.
+
 #### `aggregateExposureData` with `DATE_HISTOGRAM` — time series shape
 
-Different structure from TERMS: nested aggs use `"aggs"` (not `"subAggs"`), and `interval` must be **Title Case**. `isFixedInterval`, `extendedBounds`, and `hardBounds` are required:
+Different structure from TERMS: nested aggs use `"aggs"`, and `interval` must be **Title Case**. `isFixedInterval`, `extendedBounds`, and `hardBounds` are required:
 
 ```json
 {
@@ -195,15 +197,13 @@ Run `aggregateExposureData` once per dimension (two calls):
 // Call 1 — by severity
 {
   "filters": "exposure.status = 'Open'",
-  "aggs": [{"name": "bySeverity", "function": "TERMS", "field": "exposure.scores.scoreLevel", "size": 10,
-            "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]}]
+  "aggs": [{"name": "bySeverity", "function": "TERMS", "field": "exposure.scores.scoreLevel", "size": 10}]
 }
 
 // Call 2 — by workspace (use asset.workspaces.name — exposure.workspaceId returns 500)
 {
   "filters": "exposure.status = 'Open'",
-  "aggs": [{"name": "byWorkspace", "function": "TERMS", "field": "asset.workspaces.name", "size": 25,
-            "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]}]
+  "aggs": [{"name": "byWorkspace", "function": "TERMS", "field": "asset.workspaces.name", "size": 25}]
 }
 ```
 
