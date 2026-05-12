@@ -115,7 +115,7 @@ compositeAsset.reachability = 'Exposed'
 
 #### `aggregateExposureData` — correct request shape
 
-`function` is a **string**, `field` is the key (not `apiPath`), and a `subAggs` COUNT is required:
+`function` is a **string** and `field` is the key (not `apiPath`):
 
 ```json
 {
@@ -124,8 +124,7 @@ compositeAsset.reachability = 'Exposed'
     "name": "bySeverity",
     "function": "TERMS",
     "field": "exposure.scores.scoreLevel",
-    "size": 10,
-    "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]
+    "size": 10
   }]
 }
 ```
@@ -137,7 +136,7 @@ Common mistakes that cause 400/500:
 
 #### `aggregateExposureData` with `DATE_HISTOGRAM` — time series shape
 
-Different structure from TERMS: nested aggs use `"aggs"` (not `"subAggs"`), and `interval` must be **Title Case**. `isFixedInterval`, `extendedBounds`, and `hardBounds` are required:
+Different structure from TERMS: nested aggs use `"aggs"`, and `interval` must be **Title Case**. `isFixedInterval`, `extendedBounds`, and `hardBounds` are required:
 
 ```json
 {
@@ -195,15 +194,13 @@ Run `aggregateExposureData` once per dimension (two calls):
 // Call 1 — by severity
 {
   "filters": "exposure.status = 'Open'",
-  "aggs": [{"name": "bySeverity", "function": "TERMS", "field": "exposure.scores.scoreLevel", "size": 10,
-            "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]}]
+  "aggs": [{"name": "bySeverity", "function": "TERMS", "field": "exposure.scores.scoreLevel", "size": 10}]
 }
 
 // Call 2 — by workspace (use asset.workspaces.name — exposure.workspaceId returns 500)
 {
   "filters": "exposure.status = 'Open'",
-  "aggs": [{"name": "byWorkspace", "function": "TERMS", "field": "asset.workspaces.name", "size": 25,
-            "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]}]
+  "aggs": [{"name": "byWorkspace", "function": "TERMS", "field": "asset.workspaces.name", "size": 25}]
 }
 ```
 
