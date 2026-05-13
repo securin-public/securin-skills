@@ -39,7 +39,7 @@ Also before you use this SKILL, its MANDATORY for you to read through all the fi
 
 ### Threat intel (global)
 - `searchVulnerabilityData` — CVE record + exploitation signals
-- `searchThreatActorData` — threat actor → CVE list. Pass `fields: ['threatActor']` in the request
+- `searchThreatActorData` — threat actor → CVE list. Actor records are flat — do NOT pass `fields: ['threatActor']` (that prefix doesn't match the actual record shape and the call returns empty rows silently). Omit `fields`, or pass top-level keys like `name`, `vulnerabilities`, `associatedGroups`.
 - `searchWeaknessData` — CWE root cause
 
 ### User environment
@@ -79,7 +79,7 @@ The user starts with a threat and wants to know if they're affected.
 | If the user said… | Do |
 |---|---|
 | `CVE-XXXX-YYYY` | Already a CVE — skip to A.2 |
-| A threat-actor name (e.g., "Lazarus") | `searchThreatActorData` with bare-path filter `name like 'Lazarus'`, `fields: ['threatActor']` → collect `mappedAttributes.cveIds` |
+| A threat-actor name (e.g., "Lazarus") | `searchThreatActorData` with bare-path filter `name like 'Lazarus'` (omit `fields` — actor records are flat) → collect the top-level `vulnerabilities` array (CVE IDs) |
 | A ransomware family (e.g., "LockBit") | **Use web search** — resolve the family to a CVE list via published threat-intel and confirm with the user|
 | A campaign / news event | Web search to resolve to CVE list, then confirm with the user before proceeding |
 
@@ -174,7 +174,7 @@ aggs: [{
 For each CVE (or batched):
 
 ```text
-searchThreatActorData  filter: ...mappedAttributes.cveIds = "CVE-X", fields: ["threatActor"]
+searchThreatActorData   filter: vulnerabilities like 'CVE-X'   # bare-path FQL on the actor record; do NOT pass fields:['threatActor']
 searchVulnerabilityData filter: vulnerabilityId = 'CVE-X'
 ```
 
@@ -216,7 +216,7 @@ vulnerabilityId = 'CVE-X'
 isCisaKEV = true
 ```
 
-- `searchThreatActorData` with no `filters` → an error. Always pass a filter + `fields: ['threatActor']`.
+- `searchThreatActorData` with no `filters` → an error. Always pass a filter (and OMIT `fields: ['threatActor']` — actor records are flat, so that prefix silently returns empty rows; see `correlation-patterns.md`).
 - THREATACTOR field namespace is bare (`name`, `description`, `vulnerabilityCount`, `originCountry`, `targetedCountries`, `targetedIndustries`, `associatedGroups`) — no `threatActor.` prefix.
 - `validateFilter` only checks FQL syntax — it does not verify field existence. Always cross-check paths against [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) based on the current mode of execution. Use `getApiFields` tool call as fallback.
 

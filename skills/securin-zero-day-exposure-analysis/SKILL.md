@@ -44,7 +44,7 @@ See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md).
 
 ### Core intelligence
 - `searchVulnerabilityData` — Core index; filter by `tags = 'Zero Day'` or name/alias
-- `searchThreatActorData` — threat actors behind the zero-day (pass `fields: ['threatActor']`)
+- `searchThreatActorData` — threat actors behind the zero-day. Do NOT pass `fields: ['threatActor']` (actor records are flat — that prefix returns empty silently). Omit `fields`, or pass top-level keys.
 
 ### Environment correlation
 - **Source mode** — `searchExposureData` for the row list and `aggregateExposureData` for bucket counts (two calls, same filter). `searchAssetData` for the asset pivot.
