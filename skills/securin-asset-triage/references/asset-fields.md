@@ -1,7 +1,7 @@
 # Asset Fields
 
 
-> **Prefix rule:** use `compositeAsset.*` in composite-FF accounts, `asset.*` otherwise. See [_shared/composite-vs-source.md](_shared/composite-vs-source.md). The prefix change is not always exactly the same so its MANDATORY for you to refer [Composite API Fields](_shared/composite-fields.md) while using `compositeAsset.*` prefix. The fields below are **source-mode** paths; cross-reference [_shared/source-fields.md](_shared/source-fields.md) for the authoritative list.
+> **Prefix rule:** use `compositeAsset.*` in composite-FF accounts, `asset.*` otherwise. See [_shared/composite-vs-source.md](_shared/composite-vs-source.md). The prefix swap is not always a straight rename — always cross-reference [Composite API Fields](_shared/composite-fields.md) when constructing a `compositeAsset.*` path. The fields below are **source-mode** paths; cross-reference [_shared/source-fields.md](_shared/source-fields.md) for the authoritative list.
 
 ## Identity
 
