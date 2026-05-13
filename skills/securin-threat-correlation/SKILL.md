@@ -33,7 +33,7 @@ This skill is the inverse of `securin-cve-enrichment`: enrichment produces a glo
 
 See [_shared/account-preflight.md](references/_shared/account-preflight.md). Correlation queries always touch the user's environment — you must resolve account-id(s) and validate access before any exposure/asset query. Also detect the composite-vs-source data model (see [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md)) to use the correct asset prefix. This should also give you context about when to use `*Query` tools and when to use `search*` and `aggregate*` tools. 
 
-Also before you use this SKILL, its MANDATORY for you to read through all the files inside [Referances folder](references/). This also includes all the files inside [Shared referances folder](references/_shared/). It is also COMPELSORY to try and use [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) instead of calling the `getApiFields` tool. ONLY use the tool as a fall back mechanism. 
+Before using this skill, read every file in the [references folder](references/), including the shared [references/_shared/](references/_shared/) docs. **Prefer the cached field catalogs** ([source-fields.md](references/_shared/source-fields.md) for source mode, [composite-fields.md](references/_shared/composite-fields.md) for composite mode) over calling `getApiFields` — only fall back to the live tool when an entity or field is missing from the cache.
 
 ## Suggested tools
 
@@ -238,3 +238,13 @@ isCisaKEV = true
 ## Visual output (CC-4)
 
 When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](references/_shared/brand.md). Offer customization after delivery; never default to a different brand.
+
+## References
+
+- [Correlation Patterns](references/correlation-patterns.md) — inbound/outbound recipes for the common ask shapes.
+- [Shared: Account Preflight](references/_shared/account-preflight.md)
+- [Shared: Composite vs Source](references/_shared/composite-vs-source.md)
+- [Shared: Deep Links](references/_shared/deep-links.md)
+- [Shared: FQL Grammar](references/_shared/fql-grammar.md)
+- [Shared: Sorting Rules](references/_shared/sorting-rules.md)
+- [Shared: Brand & Visual Communication](references/_shared/brand.md)

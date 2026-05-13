@@ -29,7 +29,7 @@ Ad-hoc asset search, filtering, and aggregation. Translate natural-language ques
 
 See [_shared/account-preflight.md](references/_shared/account-preflight.md). Resolve the account-id(s), validate access, and hold them for the rest of the turn. If the question implies a workspace subset ("prod", "EU BU"), also resolve workspace-ids via `getEffectiveAccessWorkspaces`.
 
-Also before you use this SKILL, its MANDATORY for you to read through all the files inside [Referances folder](references/). This also includes all the files inside [Shared referances folder](references/_shared/). It is also COMPELSORY to try and use [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) instead of calling the `getApiFields` tool. ONLY use the tool as a fall back mechanism. 
+Before using this skill, read every file in the [references folder](references/), including the shared [references/_shared/](references/_shared/) docs. **Prefer the cached field catalogs** ([source-fields.md](references/_shared/source-fields.md) for source mode, [composite-fields.md](references/_shared/composite-fields.md) for composite mode) over calling `getApiFields` — only fall back to the live tool when an entity or field is missing from the cache.
 
 ### Step 0.5 — Detect composite vs source data model (critical)
 
