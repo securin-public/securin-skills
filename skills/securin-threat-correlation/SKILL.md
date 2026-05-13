@@ -43,8 +43,9 @@ Also before you use this SKILL, its MANDATORY for you to read through all the fi
 - `searchWeaknessData` — CWE root cause
 
 ### User environment
-- `searchExposureData` / `aggregateExposureData` / `exposureQuery` — match CVEs to open exposures (run as two calls when you need both list and bucket counts)
-- `searchAssetData` / `searchCompositeAssetData` / `assetQuery` (+ matching `aggregate*AssetData`) — pivot exposures → affected assets
+- **Source mode** — `searchExposureData` + `aggregateExposureData` (two calls, same filter when both list and bucket counts are needed).
+- **Composite mode** — `exposureQuery` (combined search + aggregate, `compositeExposure.*` prefix).
+- Asset pivot: `searchAssetData` (source) or `assetQuery` (composite). For source bucket counts pair with `aggregateAssetData`.
 
 ### Scoping + access
 - `getEffectiveAccessWorkspaces`
@@ -107,9 +108,15 @@ In case of **composite mode** use `exposureQuery` in place of the above mentione
 Using `assetId`s from the exposures (or a separate join):
 
 ```text
-searchAssetData                          # or searchCompositeAssetData
+# Source mode
+searchAssetData
 filter: asset.assetId in (<asset-ids from A.2>)
 sort: "asset.scores.overallScore:desc"
+
+# Composite mode — single call returns list + buckets
+assetQuery
+filter: compositeAsset.id in (<ids>)
+sort: "compositeAsset.scores.overallScore:desc"
 ```
 
 ### A.4 Generate deep links (CC-2)

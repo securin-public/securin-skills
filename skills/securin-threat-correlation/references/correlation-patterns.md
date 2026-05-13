@@ -19,8 +19,9 @@ Reference templates for common threat-correlation questions. Each pattern assume
    aggs: [{ name: "by_severity", function: "TERMS", field: "exposure.scores.scoreLevel" }]
    → count + severity breakdown
 
-4. searchAssetData (or searchCompositeAssetData)
-   filters: asset.assetId in (<ids from step 2>)
+4. searchAssetData (source) OR assetQuery (composite)
+   filters: asset.assetId in (<ids from step 2>)            # source
+            compositeAsset.id in (<ids from step 2>)        # composite
    → asset context
 
 5. createDeepLink per affected asset + top-level filter link

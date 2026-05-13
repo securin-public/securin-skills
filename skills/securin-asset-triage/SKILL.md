@@ -132,15 +132,20 @@ Use `*Query` in case of composite mode.
 | `asset.status = 'active'` (single) | `searchAssetData` | `aggregateAssetData` |
 | `asset.reachability = 'Exposed' AND asset.criticality >= 4` (compound, numeric criticality) | `searchAssetData` | `searchAssetData` + `aggregateAssetData` (two calls, same filter) |
 
-Replace `searchAssetData` with `searchCompositeAssetData` and `aggregateAssetData` with `aggregateCompositeAssetData` if the account uses composite data.
+For composite accounts there's no separate `searchCompositeAssetData` / `aggregateCompositeAssetData` — use the single `assetQuery` tool with `compositeAsset.*` prefixes; it returns the row list and bucket counts in one call.
 
 ## Common recipes
 
 ### "Asset distribution by business unit / workspace"
 
 ```text
-aggregateAssetData | aggregateCompositeAssetData
-groupByField: "asset.workspaces.id"  (or composite equivalent — see composite-fields.md)
+# Source mode
+aggregateAssetData
+aggs: [{ name: "byWorkspace", function: { type: "TERMS", field: "asset.workspaces.name", size: 25 } }]
+
+# Composite mode
+assetQuery
+aggs: [{ name: "byWorkspace", function: { type: "TERMS", field: "compositeAsset.workspaces.name", size: 25 } }]
 ```
 
 Enrich workspace-ids → names via `getWorkspacesByAccountId`.

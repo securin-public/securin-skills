@@ -42,7 +42,7 @@ See [_shared/account-preflight.md](references/_shared/account-preflight.md). Req
 ### Read remediation content (primary)
 - `searchExposureData` — exposure records; **this is where most remediation content lives**, under `exposure.mappedAttributes.*` or scanner-specific fields
 - `searchVulnerabilityData` — CVE record with fixed-in version and vendor references (when available)
-- `searchAssetData` / `searchCompositeAssetData` — asset platform context (OS, version) so the fix advice is relevant
+- `searchAssetData` (source) or `assetQuery` (composite) — asset platform context (OS, version) so the fix advice is relevant
 - `searchComponentData` — installed component / package version (for package-manager style remediation)
 - `getApiFields(entityType=['EXPOSURE'], searchText='remediation')` — discover all remediation-bearing fields for this account
 - `getApiFields(entityType=['EXPOSURE'], searchText='solution')` — same for scanner-native `solution` fields
