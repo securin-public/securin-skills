@@ -32,7 +32,9 @@ An *exposure* is an instance (e.g., "CVE-2024-3400 on host web-01"). A *vulnerab
 
 See [_shared/account-preflight.md](references/_shared/account-preflight.md). Resolve account-id(s) and validate access before any query. If the question implies a workspace subset, resolve workspace-ids too.
 
-> Note: the exposure index is **not** affected by the composite-vs-source data model (that flag only affects assets). But cross-entity exposure filters that reference asset fields still need the correct asset prefix — see [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md).
+### Step 0.5 — Detect composite vs source data model
+
+Exposures are affected by the composite flag too — composite accounts have a separate composite-exposure index with `compositeExposure.*` field paths and use the `exposureQuery` tool (source accounts use `searchExposureData` + `aggregateExposureData`). See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md). Cache the flag for the turn — picking the wrong model returns empty results with no error.
 
 ## Suggested tools
 
