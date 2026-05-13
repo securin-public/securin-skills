@@ -76,7 +76,7 @@ filter: exposure.status = 'Open'
         AND vulnerabilities.tags = 'Zero Day'
 groupByField: exposure.scores.scoreLevel
 aggs: [{function: TERMS, field: exposure.scores.scoreLevel, name: 'bySeverity', size: 10}]
-sort: "exposures.scores.score:desc,exposure.remediationTarget.dueDate:asc"
+sort: "exposure.scores.score:desc,exposure.remediationTarget.dueDate:asc"
 limit: 100
 page: 1
 ```
@@ -89,7 +89,7 @@ Collect distinct CVE IDs from Step A.1 results. For each (or batched):
 
 ```text
 searchVulnerabilityData
-filter: vulnerabilityId in ['CVE-…','CVE-…']
+filter: vulnerabilityId in ('CVE-…','CVE-…')
 fields: ['vulnerability']
 sort: "riskIndex.index:desc"
 ```
@@ -99,8 +99,10 @@ Capture: KEV status, exploitation status, risk index, published date, affected p
 ### Step A.3 — Pivot to affected assets
 
 ```text
-searchAssetData   # or searchCompositeAssetData
-filter: asset.assetId in [<ids from A.1>]
+searchAssetData                         # source mode
+# Composite mode: use `assetQuery` with the same filter, with
+#                 `compositeAsset.assetId` / `compositeAsset.scores.overallScore`.
+filter: asset.assetId in (<ids from A.1>)
 sort: "asset.scores.overallScore:desc,asset.criticality:desc"
 fields: ['asset']
 limit: 50
@@ -159,17 +161,30 @@ If Core doesn't match (very new or informal name):
 
 ### Step B.2 — Correlate to environment
 
-```text
-hybridExposureData
-filter: exposure.mappedAttributes.vulnerabilityIds in [<cve list>]
-        AND exposure.status = 'Open'
-groupByField: asset.workspaceId
-aggs: [{function: TERMS, field: asset.workspaceId, name: 'byWorkspace', size: 20},
-       {function: COUNT, field: exposure.exposureId, name: 'totalExposures'}]
-limit: 100
-page: 1
-sort: "exposures.scores.score:desc"
+Source mode — run search + aggregate with the same filter:
+
+```json
+// 1) Itemized list
+{
+  "filters": "exposure.mappedAttributes.vulnerabilityIds in (<cve list>) AND exposure.status = 'Open'",
+  "sort": "exposure.scores.score:desc",
+  "limit": 100,
+  "page": 1
+}
+// → searchExposureData
+
+// 2) Workspace breakdown — same filter
+{
+  "filters": "exposure.mappedAttributes.vulnerabilityIds in (<cve list>) AND exposure.status = 'Open'",
+  "aggs": [
+    {"name": "byWorkspace",  "function": {"type": "TERMS", "field": "asset.workspaces.name", "size": 20}},
+    {"name": "totalExposures", "function": {"type": "COUNT", "field": "exposure.exposureId"}}
+  ]
+}
+// → aggregateExposureData
 ```
+
+Composite mode: run a single `exposureQuery` with `compositeExposure.*` / `compositeAsset.*` prefixes.
 
 ### Step B.3 — Enrich and report
 
@@ -206,7 +221,7 @@ tags = 'Zero Day'
 ```text
 exposure.status = 'Open'
 AND vulnerabilities.tags = 'Zero Day'
-AND vulnerabilities.exploitation.isCisaKev = true
+AND vulnerabilities.isCisaKEV = true
 ```
 
 ### Zero-day on exposed-to-internet prod assets (compound)
@@ -214,17 +229,17 @@ AND vulnerabilities.exploitation.isCisaKev = true
 exposure.status = 'Open'
 AND vulnerabilities.tags = 'Zero Day'
 AND asset.reachability = 'Exposed'                      # source-model
-AND asset.workspaceId in [<prod-ws-ids>]
+AND asset.workspaces.id in (<prod-ws-ids>)              # numeric LONGs — unquoted, parens not brackets
 ```
 
 Substitute `compositeAsset.*` in composite-data accounts — see [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md).
 
 ## Sorting
 
-Default: `exposures.scores.score:desc, exposure.remediationTarget.dueDate:asc` — worst first, SLA tiebreaker.
+Default: `exposure.scores.score:desc, exposure.remediationTarget.dueDate:asc` — worst first, SLA tiebreaker.
 
 Alternative for "worst externally-facing first":
-`asset.reachability:desc, exposures.scores.score:desc` (if the platform supports ordinal sort on reachability; confirm via `getSortFields=true` 🧪).
+`asset.reachability:desc, exposure.scores.score:desc` (if the platform supports ordinal sort on reachability; confirm via `getSortFields=true` 🧪).
 
 ## Scope guard (CC-3)
 

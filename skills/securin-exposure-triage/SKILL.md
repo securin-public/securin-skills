@@ -82,8 +82,8 @@ See [_shared/fql-grammar.md](references/_shared/fql-grammar.md). Exposure-specif
 ```text
 exposure.status = 'Open'
 exposure.scores.scoreLevel = 'Critical'
-"exposure.scores.overallScore" >= 7.0  # filter-only — NOT a valid sort key; sort uses exposures.scores.score:desc
-"exposure.firstSeenAt" >= "2026-01-01T00:00:00Z"
+"exposure.scores.score" >= 7.0   # numeric — sort uses the same path: exposure.scores.score:desc
+"exposure.firstDiscoveredOn" >= "2026-01-01T00:00:00Z"
 exposure.remediationTarget.status = 'Overdue'
 exposure.assignments.assignedTo.name = 'team:remediation'
 exposure.mappedAttributes.vulnerabilityIds = 'CVE-2024-3400'
@@ -184,7 +184,7 @@ searchExposureData
 filter: exposure.status = 'Open'
         AND exposure.scores.scoreLevel = 'Critical'
         AND exposure.remediationTarget.status = 'Overdue'
-sort: "exposures.scores.score:desc"
+sort: "exposure.scores.score:desc"
 ```
 
 ### "Break down exposures by severity and workspace"

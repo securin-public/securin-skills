@@ -77,7 +77,7 @@ Fetch the exposure(s) with `searchExposureData`. Always include at minimum:
   "exposure.exposureId",
   "exposure.title",
   "exposure.scores.scoreLevel",
-  "exposure.scores.overallScore",
+  "exposure.scores.score",
   "exposure.mappedAttributes.vulnerabilityIds",
   "exposure.mappedAttributes.vendorRemediation",
   "exposure.remediationTarget.status",
@@ -155,7 +155,7 @@ Organize findings into this structure. Fields you couldn't populate (because the
 ## Remediation Plan — <CVE or exposure id>
 
 **Subject:** <CVE> on <asset hostname>
-**Severity:** <Critical/High/Medium/Low/Info> (KEV: yes/no, overallScore: <>)
+**Severity:** <Critical/High/Medium/Low/Info> (KEV: yes/no, score: <exposure.scores.score>)
 **Remediation status:** <On Track / Overdue / Met / Missed> (due <date>, priority <P1/P2/…>)
 **Asset:** <hostname> — <OS + version>, criticality <numeric 1–5>, reachability <Exposed / NotExposed>
 

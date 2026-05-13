@@ -108,7 +108,7 @@ Using `assetId`s from the exposures (or a separate join):
 
 ```text
 searchAssetData                          # or searchCompositeAssetData
-filter: asset.assetId in [<asset-ids from A.2>]
+filter: asset.assetId in (<asset-ids from A.2>)
 sort: "asset.scores.overallScore:desc"
 ```
 
@@ -189,7 +189,7 @@ See [_shared/fql-grammar.md](references/_shared/fql-grammar.md) for full grammar
 
 ```text
 # Exposures matching a CVE set
-"exposure.mappedAttributes.vulnerabilityIds" in ['CVE-X','CVE-Y','CVE-Z']
+"exposure.mappedAttributes.vulnerabilityIds" in ('CVE-X','CVE-Y','CVE-Z')
 
 # Exposures on exposed-to-internet assets (source-model)
 asset.reachability = 'Exposed'
@@ -197,11 +197,11 @@ asset.reachability = 'Exposed'
 compositeAsset.reachability = 'Exposed'
 
 # Exposures tied to CISA KEV CVEs (cross-entity to vuln index from exposures)
-vulnerabilities.isCisaKev = true
+vulnerabilities.isCisaKEV = true
 
 # In searchVulnerabilityData — bare path, no "vulnerabilities." prefix
 vulnerabilityId = 'CVE-X'
-isCisaKev = true
+isCisaKEV = true
 ```
 
 - `searchThreatActorData` with no `filters` → an error. Always pass a filter + `fields: ['threatActor']`.
