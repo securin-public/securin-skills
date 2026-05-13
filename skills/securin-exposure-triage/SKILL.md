@@ -212,7 +212,7 @@ Run `aggregateExposureData` once per dimension (two calls):
 - "Am I affected by threat X" → hand off to `securin-threat-correlation`.
 - "How do I fix this exposure" → hand off to `securin-remediation-guidance`.
 - Pure asset questions → hand off to `securin-asset-triage`.
-- Unknown tool needed → `securin-tool-search`.
+- Unknown tool needed → fall back to the platform's built-in `Securin__search_tools` meta-tool to look up the right MCP tool by description.
 
 ## Edge cases
 

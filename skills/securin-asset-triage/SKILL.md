@@ -201,7 +201,7 @@ aggs: [{
 
 - If the user asks about threat actors, ransomware, or CVE-level intel → hand off to `securin-cve-enrichment` or `securin-threat-correlation`.
 - If the user asks about specific exposure records (as opposed to assets with exposures) → hand off to `securin-exposure-triage`.
-- If no skill fits and the user needs a capability we don't cover → hand off to `securin-tool-search`.
+- If no skill fits and the user needs a capability we don't cover → fall back to the platform's built-in `Securin__search_tools` meta-tool to find the right MCP tool by description.
 
 ## Edge cases
 

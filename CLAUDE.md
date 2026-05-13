@@ -47,7 +47,7 @@ The agent loads `SKILL.md` first, then follows links into `references/` only whe
 ## Editing skills — gotchas
 
 - **Frontmatter `description` is the trigger surface.** The host agent decides whether to load a skill based on this field. Edit it like a search query: include the user phrasings ("enrich this CVE", "am I affected by…") that should activate it, and the negative pointers to sibling skills.
-- **Tool names are tied to the upstream OpenAPI spec** served by the MCP server (`mcp.securin.io/mcp`). Don't invent tool names — the canonical list is whatever the MCP exposes at runtime. `securin-tool-search` is the fallback discovery skill when an ask doesn't match the other seven.
+- **Tool names are tied to the upstream OpenAPI spec** served by the MCP server (`mcp.securin.io/mcp`). Don't invent tool names — the canonical list is whatever the MCP exposes at runtime. When no shipped skill matches the ask, fall back to the built-in `Securin__search_tools` meta-tool to look up a tool by description.
 - **FQL string literals must use single quotes** (`exposure.status = 'Open'`). Double quotes will silently fail. See `_shared/fql-grammar.md`.
 - **Sort path for exposures is `exposures.scores.score` (plural).** The singular `exposure.scores.overallScore` is filter-only. Mixing them up is the most common skill bug.
 

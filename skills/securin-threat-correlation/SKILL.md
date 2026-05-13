@@ -226,7 +226,7 @@ isCisaKEV = true
 - Raw exposure triage (no external threat angle) → `securin-exposure-triage`.
 - Asset inventory only → `securin-asset-triage`.
 - Remediation planning → `securin-remediation-guidance`.
-- Unknown capability → `securin-tool-search`.
+- Unknown capability → fall back to the platform's built-in `Securin__search_tools` meta-tool to look up the right MCP tool by description.
 
 ## Edge cases
 

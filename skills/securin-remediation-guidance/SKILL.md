@@ -218,7 +218,7 @@ See [references/patch-lookup-patterns.md](references/patch-lookup-patterns.md) f
 - Prioritization across many exposures → `securin-exposure-triage`.
 - "Am I affected by threat X" → `securin-threat-correlation`.
 - Zero-day-specific analysis → `securin-zero-day-exposure-analysis`.
-- Unknown platform capability → `securin-tool-search`.
+- Unknown platform capability → fall back to the platform's built-in `Securin__search_tools` meta-tool to look up the right MCP tool by description.
 
 ## Visual output (CC-4)
 
