@@ -6,7 +6,7 @@
 <h3 align="center">Securin Platform — Skills & MCP Server</h3>
 
 <p align="center">
-  Bring your Securin data into your AI tools. 6 ready-made workflows + 300+ MCP tools<br>
+  Bring your Securin data into your AI tools. 6 ready-made workflows + 50+ MCP tools<br>
   for vulnerability triage, exposure analysis, threat correlation, and remediation.
 </p>
 
@@ -39,7 +39,7 @@
 
 When no skill matches the ask, fall back to the built-in `Securin__search_tools` MCP meta-tool to look up the right tool by description.
 
-**300+ MCP tools** — direct API access for everything else. All tools are prefixed with `Securin__` (e.g. `Securin__searchVulnerabilityData`). Two meta-tools are unprefixed: `ping` (health check) and `search_tools` (find a tool by description).
+**50+ MCP tools** — direct API access for everything else. All tools are prefixed with `Securin__` (e.g. `Securin__searchVulnerabilityData`). Two meta-tools are unprefixed: `ping` (health check) and `search_tools` (find a tool by description).
 
 ---
 
