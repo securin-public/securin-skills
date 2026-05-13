@@ -16,7 +16,8 @@ Reference templates for common threat-correlation questions. Each pattern assume
 
 3. aggregateExposureData
    filters: <same as step 2>
-   aggs: [{ name: "by_severity", function: "TERMS", field: "exposure.scores.scoreLevel" }]
+   aggs: [{ name: "by_severity",
+            function: { type: "TERMS", field: "exposure.scores.scoreLevel", size: 10 } }]
    → count + severity breakdown
 
 4. searchAssetData (source) OR assetQuery (composite)
@@ -37,7 +38,8 @@ Reference templates for common threat-correlation questions. Each pattern assume
 2. searchExposureData + aggregateExposureData (two calls, same filter)
    filters: exposure.mappedAttributes.vulnerabilityIds in (<cve-list>)
             AND exposure.status = 'Open'
-   aggregate aggs: [{ name: "by_severity", function: "TERMS", field: "exposure.scores.scoreLevel" }]
+   aggregate aggs: [{ name: "by_severity",
+                      function: { type: "TERMS", field: "exposure.scores.scoreLevel", size: 10 } }]
 
 3-5. As Pattern 1 steps 3-5
 ```
@@ -74,7 +76,8 @@ filters: exposure.status = 'Open'
 # 2) Bucket counts (same filter)
 aggregateExposureData
 filters: <same as above>
-aggs: [{ name: "by_severity", function: "TERMS", field: "exposure.scores.scoreLevel" }]
+aggs: [{ name: "by_severity",
+         function: { type: "TERMS", field: "exposure.scores.scoreLevel", size: 10 } }]
 ```
 
 ## Pattern 5 — "What hunts my environment" (outbound)
@@ -82,8 +85,10 @@ aggs: [{ name: "by_severity", function: "TERMS", field: "exposure.scores.scoreLe
 ```text
 1. aggregateExposureData
    filters: exposure.status = 'Open' AND <scope>
-   aggs: [{ name: "by_cve", function: "TERMS",
-            field: "exposure.mappedAttributes.vulnerabilityIds" }]
+   aggs: [{ name: "by_cve",
+            function: { type: "TERMS",
+                        field: "exposure.mappedAttributes.vulnerabilityIds",
+                        size: 200 } }]
    → list of CVEs with exposure counts in your env
 
 2. For top N CVEs by exposure count, in parallel:

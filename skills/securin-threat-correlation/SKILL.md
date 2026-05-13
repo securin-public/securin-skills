@@ -97,8 +97,10 @@ filter: exposure.mappedAttributes.vulnerabilityIds in (<cve-list>)
 # 2) Severity bucket counts (same filter)
 aggregateExposureData
 filter: <same as above>
-groupByField: "exposure.scores.scoreLevel"
-aggs: [{type: "count"}]
+aggs: [{
+  name: "bySeverity",
+  function: { type: "TERMS", field: "exposure.scores.scoreLevel", size: 10 }
+}]
 ```
 
 In case of **composite mode** use `exposureQuery` in place of the above mentioned tools for search and aggregate. 
@@ -159,9 +161,12 @@ The user starts with an asset or exposure and wants to know what threats target 
 ### B.1 Collect CVEs in the user's scope
 
 ```text
-aggregateExposureData                   
-groupByField: "exposure.mappedAttributes.vulnerabilityIds"
+aggregateExposureData
 filter: exposure.status = 'Open' AND "<scope>"
+aggs: [{
+  name: "byCve",
+  function: { type: "TERMS", field: "exposure.mappedAttributes.vulnerabilityIds", size: 200 }
+}]
 ```
 
 ### B.2 Enrich each CVE with threat signals

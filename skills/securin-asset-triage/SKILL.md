@@ -169,11 +169,13 @@ filters: asset.assetId in ('<id1>','<id2>',...)
          AND asset.workspaces.id in (<prod-ws-id-1>, <prod-ws-id-2>)
 
 # 3) Bucket counts on the same asset filter (e.g., by asset type).
-#    aggs entries require {name, function, field}. `function` (not `type`) is
-#    the operation key — TERMS for bucketing, COUNT/SUM/MIN/MAX/AVG for metrics.
+#    aggs entries are {name, function: {type, field, size?}}.
+#    `function` is an object with a `type` discriminator (TERMS for
+#    bucketing, COUNT/SUM/MIN/MAX/AVG for metrics, DATE_HISTOGRAM for
+#    time series). String-form `function: "TERMS"` is rejected.
 aggregateAssetData
 filters: <same as step 2>
-aggs: [{ name: "by_type", function: "TERMS", field: "asset.assetType" }]
+aggs: [{ name: "by_type", function: { type: "TERMS", field: "asset.assetType", size: 25 } }]
 ```
 
 ### "Assets discovered in last 30 days"
@@ -188,7 +190,11 @@ sort: "asset.firstDiscoveredOn:desc"
 
 ```text
 aggregateAssetData
-groupByField: "asset.mappedAttributes.isCredentialed"   # or asset.isCredentialedAsset; confirm via getApiFields
+aggs: [{
+  name: "byCredentialed",
+  function: { type: "TERMS", field: "asset.mappedAttributes.isCredentialed", size: 2 }
+}]
+# or asset.isCredentialedAsset — confirm the active field via getApiFields
 ```
 
 ## Scope guard (CC-3)
