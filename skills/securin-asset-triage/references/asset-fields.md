@@ -29,7 +29,7 @@
 |---|---|---|
 | `asset.integration.productName` | string | Scanner/integration that detected the asset (per `getTopValues` schema example) |
 | `asset.lastIngestedOn` | date | Freshest record first on `desc` |
-| `asset.status` | enum | Known: `active` (lowercase, unquoted in schema example) |
+| `asset.status` | enum string | **`'Active'`, `'Inactive'`** (titlecase, single-quoted in FQL — see `_shared/fql-grammar.md` "Known Enum Values"). |
 
 ## Exposure rollups (cross-entity fields on asset record)
 
