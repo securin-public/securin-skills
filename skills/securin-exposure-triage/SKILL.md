@@ -115,41 +115,40 @@ compositeAsset.reachability = 'Exposed'
 
 #### `aggregateExposureData` — correct request shape
 
-`function` is a **string**, `field` is the key (not `apiPath`), and a `subAggs` COUNT is required:
+`function` is an **object** with a `type` discriminator. Type-specific parameters (`field`, `size`, etc.) go inside the function object:
 
 ```json
 {
   "filters": "exposure.status = 'Open'",
   "aggs": [{
     "name": "bySeverity",
-    "function": "TERMS",
-    "field": "exposure.scores.scoreLevel",
-    "size": 10,
-    "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]
+    "function": {"type": "TERMS", "field": "exposure.scores.scoreLevel", "size": 10}
   }]
 }
 ```
 
 Common mistakes that cause 400/500:
-- ❌ `"function": {"type": "TERMS", "field": "..."}` — function must be a string, not an object
+- ❌ `"function": "TERMS"` — function must be an object, not a string
 - ❌ `"apiPath": "..."` — key must be `"field"`, not `"apiPath"`
 - ❌ `"field": "exposure.workspaceId"` — returns 500; use `"asset.workspaces.name"` for workspace grouping
 
 #### `aggregateExposureData` with `DATE_HISTOGRAM` — time series shape
 
-Different structure from TERMS: nested aggs use `"aggs"` (not `"subAggs"`), and `interval` must be **Title Case**. `isFixedInterval`, `extendedBounds`, and `hardBounds` are required:
+Different structure from TERMS: nested aggs use `"aggs"`, and `interval` must be **Title Case**. `isFixedInterval`, `extendedBounds`, and `hardBounds` are required:
 
 ```json
 {
   "aggs": [{
-    "function": "DATE_HISTOGRAM",
     "name": "openedByMonth",
-    "field": "exposure.firstDiscoveredOn",
-    "interval": "Month",
-    "isFixedInterval": false,
-    "extendedBounds": {"min": "2025-11-01T00:00:00Z", "max": "now"},
-    "hardBounds": {"min": "2025-11-01T00:00:00Z"},
-    "aggs": [{"function": "COUNT", "name": "count", "field": "exposure.exposureId"}]
+    "function": {
+      "type": "DATE_HISTOGRAM",
+      "field": "exposure.firstDiscoveredOn",
+      "interval": "Month",
+      "isFixedInterval": false,
+      "extendedBounds": {"min": "2025-11-01T00:00:00Z", "max": "now"},
+      "hardBounds": {"min": "2025-11-01T00:00:00Z"}
+    },
+    "aggs": [{"name": "count", "function": {"type": "COUNT", "field": "exposure.exposureId"}}]
   }]
 }
 ```
@@ -195,15 +194,13 @@ Run `aggregateExposureData` once per dimension (two calls):
 // Call 1 — by severity
 {
   "filters": "exposure.status = 'Open'",
-  "aggs": [{"name": "bySeverity", "function": "TERMS", "field": "exposure.scores.scoreLevel", "size": 10,
-            "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]}]
+  "aggs": [{"name": "bySeverity", "function": {"type": "TERMS", "field": "exposure.scores.scoreLevel", "size": 10}}]
 }
 
 // Call 2 — by workspace (use asset.workspaces.name — exposure.workspaceId returns 500)
 {
   "filters": "exposure.status = 'Open'",
-  "aggs": [{"name": "byWorkspace", "function": "TERMS", "field": "asset.workspaces.name", "size": 25,
-            "subAggs": [{"name": "count", "function": "COUNT", "field": "exposure.exposureId"}]}]
+  "aggs": [{"name": "byWorkspace", "function": {"type": "TERMS", "field": "asset.workspaces.name", "size": 25}}]
 }
 ```
 
