@@ -53,8 +53,7 @@ Before using this skill, read every file in the [references folder](references/)
 - `getApiFields` — field discovery
 
 ### Deep links (CC-2)
-- `createDeepLink` (preferred)
-- `aggregateByDeepLink`
+- `createDeepLink` (preferred) — call once per list/aggregation, plus once per bucket if you need per-bucket links
 - `getDeepLink`
 
 ### Outside

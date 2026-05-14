@@ -56,8 +56,7 @@ Exposures and assets are both affected by the composite flag — composite accou
 - `getTopValues(field='vulnerabilities.tags', entityType='VULNERABILITY')` — see what tags exist in this account's Core index
 
 ### Deep links (CC-2)
-- `createDeepLink` (preferred) — mint a `shortCode` for every list / aggregation in the response.
-- `aggregateByDeepLink` — aggregation + per-bucket URLs in one call.
+- `createDeepLink` (preferred) — mint a `shortCode` for every list / aggregation in the response (one call per bucket if you need per-bucket links).
 - `getDeepLink(<id>)` — URL for a known asset / exposure id.
 - See [_shared/deep-links.md](references/_shared/deep-links.md).
 

@@ -52,8 +52,7 @@ Exposures are affected by the composite flag too — composite accounts have a s
 - `getEffectiveAccessWorkspaces` — workspace scoping
 
 ### Deep links (CC-2)
-- `createDeepLink` (preferred)
-- `aggregateByDeepLink` — aggregation + per-bucket URLs
+- `createDeepLink` (preferred) — call once per list/aggregation, plus once per bucket if you need per-bucket links
 - `getDeepLink` — URL for a known exposure-id
 
 See [_shared/deep-links.md](references/_shared/deep-links.md).
@@ -67,7 +66,7 @@ See [_shared/deep-links.md](references/_shared/deep-links.md).
 | Flat list | "List open critical exposures" | `searchExposureData` |
 | Single-field bucket | "Exposures by severity" | `aggregateExposureData` |
 | Time series | "Exposures created per week over 6 months" | `aggregateVulnerabilityTimelineData` or `aggregateExposureData` DATE_HISTOGRAM |
-| Aggregation with per-bucket deep links | "Bucket counts, clickable" | `aggregateByDeepLink` |
+| Aggregation with per-bucket deep links | "Bucket counts, clickable" | `aggregateExposureData` + one `createDeepLink` per bucket |
 
 ### Step 2 — Discover fields if uncertain
 
@@ -113,7 +112,7 @@ compositeAsset.reachability = 'Exposed'
 ### Step 4 — Pick and call the right tool
 
 - For time series: try `aggregateVulnerabilityTimelineData` / `searchVulnerabilityTimelineData` first. If those return 404, fall back to `aggregateExposureData` with `DATE_HISTOGRAM`.
-- For per-bucket deep links, prefer `aggregateByDeepLink`.
+- For per-bucket deep links, run `aggregateExposureData` to get the buckets, then call `createDeepLink` once per bucket with the bucket's filter narrowed by the bucket value.
 
 #### `aggregateExposureData` — correct request shape
 

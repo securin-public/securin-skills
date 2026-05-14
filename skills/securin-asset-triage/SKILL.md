@@ -62,8 +62,7 @@ Cache the flag for the turn. **Picking the wrong model returns empty results wit
 - `validateFilter` — FQL syntax validation
 
 ### Deep links (CC-2)
-- `createDeepLink` (preferred) — build a URL from entity type + filter
-- `aggregateByDeepLink` — one-shot aggregation with per-bucket URLs
+- `createDeepLink` (preferred) — build a URL from entity type + filter (call once per list/aggregation, plus once per bucket if you need per-bucket links)
 - `getDeepLink` — URL for a known assetId
 
 See [_shared/deep-links.md](references/_shared/deep-links.md).
@@ -110,7 +109,7 @@ Use `*Query` in case of composite mode.
 ### Step 5 — Deep link every result (CC-2)
 
 - For each list: one `createDeepLink` for the filtered Assets view.
-- For aggregations: one link per bucket. Prefer `aggregateByDeepLink` which returns these inline.
+- For aggregations: one `createDeepLink` per bucket, with the bucket's value narrowed into the filter (e.g. add `AND <field> = '<bucket-value>'`).
 - For a single asset drill-down: `getDeepLink(assetId)`.
 
 ### Step 6 — Emit response
