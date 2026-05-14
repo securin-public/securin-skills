@@ -40,7 +40,7 @@ See [_shared/account-preflight.md](references/_shared/account-preflight.md). Req
 - `getEffectiveAccess` / `getEffectiveAccessWorkspaces` — per-resource access when needed
 
 ### Read remediation content (primary)
-- `searchExposureData` — exposure records; **this is where most remediation content lives**, under `exposure.mappedAttributes.*` or scanner-specific fields
+- `searchExposureData` (source) or `exposureQuery` (composite) — exposure records; **this is where most remediation content lives**, under `exposure.mappedAttributes.*` / `compositeExposure.sources.mappedAttributes.*` or scanner-specific fields
 - `searchVulnerabilityData` — CVE record with fixed-in version and vendor references (when available)
 - `searchAssetData` (source) or `assetQuery` (composite) — asset platform context (OS, version) so the fix advice is relevant
 - `searchComponentData` — installed component / package version (for package-manager style remediation)
