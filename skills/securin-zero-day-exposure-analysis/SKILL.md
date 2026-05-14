@@ -75,7 +75,7 @@ Source mode — run two calls with the same filter:
 // 1) Row list
 {
   "filters": "exposure.status = 'Open' AND vulnerabilities.tags = 'Zero Day'",
-  "sort": "exposure.scores.score:desc,exposure.remediationTarget.dueDate:asc",
+  "sort": "exposure.scores.score:desc,exposure.firstIngestedOn:desc",
   "limit": 100,
   "page": 1
 }
@@ -180,7 +180,7 @@ Source mode — run search + aggregate with the same filter:
 // 1) Itemized list
 {
   "filters": "exposure.mappedAttributes.vulnerabilityIds in (<cve list>) AND exposure.status = 'Open'",
-  "sort": "exposure.scores.score:desc",
+  "sort": "exposure.scores.score:desc,exposure.firstIngestedOn:desc",
   "limit": 100,
   "page": 1
 }
@@ -249,7 +249,7 @@ Substitute `compositeAsset.*` in composite-data accounts — see [_shared/compos
 
 ## Sorting
 
-Default: `exposure.scores.score:desc, exposure.remediationTarget.dueDate:asc` — worst first, SLA tiebreaker.
+Default: `exposure.scores.score:desc, exposure.firstIngestedOn:desc` — worst first, newest detection as tiebreaker (matches canonical zero-day rule in `_shared/sorting-rules.md`).
 
 Alternative for "worst externally-facing first":
 `asset.reachability:desc, exposure.scores.score:desc` (if the platform supports ordinal sort on reachability; confirm via `getSortFields=true` 🧪).

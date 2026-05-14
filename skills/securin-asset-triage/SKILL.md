@@ -33,7 +33,7 @@ Before using this skill, read every file in the [references folder](references/)
 
 ### Step 0.5 — Detect composite vs source data model (critical)
 
-See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md). Call `getAccountSettings` and determine whether `compositeDataEnabled` is on. This determines:
+See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md). Call `getAccountSettings(account-id, settings: ["COMPOSITE_ASSET_LIST_VIEW"])` — `"true"` means composite, anything else means source. This determines:
 
 - Tool to call: `assetQuery` (composite) or `searchAssetData` (source).
 - Field prefix: `compositeAsset.*` vs `asset.*`.
