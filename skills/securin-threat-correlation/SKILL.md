@@ -4,7 +4,7 @@ description: >
   Use this skill when the user asks "am I affected by this CVE", "does this
   threat affect my environment", "check if we're vulnerable to [ransomware /
   threat actor]", "correlate threats with my exposures", "what threats target
-  my vulnerabilities", "show me the intersection of <threat> and my environment",
+  my vulnerabilities", "show me the intersection of [threat] and my environment",
   or any question that bridges external threat intelligence with the user's
   specific assets and exposures. For pure CVE intelligence without environment
   matching use securin-cve-enrichment. Requires the Securin Platform MCP server.
