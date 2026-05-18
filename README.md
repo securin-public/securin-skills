@@ -78,6 +78,21 @@ Save, then **fully quit and relaunch** Claude Desktop. Requires Node.js 18+.
 </details>
 <!-- prettier-ignore-end -->
 
+**Claude Teams & Enterprise — add via UI**
+
+Organization owners can add the connector directly from [claude.ai](https://claude.ai) — no file editing or restart needed:
+
+1. Go to **Organization Settings → Connectors → Add → Custom → Web**
+2. Enter name: `Securin Platform`
+3. Enter URL: `https://mcp.securin.io/mcp`
+4. Click **Add**
+
+Team members then go to **Customize → Connectors**, find **Securin Platform**, and click **Connect** — the browser redirects to Securin for sign-in automatically.
+
+> Skills are not loaded on claude.ai. For full skills + MCP, use Claude Code.
+
+See the [Claude docs on custom connectors](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) for more detail.
+
 ---
 
 <!-- prettier-ignore -->
