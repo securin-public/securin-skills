@@ -33,6 +33,8 @@ Zero-days often lack a vendor patch at discovery time, so remediation emphasis s
 
 See [_shared/account-preflight.md](references/_shared/account-preflight.md). Required — exposure matches are scoped to the resolved account-id.
 
+Before using this skill, read every file in the [references folder](references/), including the shared [references/_shared/](references/_shared/) docs.
+
 ### Step 0.5 — Detect composite vs source data model
 
 Exposures and assets are both affected by the composite flag — composite accounts have a separate composite-exposure / composite-asset index with `compositeExposure.*` / `compositeAsset.*` field paths and use the `exposureQuery` / `assetQuery` tools (source accounts use `searchExposureData` + `aggregateExposureData` and `searchAssetData`). See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md). Cache the flag for the turn — picking the wrong model returns empty results with no error.

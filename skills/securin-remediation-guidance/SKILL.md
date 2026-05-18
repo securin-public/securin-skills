@@ -33,6 +33,8 @@ Produce an **actionable fix plan** for a specific exposure or CVE — drawn prim
 
 See [_shared/account-preflight.md](references/_shared/account-preflight.md). Required — remediation plans read the user's exposure records.
 
+Before using this skill, read every file in the [references folder](references/), including the shared [references/_shared/](references/_shared/) docs.
+
 ## Suggested tools
 
 ### Pre-flight (CC-1, see shared doc)
