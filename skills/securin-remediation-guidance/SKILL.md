@@ -33,6 +33,8 @@ Produce an **actionable fix plan** for a specific exposure or CVE — drawn prim
 
 See [_shared/account-preflight.md](references/_shared/account-preflight.md). Required — remediation plans read the user's exposure records.
 
+Before using this skill, read every file in the [references folder](references/), including the shared [references/_shared/](references/_shared/) docs.
+
 ## Suggested tools
 
 ### Pre-flight (CC-1, see shared doc)
@@ -40,9 +42,9 @@ See [_shared/account-preflight.md](references/_shared/account-preflight.md). Req
 - `getEffectiveAccess` / `getEffectiveAccessWorkspaces` — per-resource access when needed
 
 ### Read remediation content (primary)
-- `searchExposureData` — exposure records; **this is where most remediation content lives**, under `exposure.mappedAttributes.*` or scanner-specific fields
+- `searchExposureData` (source) or `exposureQuery` (composite) — exposure records; **this is where most remediation content lives**, under `exposure.mappedAttributes.*` / `compositeExposure.sources.mappedAttributes.*` or scanner-specific fields
 - `searchVulnerabilityData` — CVE record with fixed-in version and vendor references (when available)
-- `searchAssetData` / `searchCompositeAssetData` — asset platform context (OS, version) so the fix advice is relevant
+- `searchAssetData` (source) or `assetQuery` (composite) — asset platform context (OS, version) so the fix advice is relevant
 - `searchComponentData` — installed component / package version (for package-manager style remediation)
 - `getApiFields(entityType=['EXPOSURE'], searchText='remediation')` — discover all remediation-bearing fields for this account
 - `getApiFields(entityType=['EXPOSURE'], searchText='solution')` — same for scanner-native `solution` fields
@@ -52,10 +54,9 @@ See [_shared/account-preflight.md](references/_shared/account-preflight.md). Req
 - `getConfiguredIntegrations` — **call early**. Returns every configured scanner + ticketing integration with `id`, `name`, `vendorName`, `type` (`SCANNER` / `TICKETING`), and **`prefix`** (e.g. `WIZ`, `Q-VMDR`, `NESSUS`, `SNYK`, `SERVICE_NOW_INCIDENT`). **Two uses:**
   1. **Find scanner-specific remediation fields.** The `prefix` maps to an integration-specific field group — pass it as `fetchGroups` to `getApiFields(entityType=['EXPOSURE'])` to retrieve that integration's remediation/solution/advisory fields (e.g., Qualys `solution`, Tenable `solution`, Rapid7 `solution`). Scanner-native fields often have richer vendor advisory text than the generic `exposure.mappedAttributes.vendorRemediation`.
   2. **Detect ticketing handoff options.** Filter `type = 'TICKETING'` to find Jira / ServiceNow / ServiceNow_Incident integrations for draft ticket output.
-- `getSupportedActions` — what remediation actions are available through the platform (read-only surfacing in M1)
 
 ### Deep links (CC-2)
-- See [_shared/deep-links.md](references/_shared/deep-links.md). Default: render a platform URL with the FQL filter you used. Only call `createDeepLink` if the user explicitly asks to save/share.
+- See [_shared/deep-links.md](references/_shared/deep-links.md). Call `createDeepLink` for every list or table of exposure / asset records you surface. Skip only for single-record drilldowns and purely conceptual responses (no customer data list). Do not fabricate or omit links for list responses.
 
 ### Opt-in enrichment (after user confirms)
 - **Web search** — vendor advisory, KB article, community workarounds. Do not run by default.
@@ -77,7 +78,7 @@ Fetch the exposure(s) with `searchExposureData`. Always include at minimum:
   "exposure.exposureId",
   "exposure.title",
   "exposure.scores.scoreLevel",
-  "exposure.scores.overallScore",
+  "exposure.scores.score",
   "exposure.mappedAttributes.vulnerabilityIds",
   "exposure.mappedAttributes.vendorRemediation",
   "exposure.remediationTarget.status",
@@ -155,7 +156,7 @@ Organize findings into this structure. Fields you couldn't populate (because the
 ## Remediation Plan — <CVE or exposure id>
 
 **Subject:** <CVE> on <asset hostname>
-**Severity:** <Critical/High/Medium/Low/Info> (KEV: yes/no, overallScore: <>)
+**Severity:** <Critical/High/Medium/Low/Info> (KEV: yes/no, score: <exposure.scores.score>)
 **Remediation status:** <On Track / Overdue / Met / Missed> (due <date>, priority <P1/P2/…>)
 **Asset:** <hostname> — <OS + version>, criticality <numeric 1–5>, reachability <Exposed / NotExposed>
 
@@ -218,7 +219,7 @@ See [references/patch-lookup-patterns.md](references/patch-lookup-patterns.md) f
 - Prioritization across many exposures → `securin-exposure-triage`.
 - "Am I affected by threat X" → `securin-threat-correlation`.
 - Zero-day-specific analysis → `securin-zero-day-exposure-analysis`.
-- Unknown platform capability → `securin-tool-search`.
+- Unknown platform capability → fall back to the platform's built-in `Securin__search_tools` meta-tool to look up the right MCP tool by description.
 
 ## Visual output (CC-4)
 

@@ -14,10 +14,10 @@
 | Field | Type | Real values |
 |---|---|---|
 | `exposure.scores.scoreLevel` | enum string | **`Critical`, `High`, `Medium`, `Low`, `Info`** |
-| `exposure.scores.overallScore` | number | Higher = worse |
-| `exposure.scores.remediationScore` | number | |
-
-> ❌ `exposure.severity` and `exposure.severityScore` are NOT valid paths. Use `exposure.scores.scoreLevel` and `exposure.scores.overallScore`.
+| `exposure.scores.score` | DOUBLE | Higher = worse. Same path for filter **and** sort. |
+| `exposure.scores.remediationScore` | DOUBLE | |
+| `exposure.severity` | ENUM | Legacy free-form severity string. Prefer `exposure.scores.scoreLevel` for filtering. |
+| `exposure.severityScore` | INTEGER | Legacy numeric severity. Prefer `exposure.scores.score`. |
 
 ## Status
 
@@ -65,7 +65,9 @@ These are powerful for dashboards — call `aggregateExposureData` with a TERMS/
 
 | Field | Type | Notes |
 |---|---|---|
-| `exposure.firstSeenAt` / `exposure.lastSeenAt` | date | Confirm paths per account via `getApiFields`. |
+| `exposure.firstDiscoveredOn` / `exposure.lastDiscoveredOn` | DATE | When the scanner first / last saw the finding on the asset. |
+| `exposure.firstIngestedOn` / `exposure.lastIngestedOn` | DATE | When the platform first / last received the finding. Prefer for "new exposures in the last N days". |
+| `exposure.lastResolvedOn` / `exposure.lastResurfacedOn` | DATE | State-change timestamps. |
 
 ## Cross-entity joins (from `searchExposureData` / aggregate)
 
@@ -76,7 +78,8 @@ These are powerful for dashboards — call `aggregateExposureData` with a TERMS/
 | `vulnerabilities.isCisaKEV` | VULNERABILITY | `vulnerabilities.isCisaKEV = true` |
 | `asset.criticality` / `compositeAsset.criticality` | ASSET | integer (1–5 scale) |
 | `asset.reachability` / `compositeAsset.reachability` | ASSET | `'Exposed'` / `'NotExposed'` |
-| `asset.workspaceId` / `compositeAsset.workspaceId` | ASSET | `in (...)` |
+| `asset.workspaces.id` / `compositeAsset.workspaces.id` | ASSET | `in (123, 456)` — numeric LONG, unquoted |
+| `asset.workspaces.name` / `compositeAsset.workspaces.name` | ASSET | `in ('prod','staging')` — prefer for aggregations |
 
 > **Namespace reminder:** `vulnerabilities.*` is valid **only** in exposure queries. In `searchVulnerabilityData`, use bare paths (`vulnerabilityId`, `tags`, `isCisaKEV`). See [_shared/fql-grammar.md](_shared/fql-grammar.md).
 
@@ -93,6 +96,6 @@ Call `getGroupByFields(entityType='EXPOSURE')` for the canonical list.
 
 ## Sort keys
 
-Default: `exposures.scores.score:desc`. Other useful sorts:
+Default: `exposure.scores.score:desc`. Other useful sorts:
 - `exposure.remediationTarget.dueDate:asc` (closest breach first)
-- `exposures.scores.score:desc,exposure.remediationTarget.dueDate:asc` (risk-primary, SLA-tiebreak)
+- `exposure.scores.score:desc,exposure.remediationTarget.dueDate:asc` (risk-primary, SLA-tiebreak)

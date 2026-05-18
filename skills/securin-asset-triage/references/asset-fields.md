@@ -1,7 +1,7 @@
 # Asset Fields
 
 
-> **Prefix rule:** use `compositeAsset.*` in composite-FF accounts, `asset.*` otherwise. See [_shared/composite-vs-source.md](_shared/composite-vs-source.md). The prefix change is not always exactly the same so its MANDATORY for you to refer [Composite API Fields](_shared/composite-fields.md) while using `compositeAsset.*` prefix. The fields below are **source-mode** paths; cross-reference [_shared/source-fields.md](_shared/source-fields.md) for the authoritative list.
+> **Prefix rule:** use `compositeAsset.*` in composite-FF accounts, `asset.*` otherwise. See [_shared/composite-vs-source.md](_shared/composite-vs-source.md). The prefix swap is not always a straight rename — always cross-reference [Composite API Fields](_shared/composite-fields.md) when constructing a `compositeAsset.*` path. The fields below are **source-mode** paths; cross-reference [_shared/source-fields.md](_shared/source-fields.md) for the authoritative list.
 
 ## Identity
 
@@ -29,7 +29,7 @@
 |---|---|---|
 | `asset.integration.productName` | string | Scanner/integration that detected the asset (per `getTopValues` schema example) |
 | `asset.lastIngestedOn` | date | Freshest record first on `desc` |
-| `asset.status` | enum | Known: `active` (lowercase, unquoted in schema example) |
+| `asset.status` | enum string | **`'Active'`, `'Inactive'`** (titlecase, single-quoted in FQL — see `_shared/fql-grammar.md` "Known Enum Values"). |
 
 ## Exposure rollups (cross-entity fields on asset record)
 

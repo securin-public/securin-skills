@@ -33,9 +33,11 @@ Zero-days often lack a vendor patch at discovery time, so remediation emphasis s
 
 See [_shared/account-preflight.md](references/_shared/account-preflight.md). Required — exposure matches are scoped to the resolved account-id.
 
-### Step 0.5 — Composite vs source (if asset pivot is needed)
+Before using this skill, read every file in the [references folder](references/), including the shared [references/_shared/](references/_shared/) docs.
 
-See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md). Only matters when the report includes affected-asset context.
+### Step 0.5 — Detect composite vs source data model
+
+Exposures and assets are both affected by the composite flag — composite accounts have a separate composite-exposure / composite-asset index with `compositeExposure.*` / `compositeAsset.*` field paths and use the `exposureQuery` / `assetQuery` tools (source accounts use `searchExposureData` + `aggregateExposureData` and `searchAssetData`). See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md). Cache the flag for the turn — picking the wrong model returns empty results with no error.
 
 ## Suggested tools
 
@@ -44,21 +46,20 @@ See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md).
 
 ### Core intelligence
 - `searchVulnerabilityData` — Core index; filter by `tags = 'Zero Day'` or name/alias
-- `searchThreatActorData` — threat actors behind the zero-day (pass `fields: ['threatActor']`)
+- `searchThreatActorData` — threat actors behind the zero-day. Do NOT pass `fields: ['threatActor']` (actor records are flat — that prefix returns empty silently). Omit `fields`, or pass top-level keys.
 
 ### Environment correlation
-- `searchExposureData` / `aggregateExposureData` / `hybridExposureData` — match CVEs to open exposures
-- `searchAssetData` / `hybridAssetData` (or composite variants) — pivot to affected assets
-- `searchComponentData` — component-level matches
+- **Source mode** — `searchExposureData` for the row list and `aggregateExposureData` for bucket counts (two calls, same filter). `searchAssetData` for the asset pivot.
+- **Composite mode** — `exposureQuery` (combined search + aggregate) and `assetQuery` for the asset pivot. Uses `compositeExposure.*` / `compositeAsset.*` prefixes.
+- `searchComponentData` — component-level matches.
 
 ### Field discovery
 - `getApiFields(entityType=['VULNERABILITY'], searchText='tag')` — confirm tag field path
 - `getTopValues(field='vulnerabilities.tags', entityType='VULNERABILITY')` — see what tags exist in this account's Core index
 
 ### Deep links (CC-2)
-- `filterToChipPost` — convert FQL filter → chip form for a platform URL (default, Strategy A).
-- `createDeepLink` — only if the user explicitly asks to save/share the view (Strategy B; write op, needs `x-user-id` + `shareWith`).
-- `getDeepLink` / `aggregateByDeepLink` — retrieve a saved short-code.
+- `createDeepLink` (preferred) — mint a `shortCode` for every list / aggregation in the response (one call per bucket if you need per-bucket links).
+- `getDeepLink(<id>)` — URL for a known asset / exposure id.
 - See [_shared/deep-links.md](references/_shared/deep-links.md).
 
 ### Outside
@@ -70,16 +71,30 @@ User asks "am I exposed to any zero-day?" / "show me my zero-day risk".
 
 ### Step A.1 — Inventory your environment's zero-day exposures
 
-```text
-hybridExposureData
-filter: exposure.status = 'Open'
-        AND vulnerabilities.tags = 'Zero Day'
-groupByField: exposure.scores.scoreLevel
-aggs: [{function: TERMS, field: exposure.scores.scoreLevel, name: 'bySeverity', size: 10}]
-sort: "exposures.scores.score:desc,exposure.remediationTarget.dueDate:asc"
-limit: 100
-page: 1
+Source mode — run two calls with the same filter:
+
+```json
+// 1) Row list
+{
+  "filters": "exposure.status = 'Open' AND vulnerabilities.tags = 'Zero Day'",
+  "sort": "exposure.scores.score:desc,exposure.firstIngestedOn:desc",
+  "limit": 100,
+  "page": 1
+}
+// → searchExposureData
+
+// 2) Severity breakdown — same filter
+{
+  "filters": "exposure.status = 'Open' AND vulnerabilities.tags = 'Zero Day'",
+  "aggs": [{
+    "name": "bySeverity",
+    "function": {"type": "TERMS", "field": "exposure.scores.scoreLevel", "size": 10}
+  }]
+}
+// → aggregateExposureData
 ```
+
+Composite mode — single `exposureQuery` call with the same filter rewritten as `compositeExposure.status = 'Open' AND vulnerabilities.tags = 'Zero Day'`.
 
 The `vulnerabilities.tags = 'Zero Day'` cross-entity join pulls from the vulnerability index (bare path `tags = 'Zero Day'` in Core).
 
@@ -89,7 +104,7 @@ Collect distinct CVE IDs from Step A.1 results. For each (or batched):
 
 ```text
 searchVulnerabilityData
-filter: vulnerabilityId in ['CVE-…','CVE-…']
+filter: vulnerabilityId in ('CVE-…','CVE-…')
 fields: ['vulnerability']
 sort: "riskIndex.index:desc"
 ```
@@ -99,8 +114,10 @@ Capture: KEV status, exploitation status, risk index, published date, affected p
 ### Step A.3 — Pivot to affected assets
 
 ```text
-searchAssetData   # or searchCompositeAssetData
-filter: asset.assetId in [<ids from A.1>]
+searchAssetData                         # source mode
+# Composite mode: use `assetQuery` with the same filter, with
+#                 `compositeAsset.assetId` / `compositeAsset.scores.overallScore`.
+filter: asset.assetId in (<ids from A.1>)
 sort: "asset.scores.overallScore:desc,asset.criticality:desc"
 fields: ['asset']
 limit: 50
@@ -159,17 +176,30 @@ If Core doesn't match (very new or informal name):
 
 ### Step B.2 — Correlate to environment
 
-```text
-hybridExposureData
-filter: exposure.mappedAttributes.vulnerabilityIds in [<cve list>]
-        AND exposure.status = 'Open'
-groupByField: asset.workspaceId
-aggs: [{function: TERMS, field: asset.workspaceId, name: 'byWorkspace', size: 20},
-       {function: COUNT, field: exposure.exposureId, name: 'totalExposures'}]
-limit: 100
-page: 1
-sort: "exposures.scores.score:desc"
+Source mode — run search + aggregate with the same filter:
+
+```json
+// 1) Itemized list
+{
+  "filters": "exposure.mappedAttributes.vulnerabilityIds in (<cve list>) AND exposure.status = 'Open'",
+  "sort": "exposure.scores.score:desc,exposure.firstIngestedOn:desc",
+  "limit": 100,
+  "page": 1
+}
+// → searchExposureData
+
+// 2) Workspace breakdown — same filter
+{
+  "filters": "exposure.mappedAttributes.vulnerabilityIds in (<cve list>) AND exposure.status = 'Open'",
+  "aggs": [
+    {"name": "byWorkspace",  "function": {"type": "TERMS", "field": "asset.workspaces.name", "size": 20}},
+    {"name": "totalExposures", "function": {"type": "COUNT", "field": "exposure.exposureId"}}
+  ]
+}
+// → aggregateExposureData
 ```
+
+Composite mode: run a single `exposureQuery` with `compositeExposure.*` / `compositeAsset.*` prefixes.
 
 ### Step B.3 — Enrich and report
 
@@ -206,7 +236,7 @@ tags = 'Zero Day'
 ```text
 exposure.status = 'Open'
 AND vulnerabilities.tags = 'Zero Day'
-AND vulnerabilities.exploitation.isCisaKev = true
+AND vulnerabilities.isCisaKEV = true
 ```
 
 ### Zero-day on exposed-to-internet prod assets (compound)
@@ -214,17 +244,17 @@ AND vulnerabilities.exploitation.isCisaKev = true
 exposure.status = 'Open'
 AND vulnerabilities.tags = 'Zero Day'
 AND asset.reachability = 'Exposed'                      # source-model
-AND asset.workspaceId in [<prod-ws-ids>]
+AND asset.workspaces.id in (<prod-ws-ids>)              # numeric LONGs — unquoted, parens not brackets
 ```
 
 Substitute `compositeAsset.*` in composite-data accounts — see [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md).
 
 ## Sorting
 
-Default: `exposures.scores.score:desc, exposure.remediationTarget.dueDate:asc` — worst first, SLA tiebreaker.
+Default: `exposure.scores.score:desc, exposure.firstIngestedOn:desc` — worst first, newest detection as tiebreaker (matches canonical zero-day rule in `_shared/sorting-rules.md`).
 
 Alternative for "worst externally-facing first":
-`asset.reachability:desc, exposures.scores.score:desc` (if the platform supports ordinal sort on reachability; confirm via `getSortFields=true` 🧪).
+`asset.reachability:desc, exposure.scores.score:desc` (if the platform supports ordinal sort on reachability; confirm via `getSortFields=true` 🧪).
 
 ## Scope guard (CC-3)
 

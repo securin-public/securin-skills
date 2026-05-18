@@ -6,7 +6,7 @@
 <h3 align="center">Securin Platform — Skills & MCP Server</h3>
 
 <p align="center">
-  Bring your Securin data into your AI tools. 8 ready-made workflows + 40+ tools<br>
+  Bring your Securin data into your AI tools. 6 ready-made workflows + 50+ MCP tools<br>
   for vulnerability triage, exposure analysis, threat correlation, and remediation.
 </p>
 
@@ -26,7 +26,7 @@
 
 ## What you get
 
-**8 skills** — guided workflows your agent runs end-to-end. No prompt engineering required.
+**6 skills** — guided workflows your agent runs end-to-end. No prompt engineering required.
 
 | Skill | What you can ask |
 | --- | --- |
@@ -36,9 +36,10 @@
 | `securin-asset-triage` | *"Break down assets by criticality and workspace."* — Search, filter, and aggregate your asset inventory. |
 | `securin-exposure-triage` | *"Show open criticals breaching SLA."* — Ranked exposure lists or aggregated views. |
 | `securin-remediation-guidance` | *"How do I fix exposure 12345?"* — Actionable fix plans with vendor advisories and ticket bodies. |
-| `securin-tool-search` | Fallback when no other skill fits — searches all 40+ MCP tools. |
 
-**40+ MCP tools** — direct API access for everything else. All tools are prefixed with `Securin__` (e.g. `Securin__searchVulnerabilityData`). Two meta-tools are unprefixed: `ping` (health check) and `search_tools` (find a tool by description).
+When no skill matches the ask, fall back to the built-in `Securin__search_tools` MCP meta-tool to look up the right tool by description.
+
+**50+ MCP tools** — direct API access for everything else. All tools are prefixed with `Securin__` (e.g. `Securin__searchVulnerabilityData`). Two meta-tools are unprefixed: `ping` (health check) and `search_tools` (find a tool by description).
 
 ---
 
@@ -82,7 +83,7 @@ Save, then **fully quit and relaunch** Claude Desktop. Requires Node.js 18+.
 <!-- prettier-ignore -->
 ### <img src="https://cdn.simpleicons.org/claude/D97757" height="16" alt="Claude"> Claude Code
 
-The plugin marketplace installs both the MCP server and all 8 skills:
+The plugin marketplace installs both the MCP server and all 6 skills:
 
 ```bash
 /plugin marketplace add securin-public/securin-skills

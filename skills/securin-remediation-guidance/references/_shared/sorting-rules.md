@@ -62,7 +62,6 @@ For aggregation buckets (inside `aggs[].sort`):
 - `securin-threat-correlation`: matched exposures → `exposure.scores.score:desc`; CVEs → `riskIndex.index:desc`
 - `securin-remediation-guidance`: single-exposure focus, N/A.
 - `securin-zero-day-exposure-analysis`: **`exposure.scores.score:desc,exposure.firstIngestedOn:desc`**
-- `securin-tool-search`: ranked by `search_tools` relevance score
 
 ## Don't
 

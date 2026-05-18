@@ -32,7 +32,11 @@ An *exposure* is an instance (e.g., "CVE-2024-3400 on host web-01"). A *vulnerab
 
 See [_shared/account-preflight.md](references/_shared/account-preflight.md). Resolve account-id(s) and validate access before any query. If the question implies a workspace subset, resolve workspace-ids too.
 
-> Note: the exposure index is **not** affected by the composite-vs-source data model (that flag only affects assets). But cross-entity exposure filters that reference asset fields still need the correct asset prefix — see [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md).
+Before using this skill, read every file in the [references folder](references/), including the shared [references/_shared/](references/_shared/) docs.
+
+### Step 0.5 — Detect composite vs source data model
+
+Exposures are affected by the composite flag too — composite accounts have a separate composite-exposure index with `compositeExposure.*` field paths and use the `exposureQuery` tool (source accounts use `searchExposureData` + `aggregateExposureData`). See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md). Cache the flag for the turn — picking the wrong model returns empty results with no error.
 
 ## Suggested tools
 
@@ -50,8 +54,7 @@ See [_shared/account-preflight.md](references/_shared/account-preflight.md). Res
 - `getEffectiveAccessWorkspaces` — workspace scoping
 
 ### Deep links (CC-2)
-- `createDeepLink` (preferred)
-- `aggregateByDeepLink` — aggregation + per-bucket URLs
+- `createDeepLink` (preferred) — call once per list/aggregation, plus once per bucket if you need per-bucket links
 - `getDeepLink` — URL for a known exposure-id
 
 See [_shared/deep-links.md](references/_shared/deep-links.md).
@@ -65,7 +68,7 @@ See [_shared/deep-links.md](references/_shared/deep-links.md).
 | Flat list | "List open critical exposures" | `searchExposureData` |
 | Single-field bucket | "Exposures by severity" | `aggregateExposureData` |
 | Time series | "Exposures created per week over 6 months" | `aggregateVulnerabilityTimelineData` or `aggregateExposureData` DATE_HISTOGRAM |
-| Aggregation with per-bucket deep links | "Bucket counts, clickable" | `aggregateByDeepLink` |
+| Aggregation with per-bucket deep links | "Bucket counts, clickable" | `aggregateExposureData` + one `createDeepLink` per bucket |
 
 ### Step 2 — Discover fields if uncertain
 
@@ -82,8 +85,8 @@ See [_shared/fql-grammar.md](references/_shared/fql-grammar.md). Exposure-specif
 ```text
 exposure.status = 'Open'
 exposure.scores.scoreLevel = 'Critical'
-"exposure.scores.overallScore" >= 7.0  # filter-only — NOT a valid sort key; sort uses exposures.scores.score:desc
-"exposure.firstSeenAt" >= "2026-01-01T00:00:00Z"
+"exposure.scores.score" >= 7.0   # numeric — sort uses the same path: exposure.scores.score:desc
+"exposure.firstDiscoveredOn" >= "2026-01-01T00:00:00Z"
 exposure.remediationTarget.status = 'Overdue'
 exposure.assignments.assignedTo.name = 'team:remediation'
 exposure.mappedAttributes.vulnerabilityIds = 'CVE-2024-3400'
@@ -111,7 +114,7 @@ compositeAsset.reachability = 'Exposed'
 ### Step 4 — Pick and call the right tool
 
 - For time series: try `aggregateVulnerabilityTimelineData` / `searchVulnerabilityTimelineData` first. If those return 404, fall back to `aggregateExposureData` with `DATE_HISTOGRAM`.
-- For per-bucket deep links, prefer `aggregateByDeepLink`.
+- For per-bucket deep links, run `aggregateExposureData` to get the buckets, then call `createDeepLink` once per bucket with the bucket's filter narrowed by the bucket value.
 
 #### `aggregateExposureData` — correct request shape
 
@@ -184,7 +187,7 @@ searchExposureData
 filter: exposure.status = 'Open'
         AND exposure.scores.scoreLevel = 'Critical'
         AND exposure.remediationTarget.status = 'Overdue'
-sort: "exposures.scores.score:desc"
+sort: "exposure.scores.score:desc"
 ```
 
 ### "Break down exposures by severity and workspace"
@@ -212,7 +215,7 @@ Run `aggregateExposureData` once per dimension (two calls):
 - "Am I affected by threat X" → hand off to `securin-threat-correlation`.
 - "How do I fix this exposure" → hand off to `securin-remediation-guidance`.
 - Pure asset questions → hand off to `securin-asset-triage`.
-- Unknown tool needed → `securin-tool-search`.
+- Unknown tool needed → fall back to the platform's built-in `Securin__search_tools` meta-tool to look up the right MCP tool by description.
 
 ## Edge cases
 

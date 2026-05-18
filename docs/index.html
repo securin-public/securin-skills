@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Securin Platform — Skills & MCP Server for AI assistants</title>
-  <meta name="description" content="Your Securin expertise, open to every AI agent your team uses. 8 curated skills, 40+ MCP tools — works with Claude, Cursor, Copilot, Gemini, Codex, Windsurf, and any MCP host.">
+  <meta name="description" content="Your Securin expertise, open to every AI agent your team uses. 6 curated skills, 50+ MCP tools — works with Claude, Cursor, Copilot, Gemini, Codex, Windsurf, and any MCP host.">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,9 +61,9 @@
     </p>
 
     <div class="stats-strip" aria-label="At a glance">
-      <div class="stat"><span class="stat-num">8</span><span class="stat-label">curated skills</span></div>
+      <div class="stat"><span class="stat-num">6</span><span class="stat-label">curated skills</span></div>
       <div class="stat"><span class="stat-num">7+</span><span class="stat-label">supported AI hosts</span></div>
-      <div class="stat"><span class="stat-num">40+</span><span class="stat-label">MCP tools</span></div>
+      <div class="stat"><span class="stat-num">50+</span><span class="stat-label">MCP tools</span></div>
     </div>
   </div>
 </header>
@@ -204,7 +204,7 @@
       <!-- Claude Code -->
       <div class="tab-panel" id="tab-claude-code" role="tabpanel" aria-hidden="true">
         <h3>Plugin marketplace</h3>
-        <p>Installs both the MCP server and all 8 skills:</p>
+        <p>Installs both the MCP server and all 6 skills:</p>
         <div class="code-wrap">
           <pre><code>/plugin marketplace add securin-public/securin-skills
 /plugin install securin-platform@securin-skills</code></pre>
@@ -318,7 +318,7 @@
     </div>
 
     <details class="all-skills">
-      <summary>See all 8 skills</summary>
+      <summary>See all 6 skills</summary>
       <table class="skills-table">
         <thead>
           <tr><th>Skill</th><th>Example ask</th></tr>
@@ -329,9 +329,7 @@
           <tr><td>securin-threat-correlation</td><td><em>"Am I affected by LockBit?"</em> — Maps a CVE, threat actor, or ransomware group to your environment.</td></tr>
           <tr><td>securin-asset-triage</td><td><em>"Break down assets by criticality and workspace."</em> — Search, filter, aggregate.</td></tr>
           <tr><td>securin-exposure-triage</td><td><em>"Show open criticals breaching SLA."</em> — Ranked exposure lists or aggregated views.</td></tr>
-          <tr><td>securin-product-triage</td><td><em>"What versions of Apache do we have?"</em> — Product catalog &amp; component inventory.</td></tr>
           <tr><td>securin-remediation-guidance</td><td><em>"How do I fix exposure 12345?"</em> — Actionable fix plans, vendor advisories, ticket bodies.</td></tr>
-          <tr><td>securin-tool-search</td><td>Fallback when no other skill fits — searches all 40+ MCP tools.</td></tr>
         </tbody>
       </table>
     </details>

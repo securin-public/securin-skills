@@ -16,6 +16,9 @@ secrets.json
 installed_plugins.json
 known_marketplaces.json
 
+# Local Claude Code project guidance — never push to public repos
+CLAUDE.md
+
 # ---- OS / editor junk ----
 .DS_Store
 Thumbs.db

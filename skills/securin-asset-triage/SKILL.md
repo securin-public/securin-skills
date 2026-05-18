@@ -29,11 +29,11 @@ Ad-hoc asset search, filtering, and aggregation. Translate natural-language ques
 
 See [_shared/account-preflight.md](references/_shared/account-preflight.md). Resolve the account-id(s), validate access, and hold them for the rest of the turn. If the question implies a workspace subset ("prod", "EU BU"), also resolve workspace-ids via `getEffectiveAccessWorkspaces`.
 
-Also before you use this SKILL, its MANDATORY for you to read through all the files inside [Referances folder](references/). This also includes all the files inside [Shared referances folder](references/_shared/). It is also COMPELSORY to try and use [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) instead of calling the `getApiFields` tool. ONLY use the tool as a fall back mechanism. 
+Before using this skill, read every file in the [references folder](references/), including the shared [references/_shared/](references/_shared/) docs. **Prefer the cached field catalogs** ([source-fields.md](references/_shared/source-fields.md) for source mode, [composite-fields.md](references/_shared/composite-fields.md) for composite mode) over calling `getApiFields` — only fall back to the live tool when an entity or field is missing from the cache.
 
 ### Step 0.5 — Detect composite vs source data model (critical)
 
-See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md). Call `getAccountSettings` and determine whether `compositeDataEnabled` is on. This determines:
+See [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md). Call `getAccountSettings(account-id, settings: ["COMPOSITE_ASSET_LIST_VIEW"])` — `"true"` means composite, anything else means source. This determines:
 
 - Tool to call: `assetQuery` (composite) or `searchAssetData` (source).
 - Field prefix: `compositeAsset.*` vs `asset.*`.
@@ -62,8 +62,7 @@ Cache the flag for the turn. **Picking the wrong model returns empty results wit
 - `validateFilter` — FQL syntax validation
 
 ### Deep links (CC-2)
-- `createDeepLink` (preferred) — build a URL from entity type + filter
-- `aggregateByDeepLink` — one-shot aggregation with per-bucket URLs
+- `createDeepLink` (preferred) — build a URL from entity type + filter (call once per list/aggregation, plus once per bucket if you need per-bucket links)
 - `getDeepLink` — URL for a known assetId
 
 See [_shared/deep-links.md](references/_shared/deep-links.md).
@@ -110,7 +109,7 @@ Use `*Query` in case of composite mode.
 ### Step 5 — Deep link every result (CC-2)
 
 - For each list: one `createDeepLink` for the filtered Assets view.
-- For aggregations: one link per bucket. Prefer `aggregateByDeepLink` which returns these inline.
+- For aggregations: one `createDeepLink` per bucket, with the bucket's value narrowed into the filter (e.g. add `AND <field> = '<bucket-value>'`).
 - For a single asset drill-down: `getDeepLink(assetId)`.
 
 ### Step 6 — Emit response
@@ -132,15 +131,20 @@ Use `*Query` in case of composite mode.
 | `asset.status = 'active'` (single) | `searchAssetData` | `aggregateAssetData` |
 | `asset.reachability = 'Exposed' AND asset.criticality >= 4` (compound, numeric criticality) | `searchAssetData` | `searchAssetData` + `aggregateAssetData` (two calls, same filter) |
 
-Replace `searchAssetData` with `searchCompositeAssetData` and `aggregateAssetData` with `aggregateCompositeAssetData` if the account uses composite data.
+For composite accounts there's no separate `searchCompositeAssetData` / `aggregateCompositeAssetData` — use the single `assetQuery` tool with `compositeAsset.*` prefixes; it returns the row list and bucket counts in one call.
 
 ## Common recipes
 
 ### "Asset distribution by business unit / workspace"
 
 ```text
-aggregateAssetData | aggregateCompositeAssetData
-groupByField: "asset.workspaces.id"  (or composite equivalent — see composite-fields.md)
+# Source mode
+aggregateAssetData
+aggs: [{ name: "byWorkspace", function: { type: "TERMS", field: "asset.workspaces.name", size: 25 } }]
+
+# Composite mode
+assetQuery
+aggs: [{ name: "byWorkspace", function: { type: "TERMS", field: "compositeAsset.workspaces.name", size: 25 } }]
 ```
 
 Enrich workspace-ids → names via `getWorkspacesByAccountId`.
@@ -164,11 +168,13 @@ filters: asset.assetId in ('<id1>','<id2>',...)
          AND asset.workspaces.id in (<prod-ws-id-1>, <prod-ws-id-2>)
 
 # 3) Bucket counts on the same asset filter (e.g., by asset type).
-#    aggs entries require {name, function, field}. `function` (not `type`) is
-#    the operation key — TERMS for bucketing, COUNT/SUM/MIN/MAX/AVG for metrics.
+#    aggs entries are {name, function: {type, field, size?}}.
+#    `function` is an object with a `type` discriminator (TERMS for
+#    bucketing, COUNT/SUM/MIN/MAX/AVG for metrics, DATE_HISTOGRAM for
+#    time series). String-form `function: "TERMS"` is rejected.
 aggregateAssetData
 filters: <same as step 2>
-aggs: [{ name: "by_type", function: "TERMS", field: "asset.assetType" }]
+aggs: [{ name: "by_type", function: { type: "TERMS", field: "asset.assetType", size: 25 } }]
 ```
 
 ### "Assets discovered in last 30 days"
@@ -183,14 +189,18 @@ sort: "asset.firstDiscoveredOn:desc"
 
 ```text
 aggregateAssetData
-groupByField: "asset.mappedAttributes.isCredentialed"   # or asset.isCredentialedAsset; confirm via getApiFields
+aggs: [{
+  name: "byCredentialed",
+  function: { type: "TERMS", field: "asset.mappedAttributes.isCredentialed", size: 2 }
+}]
+# or asset.isCredentialedAsset — confirm the active field via getApiFields
 ```
 
 ## Scope guard (CC-3)
 
 - If the user asks about threat actors, ransomware, or CVE-level intel → hand off to `securin-cve-enrichment` or `securin-threat-correlation`.
 - If the user asks about specific exposure records (as opposed to assets with exposures) → hand off to `securin-exposure-triage`.
-- If no skill fits and the user needs a capability we don't cover → hand off to `securin-tool-search`.
+- If no skill fits and the user needs a capability we don't cover → fall back to the platform's built-in `Securin__search_tools` meta-tool to find the right MCP tool by description.
 
 ## Edge cases
 

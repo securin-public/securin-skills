@@ -4,7 +4,7 @@ description: >
   Use this skill when the user asks "am I affected by this CVE", "does this
   threat affect my environment", "check if we're vulnerable to [ransomware /
   threat actor]", "correlate threats with my exposures", "what threats target
-  my vulnerabilities", "show me the intersection of <threat> and my environment",
+  my vulnerabilities", "show me the intersection of [threat] and my environment",
   or any question that bridges external threat intelligence with the user's
   specific assets and exposures. For pure CVE intelligence without environment
   matching use securin-cve-enrichment. Requires the Securin Platform MCP server.
@@ -33,18 +33,19 @@ This skill is the inverse of `securin-cve-enrichment`: enrichment produces a glo
 
 See [_shared/account-preflight.md](references/_shared/account-preflight.md). Correlation queries always touch the user's environment — you must resolve account-id(s) and validate access before any exposure/asset query. Also detect the composite-vs-source data model (see [_shared/composite-vs-source.md](references/_shared/composite-vs-source.md)) to use the correct asset prefix. This should also give you context about when to use `*Query` tools and when to use `search*` and `aggregate*` tools. 
 
-Also before you use this SKILL, its MANDATORY for you to read through all the files inside [Referances folder](references/). This also includes all the files inside [Shared referances folder](references/_shared/). It is also COMPELSORY to try and use [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) instead of calling the `getApiFields` tool. ONLY use the tool as a fall back mechanism. 
+Before using this skill, read every file in the [references folder](references/), including the shared [references/_shared/](references/_shared/) docs. **Prefer the cached field catalogs** ([source-fields.md](references/_shared/source-fields.md) for source mode, [composite-fields.md](references/_shared/composite-fields.md) for composite mode) over calling `getApiFields` — only fall back to the live tool when an entity or field is missing from the cache.
 
 ## Suggested tools
 
 ### Threat intel (global)
 - `searchVulnerabilityData` — CVE record + exploitation signals
-- `searchThreatActorData` — threat actor → CVE list. Pass `fields: ['threatActor']` in the request
+- `searchThreatActorData` — threat actor → CVE list. Actor records are flat — do NOT pass `fields: ['threatActor']` (that prefix doesn't match the actual record shape and the call returns empty rows silently). Omit `fields`, or pass top-level keys like `name`, `vulnerabilities`, `associatedGroups`.
 - `searchWeaknessData` — CWE root cause
 
 ### User environment
-- `searchExposureData` / `aggregateExposureData` / `exposureQuery` — match CVEs to open exposures (run as two calls when you need both list and bucket counts)
-- `searchAssetData` / `searchCompositeAssetData` / `assetQuery` (+ matching `aggregate*AssetData`) — pivot exposures → affected assets
+- **Source mode** — `searchExposureData` + `aggregateExposureData` (two calls, same filter when both list and bucket counts are needed).
+- **Composite mode** — `exposureQuery` (combined search + aggregate, `compositeExposure.*` prefix).
+- Asset pivot: `searchAssetData` (source) or `assetQuery` (composite). For source bucket counts pair with `aggregateAssetData`.
 
 ### Scoping + access
 - `getEffectiveAccessWorkspaces`
@@ -52,8 +53,7 @@ Also before you use this SKILL, its MANDATORY for you to read through all the fi
 - `getApiFields` — field discovery
 
 ### Deep links (CC-2)
-- `createDeepLink` (preferred)
-- `aggregateByDeepLink`
+- `createDeepLink` (preferred) — call once per list/aggregation, plus once per bucket if you need per-bucket links
 - `getDeepLink`
 
 ### Outside
@@ -78,7 +78,7 @@ The user starts with a threat and wants to know if they're affected.
 | If the user said… | Do |
 |---|---|
 | `CVE-XXXX-YYYY` | Already a CVE — skip to A.2 |
-| A threat-actor name (e.g., "Lazarus") | `searchThreatActorData` with bare-path filter `name like 'Lazarus'`, `fields: ['threatActor']` → collect `mappedAttributes.cveIds` |
+| A threat-actor name (e.g., "Lazarus") | `searchThreatActorData` with bare-path filter `name like 'Lazarus'` (omit `fields` — actor records are flat) → collect the top-level `vulnerabilities` array (CVE IDs) |
 | A ransomware family (e.g., "LockBit") | **Use web search** — resolve the family to a CVE list via published threat-intel and confirm with the user|
 | A campaign / news event | Web search to resolve to CVE list, then confirm with the user before proceeding |
 
@@ -96,8 +96,10 @@ filter: exposure.mappedAttributes.vulnerabilityIds in (<cve-list>)
 # 2) Severity bucket counts (same filter)
 aggregateExposureData
 filter: <same as above>
-groupByField: "exposure.scores.scoreLevel"
-aggs: [{type: "count"}]
+aggs: [{
+  name: "bySeverity",
+  function: { type: "TERMS", field: "exposure.scores.scoreLevel", size: 10 }
+}]
 ```
 
 In case of **composite mode** use `exposureQuery` in place of the above mentioned tools for search and aggregate. 
@@ -107,9 +109,15 @@ In case of **composite mode** use `exposureQuery` in place of the above mentione
 Using `assetId`s from the exposures (or a separate join):
 
 ```text
-searchAssetData                          # or searchCompositeAssetData
-filter: asset.assetId in [<asset-ids from A.2>]
+# Source mode
+searchAssetData
+filter: asset.assetId in (<asset-ids from A.2>)
 sort: "asset.scores.overallScore:desc"
+
+# Composite mode — single call returns list + buckets
+assetQuery
+filter: compositeAsset.id in (<ids>)
+sort: "compositeAsset.scores.overallScore:desc"
 ```
 
 ### A.4 Generate deep links (CC-2)
@@ -152,9 +160,12 @@ The user starts with an asset or exposure and wants to know what threats target 
 ### B.1 Collect CVEs in the user's scope
 
 ```text
-aggregateExposureData                   
-groupByField: "exposure.mappedAttributes.vulnerabilityIds"
+aggregateExposureData
 filter: exposure.status = 'Open' AND "<scope>"
+aggs: [{
+  name: "byCve",
+  function: { type: "TERMS", field: "exposure.mappedAttributes.vulnerabilityIds", size: 200 }
+}]
 ```
 
 ### B.2 Enrich each CVE with threat signals
@@ -162,7 +173,7 @@ filter: exposure.status = 'Open' AND "<scope>"
 For each CVE (or batched):
 
 ```text
-searchThreatActorData  filter: ...mappedAttributes.cveIds = "CVE-X", fields: ["threatActor"]
+searchThreatActorData   filter: vulnerabilities like 'CVE-X'   # bare-path FQL on the actor record; do NOT pass fields:['threatActor']
 searchVulnerabilityData filter: vulnerabilityId = 'CVE-X'
 ```
 
@@ -189,7 +200,7 @@ See [_shared/fql-grammar.md](references/_shared/fql-grammar.md) for full grammar
 
 ```text
 # Exposures matching a CVE set
-"exposure.mappedAttributes.vulnerabilityIds" in ['CVE-X','CVE-Y','CVE-Z']
+"exposure.mappedAttributes.vulnerabilityIds" in ('CVE-X','CVE-Y','CVE-Z')
 
 # Exposures on exposed-to-internet assets (source-model)
 asset.reachability = 'Exposed'
@@ -197,16 +208,16 @@ asset.reachability = 'Exposed'
 compositeAsset.reachability = 'Exposed'
 
 # Exposures tied to CISA KEV CVEs (cross-entity to vuln index from exposures)
-vulnerabilities.isCisaKev = true
+vulnerabilities.isCisaKEV = true
 
 # In searchVulnerabilityData — bare path, no "vulnerabilities." prefix
 vulnerabilityId = 'CVE-X'
-isCisaKev = true
+isCisaKEV = true
 ```
 
-- `searchThreatActorData` with no `filters` → an error. Always pass a filter + `fields: ['threatActor']`.
+- `searchThreatActorData` with no `filters` → an error. Always pass a filter (and OMIT `fields: ['threatActor']` — actor records are flat, so that prefix silently returns empty rows; see `correlation-patterns.md`).
 - THREATACTOR field namespace is bare (`name`, `description`, `vulnerabilityCount`, `originCountry`, `targetedCountries`, `targetedIndustries`, `associatedGroups`) — no `threatActor.` prefix.
-- `validateFilter` only checks FQL syntax — it does not verify field existence. Always cross-check paths against [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) based on the current mode of execution. Use `getApiFields` tool call as fallback.
+- `validateFilter` validates both FQL syntax and field existence — a 400 response means either malformed syntax or an invalid field path. Always cross-check paths against [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) based on the current mode of execution. Use `getApiFields` as a fallback when a field is not in the cache.
 
 ## Scope guard (CC-3)
 
@@ -214,7 +225,7 @@ isCisaKev = true
 - Raw exposure triage (no external threat angle) → `securin-exposure-triage`.
 - Asset inventory only → `securin-asset-triage`.
 - Remediation planning → `securin-remediation-guidance`.
-- Unknown capability → `securin-tool-search`.
+- Unknown capability → fall back to the platform's built-in `Securin__search_tools` meta-tool to look up the right MCP tool by description.
 
 ## Edge cases
 
@@ -226,3 +237,13 @@ isCisaKev = true
 ## Visual output (CC-4)
 
 When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](references/_shared/brand.md). Offer customization after delivery; never default to a different brand.
+
+## References
+
+- [Correlation Patterns](references/correlation-patterns.md) — inbound/outbound recipes for the common ask shapes.
+- [Shared: Account Preflight](references/_shared/account-preflight.md)
+- [Shared: Composite vs Source](references/_shared/composite-vs-source.md)
+- [Shared: Deep Links](references/_shared/deep-links.md)
+- [Shared: FQL Grammar](references/_shared/fql-grammar.md)
+- [Shared: Sorting Rules](references/_shared/sorting-rules.md)
+- [Shared: Brand & Visual Communication](references/_shared/brand.md)

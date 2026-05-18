@@ -35,7 +35,7 @@ If the user said "in prod", "the cloud BU", "the EU workspace", resolve workspac
 - `getEffectiveAccessWorkspaces(account-id=<>)` — workspaces the caller sees.
 - `getWorkspacesByAccountId(account-id=<>)` — all workspaces in the account (may be broader than what the caller sees — intersect with effective-access result).
 
-Include the workspace-ids as additional FQL constraints: e.g. `asset.workspaceId in ['ws-1','ws-2']` (confirm field path via `getApiFields` 🧪).
+Include the workspace-ids as additional FQL constraints: e.g. `asset.workspaces.id in (123, 456)` (composite: `compositeAsset.workspaces.id`). Workspace ids are numeric (`LONG`) — do NOT quote them. FQL list literals use parentheses, not square brackets.
 
 ### 4. Cache for the turn
 

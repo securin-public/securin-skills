@@ -4,11 +4,12 @@ How to find authoritative remediation data for a CVE without making the user do 
 
 ## The hierarchy of sources
 
-1. **Securin vulnerability record** (`searchVulnerabilityData`) — already-normalized fields: `remediation`, `fixedInVersions[]`, `vendorAdvisoryUrl`, `patchReferences[]`. Try this first.
-2. **Vendor advisory** — the primary source of truth for upgrade steps. Find it, read it.
-3. **KB article** (vendor knowledge base) — often deeper detail on edge cases, prerequisites, known issues.
-4. **CISA KEV entry** — for KEV CVEs, CISA's catalog page summarizes the mitigation.
-5. **NVD entry** — last resort; cross-references third-party advisories but is often sparse on remediation detail.
+1. **Exposure record** (`searchExposureData` for source, `exposureQuery` for composite) — scanner-imported remediation content lives here under `exposure.mappedAttributes.vendorRemediation` plus scanner-specific fields surfaced via `getApiFields(entityType=['EXPOSURE'], searchText='remediation')` / `'solution'` / `'patch'` / `'fix'`. This is your primary source for per-environment patch advice.
+2. **Securin vulnerability record** (`searchVulnerabilityData`, bare field paths) — `hasFix` (boolean: does an upstream fix exist), `fixes[]` (the fixed-version detail itself), `references[]` (vendor advisory URLs and similar references), `sources[]` (Securin's source attribution), `threats.sources[]` (related threat-intel advisories). Read these first to confirm a fix exists and pivot directly to the vendor advisory.
+3. **Vendor advisory** — the primary source of truth for upgrade steps. Find it (URL patterns below), read it.
+4. **KB article** (vendor knowledge base) — often deeper detail on edge cases, prerequisites, known issues.
+5. **CISA KEV entry** — for KEV CVEs, CISA's catalog page summarizes the mitigation.
+6. **NVD entry** — last resort; cross-references third-party advisories but is often sparse on remediation detail.
 
 ## Finding the vendor advisory
 
