@@ -217,7 +217,7 @@ isCisaKEV = true
 
 - `searchThreatActorData` with no `filters` → an error. Always pass a filter (and OMIT `fields: ['threatActor']` — actor records are flat, so that prefix silently returns empty rows; see `correlation-patterns.md`).
 - THREATACTOR field namespace is bare (`name`, `description`, `vulnerabilityCount`, `originCountry`, `targetedCountries`, `targetedIndustries`, `associatedGroups`) — no `threatActor.` prefix.
-- `validateFilter` only checks FQL syntax — it does not verify field existence. Always cross-check paths against [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) based on the current mode of execution. Use `getApiFields` tool call as fallback.
+- `validateFilter` validates both FQL syntax and field existence — a 400 response means either malformed syntax or an invalid field path. Always cross-check paths against [Source data API Fields](references/_shared/source-fields.md) or [Composite data API Fields](references/_shared/composite-fields.md) based on the current mode of execution. Use `getApiFields` as a fallback when a field is not in the cache.
 
 ## Scope guard (CC-3)
 
