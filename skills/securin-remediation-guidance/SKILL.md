@@ -54,7 +54,6 @@ Before using this skill, read every file in the [references folder](references/)
 - `getConfiguredIntegrations` — **call early**. Returns every configured scanner + ticketing integration with `id`, `name`, `vendorName`, `type` (`SCANNER` / `TICKETING`), and **`prefix`** (e.g. `WIZ`, `Q-VMDR`, `NESSUS`, `SNYK`, `SERVICE_NOW_INCIDENT`). **Two uses:**
   1. **Find scanner-specific remediation fields.** The `prefix` maps to an integration-specific field group — pass it as `fetchGroups` to `getApiFields(entityType=['EXPOSURE'])` to retrieve that integration's remediation/solution/advisory fields (e.g., Qualys `solution`, Tenable `solution`, Rapid7 `solution`). Scanner-native fields often have richer vendor advisory text than the generic `exposure.mappedAttributes.vendorRemediation`.
   2. **Detect ticketing handoff options.** Filter `type = 'TICKETING'` to find Jira / ServiceNow / ServiceNow_Incident integrations for draft ticket output.
-- `getSupportedActions` — what remediation actions are available through the platform (read-only surfacing in M1)
 
 ### Deep links (CC-2)
 - See [_shared/deep-links.md](references/_shared/deep-links.md). Default: render a platform URL with the FQL filter you used. Only call `createDeepLink` if the user explicitly asks to save/share.
