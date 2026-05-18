@@ -56,7 +56,7 @@ Before using this skill, read every file in the [references folder](references/)
   2. **Detect ticketing handoff options.** Filter `type = 'TICKETING'` to find Jira / ServiceNow / ServiceNow_Incident integrations for draft ticket output.
 
 ### Deep links (CC-2)
-- See [_shared/deep-links.md](references/_shared/deep-links.md). Default: render a platform URL with the FQL filter you used. Only call `createDeepLink` if the user explicitly asks to save/share.
+- See [_shared/deep-links.md](references/_shared/deep-links.md). Call `createDeepLink` for every list or table of exposure / asset records you surface. Skip only for single-record drilldowns and purely conceptual responses (no customer data list). Do not fabricate or omit links for list responses.
 
 ### Opt-in enrichment (after user confirms)
 - **Web search** — vendor advisory, KB article, community workarounds. Do not run by default.
