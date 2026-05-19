@@ -86,8 +86,13 @@ Organization owners can add the connector directly from [claude.ai](https://clau
 2. Enter name: `Securin Platform`
 3. Enter URL: `https://mcp.securin.io/mcp`
 4. Click **Add**
+<img width="959" height="399" alt="1" src="https://github.com/user-attachments/assets/0f3e45fd-5912-416e-ad45-1a31726fc851" />
+
+<img width="959" height="398" alt="2" src="https://github.com/user-attachments/assets/ee85cba1-0159-4f55-863e-e56e218d73d0" />
 
 Team members then go to **Customize → Connectors**, find **Securin Platform**, and click **Connect** — the browser redirects to Securin for sign-in automatically.
+
+<img width="958" height="394" alt="3" src="https://github.com/user-attachments/assets/e256701d-e54d-446d-9159-7be56e6d11f5" />
 
 > Skills are not loaded on claude.ai. For full skills + MCP, use Claude Code.
 
