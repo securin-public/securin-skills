@@ -99,14 +99,28 @@ After adding the MCP connector, each team member can also install the Securin Sk
 
 1. In Claude Cowork, open **Customize** from the left sidebar.
 2. Under **Personal Plugins**, click the **+** icon and select **Create Plugin**.
+
+<img width="1920" height="992" alt="Screenshot (2)" src="https://github.com/user-attachments/assets/23337ce2-ec8b-4c4a-9725-a2729f59fc45" />
+
 3. Choose **Add Marketplace**, enter the skills repository URL:
    ```
    https://github.com/securin-public/securin-skills
    ```
    Then click **Sync**.
+   
+<img width="1920" height="988" alt="Screenshot (3)" src="https://github.com/user-attachments/assets/9dd824b4-1638-4008-9811-f22ba73efeba" />
+
+<img width="955" height="486" alt="44" src="https://github.com/user-attachments/assets/e8ffb7c9-b766-4efc-8630-d1d1964d0878" />
+
 4. The **Securin Platform** plugin will appear under **Personal** in the plugins directory.
+
+<img width="948" height="489" alt="55" src="https://github.com/user-attachments/assets/f9229842-ae72-4073-b688-0dcc09fdc1d7" />
+
 5. Click **+** next to **Securin Platform** to activate it.
 6. The skills are now active — start asking questions in any conversation.
+
+<img width="953" height="470" alt="66" src="https://github.com/user-attachments/assets/e4fc6e0d-ef88-47a2-82a4-d8eb604b97d1" />
+
 
 ---
 
