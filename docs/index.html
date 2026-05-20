@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Securin Platform — Skills & MCP Server for AI assistants</title>
-  <meta name="description" content="Your Securin expertise, open to every AI agent your team uses. 6 curated skills, 50+ MCP tools — works with Claude, Cursor, Copilot, Gemini, Codex, Windsurf, and any MCP host.">
+  <meta name="description" content="Your Securin expertise, open to every AI agent your team uses. 6 curated skills, 50+ MCP tools — works with Claude, Gemini, Codex, Windsurf, and any MCP host.">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
   <meta property="og:title" content="Securin Platform — Skills & MCP Server">
-  <meta property="og:description" content="Bring Securin vulnerability, exposure, and threat data into Claude, VS Code, Cursor, and any MCP-compatible AI assistant.">
+  <meta property="og:description" content="Bring Securin vulnerability, exposure, and threat data into Claude, Gemini, Codex, Windsurf, and any MCP-compatible AI assistant.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="assets/securin_logo_purple.svg">
 </head>
@@ -41,18 +41,12 @@
     <h1>Your Securin expertise, open to <span class="accent">every AI agent</span> your team uses.</h1>
     <p class="hero-tagline">
       Securin's data and workflows, opened to the AI ecosystem — on open standards, on your terms.
-      Works with Claude, Cursor, Copilot, Gemini, Codex, Windsurf, and any MCP host.
+      Works with Claude, Gemini, Codex, Windsurf, and any MCP host.
     </p>
 
     <div class="hero-buttons">
       <a class="btn btn-primary" href="https://github.com/securin-public/securin-skills/raw/main/securin-platform.mcpb">
         <img src="https://cdn.simpleicons.org/anthropic/ffffff" alt=""> Download for Claude Desktop
-      </a>
-      <a class="btn btn-secondary" href="https://insiders.vscode.dev/redirect/mcp/install?name=securin&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.securin.io%2Fmcp%22%7D">
-        <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt=""> Install in VS Code
-      </a>
-      <a class="btn btn-secondary" href="cursor://anysphere.cursor-deeplink/mcp/install?name=securin&config=eyJ1cmwiOiJodHRwczovL21jcC5zZWN1cmluLmlvL21jcCJ9">
-        <img src="https://cdn.simpleicons.org/cursor/000000" alt=""> Install in Cursor
       </a>
     </div>
 
@@ -62,7 +56,7 @@
 
     <div class="stats-strip" aria-label="At a glance">
       <div class="stat"><span class="stat-num">6</span><span class="stat-label">curated skills</span></div>
-      <div class="stat"><span class="stat-num">7+</span><span class="stat-label">supported AI hosts</span></div>
+      <div class="stat"><span class="stat-num">5+</span><span class="stat-label">supported AI hosts</span></div>
       <div class="stat"><span class="stat-num">50+</span><span class="stat-label">MCP tools</span></div>
     </div>
   </div>
@@ -81,7 +75,7 @@
       </div>
       <div class="pillar-card">
         <h3>AI-native, host-agnostic</h3>
-        <p>Works with Claude, Cursor, Copilot, Gemini, Codex, Windsurf, and any MCP host.</p>
+        <p>Works with Claude, Gemini, Codex, Windsurf, and any MCP host.</p>
       </div>
       <div class="pillar-card">
         <h3>Built to be extended</h3>
@@ -163,12 +157,6 @@
         <li><button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-claude-code" data-tab="claude-code">
           <img src="https://cdn.simpleicons.org/anthropic/000000" alt=""> Claude Code
         </button></li>
-        <li><button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-vscode" data-tab="vscode">
-          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt=""> VS Code
-        </button></li>
-        <li><button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-cursor" data-tab="cursor">
-          <img src="https://cdn.simpleicons.org/cursor/000000" alt=""> Cursor
-        </button></li>
         <li><button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-other" data-tab="other">
           Windsurf · Gemini · Codex
         </button></li>
@@ -199,6 +187,27 @@
           </div>
           <p>Save, then <strong>fully quit and relaunch</strong> Claude Desktop. Requires Node.js 18+.</p>
         </details>
+
+        <h3 style="margin-top: 2rem;">Claude Teams &amp; Enterprise — add via UI</h3>
+        <p>Organization owners can add the connector from <a href="https://claude.ai">claude.ai</a> — no file editing needed:</p>
+        <ol>
+          <li>Go to <strong>Organization Settings → Connectors → Add → Custom → Web</strong></li>
+          <li>Enter name: <code>Securin Platform</code></li>
+          <li>Enter URL: <code>https://mcp.securin.io/mcp</code></li>
+          <li>Click <strong>Add</strong></li>
+        </ol>
+        <p>Team members then go to <strong>Customize → Connectors</strong>, find <strong>Securin Platform</strong>, and click <strong>Connect</strong> — the browser redirects to Securin for sign-in automatically.</p>
+
+        <h3 style="margin-top: 2rem;">Claude Cowork — Skills Plugin</h3>
+        <p>After adding the MCP connector, each team member can install the Skills Plugin to access the 6 guided workflows within Claude Cowork:</p>
+        <ol>
+          <li>In Claude Cowork, open <strong>Customize</strong> from the left sidebar.</li>
+          <li>Under <strong>Personal Plugins</strong>, click the <strong>+</strong> icon and select <strong>Create Plugin</strong>.</li>
+          <li>Choose <strong>Add Marketplace</strong>, enter the repository URL: <code>https://github.com/securin-public/securin-skills</code>, then click <strong>Sync</strong>.</li>
+          <li>The <strong>Securin Platform</strong> plugin will appear under <strong>Personal</strong> in the plugins directory.</li>
+          <li>Click <strong>+</strong> next to <strong>Securin Platform</strong> to activate it.</li>
+          <li>The skills are now active — start asking questions in any conversation.</li>
+        </ol>
       </div>
 
       <!-- Claude Code -->
@@ -227,40 +236,6 @@
 }</code></pre>
           </div>
         </details>
-      </div>
-
-      <!-- VS Code -->
-      <div class="tab-panel" id="tab-vscode" role="tabpanel" aria-hidden="true">
-        <h3>One-click install (Copilot)</h3>
-        <p>
-          <a class="btn btn-primary" href="https://insiders.vscode.dev/redirect/mcp/install?name=securin&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.securin.io%2Fmcp%22%7D">
-            <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt=""> Install in VS Code
-          </a>
-        </p>
-        <p>Or run from a terminal:</p>
-        <div class="code-wrap">
-          <pre><code>code --add-mcp '{"name":"securin","type":"http","url":"https://mcp.securin.io/mcp"}'</code></pre>
-        </div>
-        <p>For skills, clone the repo and add <code>skills/</code> to <code>chat.agentSkillsLocations</code> in your VS Code settings — see the <a href="https://github.com/securin-public/securin-skills/blob/main/docs/host-setup.md#vs-code-github-copilot">full guide</a>.</p>
-      </div>
-
-      <!-- Cursor -->
-      <div class="tab-panel" id="tab-cursor" role="tabpanel" aria-hidden="true">
-        <h3>One-click install</h3>
-        <p>
-          <a class="btn btn-primary" href="cursor://anysphere.cursor-deeplink/mcp/install?name=securin&config=eyJ1cmwiOiJodHRwczovL21jcC5zZWN1cmluLmlvL21jcCJ9">
-            <img src="https://cdn.simpleicons.org/cursor/ffffff" alt=""> Install in Cursor
-          </a>
-        </p>
-        <p>Or add to <code>.cursor/mcp.json</code>:</p>
-        <div class="code-wrap">
-          <pre><code>{
-  "mcpServers": {
-    "securin": { "url": "https://mcp.securin.io/mcp" }
-  }
-}</code></pre>
-        </div>
-        <p>For skills, clone the repo and copy <code>skills/</code> subdirectories into your project's <code>.agents/skills/</code>.</p>
       </div>
 
       <!-- Other -->

@@ -12,9 +12,6 @@
 
 <p align="center">
   <a href="https://github.com/securin-public/securin-skills/raw/main/securin-platform.mcpb"><img src="https://img.shields.io/badge/Claude_Desktop-Download_.mcpb-D97757?style=flat-square&logo=anthropic&logoColor=white" alt="Install in Claude Desktop"></a>
-  <a href="https://insiders.vscode.dev/redirect/mcp/install?name=securin&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.securin.io%2Fmcp%22%7D"><img src="https://img.shields.io/badge/VS_Code-Install_MCP-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white" alt="Install in VS Code"></a>
-  <a href="https://insiders.vscode.dev/redirect/mcp/install?name=securin&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.securin.io%2Fmcp%22%7D&quality=insiders"><img src="https://img.shields.io/badge/VS_Code_Insiders-Install_MCP-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white" alt="Install in VS Code Insiders"></a>
-  <a href="cursor://anysphere.cursor-deeplink/mcp/install?name=securin&config=eyJ1cmwiOiJodHRwczovL21jcC5zZWN1cmluLmlvL21jcCJ9"><img src="https://img.shields.io/badge/Cursor-Install_MCP-000000?style=flat-square&logo=cursor&logoColor=white" alt="Install in Cursor"></a>
 </p>
 
 <p align="center">
@@ -94,9 +91,36 @@ Team members then go to **Customize → Connectors**, find **Securin Platform**,
 
 <img width="958" height="394" alt="3" src="https://github.com/user-attachments/assets/e256701d-e54d-446d-9159-7be56e6d11f5" />
 
-> Skills are not loaded on claude.ai. For full skills + MCP, use Claude Code.
-
 See the [Claude docs on custom connectors](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) for more detail.
+
+**Claude Cowork — Skills Plugin**
+
+After adding the MCP connector, each team member can also install the Securin Skills Plugin to access the 6 guided workflows directly within Claude Cowork:
+
+1. In Claude Cowork, open **Customize** from the left sidebar.
+2. Under **Personal Plugins**, click the **+** icon and select **Create Plugin**.
+
+<img width="1920" height="992" alt="Screenshot (2)" src="https://github.com/user-attachments/assets/23337ce2-ec8b-4c4a-9725-a2729f59fc45" />
+
+3. Choose **Add Marketplace**, enter the skills repository URL:
+   ```
+   https://github.com/securin-public/securin-skills
+   ```
+   Then click **Sync**.
+   
+<img width="1920" height="988" alt="Screenshot (3)" src="https://github.com/user-attachments/assets/9dd824b4-1638-4008-9811-f22ba73efeba" />
+
+<img width="955" height="486" alt="44" src="https://github.com/user-attachments/assets/e8ffb7c9-b766-4efc-8630-d1d1964d0878" />
+
+4. The **Securin Platform** plugin will appear under **Personal** in the plugins directory.
+
+<img width="948" height="489" alt="55" src="https://github.com/user-attachments/assets/f9229842-ae72-4073-b688-0dcc09fdc1d7" />
+
+5. Click **+** next to **Securin Platform** to activate it.
+6. The skills are now active — start asking questions in any conversation.
+
+<img width="953" height="470" alt="66" src="https://github.com/user-attachments/assets/e4fc6e0d-ef88-47a2-82a4-d8eb604b97d1" />
+
 
 ---
 
@@ -133,26 +157,6 @@ Add to your project's `.claude/settings.json`:
 
 </details>
 <!-- prettier-ignore-end -->
-
----
-
-<!-- prettier-ignore -->
-### <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" height="16" alt="VS Code"> VS Code (GitHub Copilot)
-
-Click the **[Install in VS Code](https://insiders.vscode.dev/redirect/mcp/install?name=securin&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.securin.io%2Fmcp%22%7D)** badge above, or run:
-
-```bash
-code --add-mcp '{"name":"securin","type":"http","url":"https://mcp.securin.io/mcp"}'
-```
-
-For skills: clone this repo and point VS Code at `skills/` — see [docs/host-setup.md](docs/host-setup.md#vs-code-github-copilot).
-
----
-
-<!-- prettier-ignore -->
-### <img src="https://cdn.simpleicons.org/cursor/000000" height="16" alt="Cursor"> Cursor
-
-Click the **[Install in Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=securin&config=eyJ1cmwiOiJodHRwczovL21jcC5zZWN1cmluLmlvL21jcCJ9)** badge above. Skills: clone this repo and copy `skills/` into your project's `.agents/skills/`.
 
 ---
 
@@ -233,7 +237,7 @@ claude mcp add securin --transport http \
 }
 ```
 
-**VS Code / Cursor / other HTTP-native hosts:**
+**Other HTTP-native hosts:**
 ```json
 {
   "servers": {
@@ -324,7 +328,7 @@ Clear cached tokens and reconnect. In Claude Code: `/mcp` → select `securin` �
 </details>
 
 <details>
-<summary>Skills not loading (Claude Code, VS Code, etc.)</summary>
+<summary>Skills not loading</summary>
 
 - **Claude Code:** confirm `/plugin` lists `securin-platform`. If not, re-run the install command.
 - **Other hosts:** verify skill folders are in the host's expected directory (e.g. `.agents/skills/`) and each has a `SKILL.md`. Restart the host so it re-indexes.
@@ -355,6 +359,48 @@ Your account may use the composite asset data model. The skills auto-detect this
 
 </details>
 <!-- prettier-ignore-end -->
+
+---
+
+## Contributing
+
+Contributions are welcome — whether you're improving an existing skill, fixing a bug, or adding a new workflow.
+
+### Reporting issues
+
+Open an issue at [securin-public/securin-skills/issues](https://github.com/securin-public/securin-skills/issues) with a clear description and steps to reproduce.
+
+### Improving an existing skill
+
+Each skill lives in `skills/<skill-name>/SKILL.md`. To improve one:
+
+1. Fork the repository and create a feature branch.
+2. Edit `SKILL.md` — instructions are plain Markdown. Preserve the frontmatter block (`name`, `description`) and the standard section headings (`## Purpose`, `## When to use`, `## Steps`, `## Output format`).
+3. Shared reference material (FQL grammar, deep links, brand guidelines, etc.) lives in `skills/_shared/` and is mirrored into each skill's `references/_shared/`. Update it there if a change applies across all skills.
+4. Open a pull request with a clear description of what changed and why.
+
+### Adding a new skill
+
+1. Copy an existing skill directory as a starting point:
+   ```bash
+   cp -r skills/securin-cve-enrichment skills/securin-your-skill-name
+   ```
+2. Update `SKILL.md`:
+   - **Frontmatter:** Set `name` (kebab-case, matching the directory name) and a precise one-line `description` — this is what the agent reads to decide when to invoke the skill.
+   - **Purpose:** One paragraph on what the skill produces.
+   - **When to use:** Bullet list of example user queries that should trigger this skill.
+   - **Steps:** Numbered agent instructions referencing specific MCP tools (`Securin__<toolName>`).
+   - **Output format:** Describe the exact structure the skill should return.
+3. Verify that every MCP tool referenced in your skill exists — use `search_tools` or `ping` in Claude Code to confirm.
+4. Test the skill end-to-end with Claude Code before submitting. Include a sample query and its expected output in the pull request description.
+
+### Standards
+
+- Skill directory names use the `securin-` prefix and kebab-case (e.g. `securin-my-new-skill`).
+- Keep each skill focused on a single job. If a skill requires many conditional branches, consider splitting it into two distinct skills.
+- Do not duplicate shared reference files — keep them in `skills/_shared/` and reference them from there.
+- Do not commit credentials, tokens, API keys, or personal data of any kind.
+- Match the formatting and tone of existing skills for consistency.
 
 ---
 
