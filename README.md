@@ -161,16 +161,28 @@ Add to your project's `.claude/settings.json`:
 ---
 
 <!-- prettier-ignore -->
-### <img src="https://cdn.simpleicons.org/openai/000000" height="16" alt="ChatGPT"> ChatGPT
+### <img src="https://uxwing.com/wp-content/themes/uxwing/download/brands-and-social-media/chatgpt-icon.png" height="16" alt="OpenAI"> ChatGPT
 
 1. Go to **Apps** in the left sidebar and click **Create**.
+
+<img width="1789" height="877" alt="image" src="https://github.com/user-attachments/assets/ccdac211-6bf5-4aad-aa72-a9a625235826" />
+
 2. In the dialog that opens, fill in:
    - **Name:** `Securin Platform`
    - **Description:** *(optional)*
    - **MCP Server URL:** `https://mcp.securin.io/mcp`
    - **Authentication:** `OAuth`
+  
+<img width="676" height="810" alt="image" src="https://github.com/user-attachments/assets/c5fd5254-c894-41b4-b21c-6da899313549" />
+
 3. Click **Create**.
+
+<img width="660" height="809" alt="image" src="https://github.com/user-attachments/assets/7621dbc1-f59b-4dbf-8e68-3d8249235c44" />
+
 4. The browser opens the Securin auth page — sign in with your Securin credentials.
+
+<img width="1831" height="877" alt="image" src="https://github.com/user-attachments/assets/0f07133f-8a17-40ac-b22e-ff25382c42a5" />
+
 5. Once authentication succeeds, the connector is active and ready to use.
 
 > In enterprise workspaces, only owners/admins can create connectors.
