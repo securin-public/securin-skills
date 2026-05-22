@@ -157,6 +157,9 @@
         <li><button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-claude-code" data-tab="claude-code">
           <img src="https://cdn.simpleicons.org/anthropic/000000" alt=""> Claude Code
         </button></li>
+        <li><button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-chatgpt" data-tab="chatgpt">
+          <img src="https://cdn.simpleicons.org/openai/000000" alt=""> ChatGPT
+        </button></li>
         <li><button class="tab-button" role="tab" aria-selected="false" aria-controls="tab-other" data-tab="other">
           Windsurf · Gemini · Codex
         </button></li>
@@ -236,6 +239,26 @@
 }</code></pre>
           </div>
         </details>
+      </div>
+
+      <!-- ChatGPT -->
+      <div class="tab-panel" id="tab-chatgpt" role="tabpanel" aria-hidden="true">
+        <h3>Create a connector</h3>
+        <ol>
+          <li>Go to <strong>Apps</strong> in the left sidebar and click <strong>Create</strong>.</li>
+          <li>In the dialog that opens, fill in:
+            <ul>
+              <li><strong>Name:</strong> <code>Securin Platform</code></li>
+              <li><strong>Description:</strong> <em>(optional)</em></li>
+              <li><strong>MCP Server URL:</strong> <code>https://mcp.securin.io/mcp</code></li>
+              <li><strong>Authentication:</strong> <code>OAuth</code></li>
+            </ul>
+          </li>
+          <li>Click <strong>Create</strong>.</li>
+          <li>The browser opens the Securin auth page — sign in with your Securin credentials.</li>
+          <li>Once authentication succeeds, the connector is active and ready to use.</li>
+        </ol>
+        <p class="note">In enterprise workspaces, only owners/admins can create connectors.</p>
       </div>
 
       <!-- Other -->
