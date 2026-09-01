@@ -272,7 +272,7 @@ Alternative for "worst externally-facing first":
 
 ## Visual output (CC-4)
 
-When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand palette (`#712880 / #453983 / #542ade / #987bf7 / #d7cbfb`), Lato font, light theme, with the Securin logo. Default colormap uses the monotone gradient defined in [_shared/brand.md](references/_shared/brand.md). Offer customization after delivery; never default to a different brand.
+When this skill produces aggregated or multi-row data (counts, trends, distributions, comparisons, single-CVE reports), emit a chart/graph/infographic in the Securin brand — multi-series palette (`#9C66FF / #7F30FF / #E96001 / #4D268D / #DD639C / …`, assigned in order), semantic CHML severity colors (Critical `#A60D08` → Info `#C5CBD6`), Poppins headings on DM Sans body, light theme, and the Securin logo. Use the 10-stop brand purple ramp for heatmaps/sequential scales; gradients are background decoration only — never on chart bars, lines, or slices. Full color system in [_shared/brand.md](references/_shared/brand.md). Offer customization after delivery; never default to a different brand.
 
 ## References
 

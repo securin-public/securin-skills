@@ -1,6 +1,9 @@
 <!-- prettier-ignore-start -->
 <p align="center">
-  <img src="skills/_shared/securin_logos/Securin_logo_rounded.png" alt="Securin" height="48">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="skills/_shared/securin_logos/securin-wordmark-on-dark.png">
+    <img src="skills/_shared/securin_logos/securin-wordmark-on-light.png" alt="Securin" height="48">
+  </picture>
 </p>
 
 <h3 align="center">Securin Platform — Skills & MCP Server</h3>

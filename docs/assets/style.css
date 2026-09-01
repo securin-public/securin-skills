@@ -2,19 +2,21 @@
    Palette and typography per skills/_shared/brand.md */
 
 :root {
-  --primary: #712880;
-  --primary-dark: #453983;
-  --accent-1: #542ade;
-  --accent-2: #987bf7;
-  --accent-3: #d7cbfb;
-  --bg: #ffffff;
-  --bg-soft: #faf7ff;
-  --text: #111111;
-  --text-soft: #4a4a4a;
-  --border: rgba(113, 40, 128, 0.12);
-  --shadow-sm: 0 1px 2px rgba(69, 57, 131, 0.06), 0 1px 3px rgba(69, 57, 131, 0.05);
-  --shadow-md: 0 4px 12px rgba(69, 57, 131, 0.08), 0 2px 4px rgba(69, 57, 131, 0.04);
-  --shadow-lg: 0 12px 32px rgba(69, 57, 131, 0.12), 0 4px 8px rgba(69, 57, 131, 0.06);
+  --primary: #7F30FF;
+  --primary-dark: #4D268D;
+  --accent-1: #6F2DDA;
+  --accent-2: #9C66FF;
+  --accent-3: #CEB6FC;
+  --bg: #FDFCFD;
+  --bg-soft: #F7F4FD;
+  --text: #241D30;
+  --text-soft: #3C364A;
+  --border: rgba(127, 48, 255, 0.14);
+  --font-heading: "Poppins", "DM Sans", "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-body: "DM Sans", "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --shadow-sm: 0 1px 2px rgba(36, 29, 48, 0.06), 0 1px 3px rgba(36, 29, 48, 0.05);
+  --shadow-md: 0 4px 12px rgba(36, 29, 48, 0.08), 0 2px 4px rgba(36, 29, 48, 0.04);
+  --shadow-lg: 0 12px 32px rgba(36, 29, 48, 0.12), 0 4px 8px rgba(36, 29, 48, 0.06);
   --radius: 10px;
   --radius-lg: 16px;
   --max-width: 1100px;
@@ -26,13 +28,18 @@ html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  font-family: "Lato", "Google Sans", "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.6;
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
 }
 
 a { color: var(--primary); text-decoration: none; }
@@ -65,8 +72,8 @@ code {
 }
 
 pre {
-  background: #1a1033;
-  color: #e7e0ff;
+  background: #241D30;
+  color: #FDFCFD;
   padding: 1.2rem 1.4rem;
   border-radius: var(--radius);
   overflow-x: auto;
@@ -454,7 +461,7 @@ section + section {
   right: 0.6rem;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #e7e0ff;
+  color: #FDFCFD;
   padding: 0.3rem 0.6rem;
   border-radius: 5px;
   font-size: 0.78rem;
@@ -613,8 +620,8 @@ section + section {
 /* ---- Footer ---- */
 
 .footer {
-  background: #0d0820;
-  color: #b8b1d9;
+  background: #241D30;
+  color: rgba(253, 252, 253, 0.72);
   padding: 2.5rem 0;
   font-size: 0.9rem;
 }
@@ -642,7 +649,7 @@ section + section {
 }
 
 .footer-links a {
-  color: #b8b1d9;
+  color: rgba(253, 252, 253, 0.72);
 }
 
 .footer-links a:hover {
@@ -654,7 +661,7 @@ section + section {
   width: 100%;
   text-align: center;
   margin-top: 1.5rem;
-  color: #6f689a;
+  color: rgba(253, 252, 253, 0.55);
   font-size: 0.85rem;
 }
 
