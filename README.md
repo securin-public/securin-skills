@@ -92,7 +92,8 @@ Organization owners can add the connector directly from [claude.ai](https://clau
 
 Team members then go to **Customize → Connectors**, find **Securin Platform**, and click **Connect** — the browser redirects to Securin for sign-in automatically.
 
-<img width="958" height="394" alt="3" src="https://github.com/user-attachments/assets/e256701d-e54d-446d-9159-7be56e6d11f5" />
+<img width="832" height="724" alt="3" src="https://github.com/user-attachments/assets/0e193ba2-25f3-4d14-83b1-29efd6c96528" />
+
 
 See the [Claude docs on custom connectors](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) for more detail.
 
@@ -171,8 +172,7 @@ Add to your project's `.claude/settings.json`:
 <img width="1527" height="815" alt="image" src="https://github.com/user-attachments/assets/296f719f-cac6-49be-adf2-80a44121b8d1" />
 
 
-2. In the dialog that opens, fill in:<img width="1527" height="815" alt="596800336-ccdac211-6bf5-4aad-aa72-a9a625235826" src="https://github.com/user-attachments/assets/42b7cb3d-dc9a-4886-9709-b56282a61b03" />
-
+2. In the dialog that opens, fill in:
    - **Name:** `Securin Platform`
    - **Description:** *(optional)*
    - **MCP Server URL:** `https://mcp.securin.io/mcp`
@@ -186,7 +186,8 @@ Add to your project's `.claude/settings.json`:
 
 4. The browser opens the Securin auth page — sign in with your Securin credentials.
 
-<img width="1831" height="877" alt="image" src="https://github.com/user-attachments/assets/0f07133f-8a17-40ac-b22e-ff25382c42a5" />
+<img width="1114" height="704" alt="image" src="https://github.com/user-attachments/assets/a52f774c-607a-4196-b9e1-3e28221d5057" />
+
 
 5. Once authentication succeeds, the connector is active and ready to use.
 
