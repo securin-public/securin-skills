@@ -168,9 +168,11 @@ Add to your project's `.claude/settings.json`:
 
 1. Go to **Apps** in the left sidebar and click **Create**.
 
-<img width="1789" height="877" alt="image" src="https://github.com/user-attachments/assets/ccdac211-6bf5-4aad-aa72-a9a625235826" />
+<img width="1527" height="815" alt="image" src="https://github.com/user-attachments/assets/296f719f-cac6-49be-adf2-80a44121b8d1" />
 
-2. In the dialog that opens, fill in:
+
+2. In the dialog that opens, fill in:<img width="1527" height="815" alt="596800336-ccdac211-6bf5-4aad-aa72-a9a625235826" src="https://github.com/user-attachments/assets/42b7cb3d-dc9a-4886-9709-b56282a61b03" />
+
    - **Name:** `Securin Platform`
    - **Description:** *(optional)*
    - **MCP Server URL:** `https://mcp.securin.io/mcp`
