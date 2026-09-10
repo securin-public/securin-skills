@@ -10,16 +10,9 @@ If you believe you have found a security vulnerability in this plugin,
 its shipped MCP configuration, or its skill content, please report it
 responsibly so we can fix it before it is publicly disclosed.
 
-**Preferred channel — email:**
-
-Send a detailed report to **security@securin.io**. Encrypt with Securin's
-PGP key if your finding is sensitive (key fingerprint and published key
-available at <https://securin.io/.well-known/security.txt>).
-
-**Alternate channel — private GitHub advisory:**
-
-Open a private security advisory against this repository:
-<https://github.com/securin-public/securin-skills/security/advisories/new>
+Send a detailed report by email to **security@securin.io**. If your finding
+is sensitive, say so in your first email and we'll arrange an encrypted
+channel before you share the details.
 
 Please include:
 
@@ -46,16 +39,14 @@ In scope:
 
 Out of scope (report to the relevant upstream project):
 
-- The Securin Platform MCP Server itself →
-  <https://github.com/securin-inc/securin-mcp>
-- The Securin Platform API and UI → security@securin.io
+- The Securin Platform MCP Server itself, and the Securin Platform API and
+  UI → security@securin.io
 - Claude Code / Cowork / Desktop / other host clients → the respective
   vendor (Anthropic, Microsoft, etc.)
 
 ## Our response
 
-When you report a vulnerability through one of the preferred channels,
-you can expect:
+When you report a vulnerability to **security@securin.io**, you can expect:
 
 | Stage | Timeline |
 |---|---|
@@ -75,7 +66,7 @@ Securin will not take legal action against researchers who:
 - Make a good-faith effort to avoid privacy violations, destruction of
   data, and interruption or degradation of our service during their
   research.
-- Report vulnerabilities through the channels above and give us a
+- Report vulnerabilities through the channel above and give us a
   reasonable opportunity to fix the issue before public disclosure.
 - Do not exfiltrate data beyond what is necessary to prove the
   vulnerability.
