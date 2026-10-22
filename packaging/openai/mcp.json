@@ -1,0 +1,24 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "securin": {
+      "type": "streamable-http",
+      "url": "https://mcp.securin.io/mcp",
+      "extensions": {
+        "com.openai": {
+          "auth": {
+            "type": "oauth",
+            "client": {
+              "mode": "dcr"
+            },
+            "authorizationUrl": "https://auth.securin.io/auth/realms/CyberSecurityWorks/protocol/openid-connect/auth",
+            "tokenUrl": "https://mcp.securin.io/token",
+            "registrationUrl": "https://mcp.securin.io/register",
+            "resource": "https://mcp.securin.io/mcp",
+            "baseScopes": ["openid"]
+          }
+        }
+      }
+    }
+  }
+}
