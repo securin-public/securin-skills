@@ -1,4 +1,4 @@
-<!-- Mirrored from skills/_shared/groupby-allowlist.md. Do not edit here — edit the source and run scripts/sync-shared.sh. -->
+<!-- Mirrored from skills/_shared/groupby-allowlist.md. Do not edit here; edit the source and run scripts/sync-shared.sh. -->
 
 ## GroupBy Aggregation Columns
 

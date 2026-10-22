@@ -14,7 +14,7 @@ is no third option.
 The URL you embed in the response is built ONLY from the tool's returned
 `shortCode` — never from pattern matching, prior turns, or guessing.
 
-Whenever your Final Response presents a **list, table, or aggregation of customer data** (assets, exposures, vulnerabilities, weaknesses, components, threat actors, Securin Signals stats, dashboards), generate a deep link back into the Securin Platform UI so the user can open the exact same filtered view there. Render the link directly under the relevant table/list — not at the bottom of the response.
+Whenever your Final Response presents a **list, table, or aggregation of customer data** (assets, exposures, vulnerabilities, weaknesses, components, threat actors, Securin Signals stats, dashboards), generate a deep link back into the Securin Platform UI so the user can open the exact same filtered view there. Render the link directly under the relevant table/list; not at the bottom of the response.
 
 ### When to Generate
 
