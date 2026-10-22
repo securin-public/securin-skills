@@ -1,4 +1,4 @@
-<!-- Mirrored from skills/_shared/account-preflight.md. Do not edit here — edit the source and run scripts/sync-shared.sh. -->
+<!-- Mirrored from skills/_shared/account-preflight.md. Do not edit here; edit the source and run scripts/sync-shared.sh. -->
 
 # Account-ID Preflight (CC-1)
 

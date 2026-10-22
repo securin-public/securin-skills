@@ -1,0 +1,24 @@
+{
+  "name": "securin-platform",
+  "displayName": "Securin Platform",
+  "version": "0.1.0",
+  "mcpbVersion": "1.2.3",
+  "description": "Securin Platform skills for exposure triage, CVE enrichment, threat correlation, and remediation guidance. Connects to the Securin MCP server with per user OAuth single sign on. A Securin account is required.",
+  "homepage": "https://securin.io",
+  "repository": "https://github.com/securin-public/securin-skills",
+  "license": "LicenseRef-Securin-Proprietary",
+  "authorName": "Securin",
+  "supportEmail": "support@securin.io",
+  "supportUrl": "https://github.com/securin-public/securin-skills/issues",
+  "privacyPolicyUrl": "https://www.securin.io/privacy-policy",
+  "mcpUrl": "https://mcp.securin.io/mcp",
+  "logo": "assets/logo.svg",
+  "logoPng": "assets/logo.png",
+  "keywords": [
+    "securin",
+    "vulnerability",
+    "exposure",
+    "cve",
+    "remediation"
+  ]
+}

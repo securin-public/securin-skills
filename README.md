@@ -67,7 +67,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
   "mcpServers": {
     "securin": {
       "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.securin.io/mcp"]
+      "args": ["-y", "mcp-remote@0.1.38", "https://mcp.securin.io/mcp"]
     }
   }
 }
@@ -264,7 +264,7 @@ claude mcp add securin --transport http \
   "mcpServers": {
     "securin": {
       "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.securin.io/api/mcp",
+      "args": ["-y", "mcp-remote@0.1.38", "https://mcp.securin.io/api/mcp",
                "--header", "Authorization:${AUTH_TOKEN}"],
       "env": { "AUTH_TOKEN": "Bearer <access-token>" }
     }
@@ -438,6 +438,10 @@ Each skill lives in `skills/<skill-name>/SKILL.md`. To improve one:
 - Match the formatting and tone of existing skills for consistency.
 
 ---
+
+## Marketplace packaging
+
+Listing files for Cursor, Grok Bot, OpenAI, and Claude are in this repository. Read [docs/marketplaces.md](docs/marketplaces.md) for the format used by each host. Human submission steps are in [docs/submission.md](docs/submission.md). OAuth redirect URIs are in [docs/oauth-redirects.md](docs/oauth-redirects.md).
 
 ## Learn more
 
