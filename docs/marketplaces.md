@@ -1,6 +1,6 @@
 # Marketplace formats
 
-Plugin name `securin-platform`. Package version `0.1.0`. Homepage `https://securin.io`. Support `support@securin.io`. Logo files in `assets/` are copies of the existing Securin icon in `skills/_shared/securin_logos/`. The license field in every manifest is `LicenseRef-Securin-Proprietary`, which points at the root `LICENSE`. Legal has not signed off on that identifier. See [submission.md](submission.md).
+Plugin name `securin-platform`. Package version `0.1.0`. Homepage `https://securin.io`. Support `support@securin.io`. Logo files in `assets/` are copies of the existing Securin icon in `skills/_shared/securin_logos/`. We set the license field in every manifest to `LicenseRef-Securin-Proprietary`, which points at the root `LICENSE`. See [submission.md](submission.md).
 
 The remote server for every listing is `https://mcp.securin.io/mcp`. Auth is per user OAuth. Details and redirect URIs are in [oauth-redirects.md](oauth-redirects.md). Tool boundaries are in [tool-scope.md](tool-scope.md).
 
@@ -15,9 +15,9 @@ Format: Cursor plugin.
 | `skills/*/SKILL.md` | Six skills. `skills/_shared` has no `SKILL.md`, so it is not a skill. |
 | `assets/logo.svg` | Logo path in the manifest. |
 
-Submit the public GitHub repository at https://cursor.com/marketplace/publish. There is one plugin at the repository root, so this repo does not add `.cursor-plugin/marketplace.json`. That file is for a repository that holds several plugins in subfolders.
+We submit the public GitHub repository at https://cursor.com/marketplace/publish. There is one plugin at the repository root, so we do not add `.cursor-plugin/marketplace.json`. That file is for a repository that holds several plugins in subfolders.
 
-Cursor also loads an Agent Plugin when `plugin.json` sits at the repository root. This repo keeps the OpenAI Agent Plugin manifest under `packaging/openai/` and puts it at the root of the upload zip only. A second root `plugin.json` in git could be installed beside the Cursor manifest.
+Cursor also loads an Agent Plugin when `plugin.json` sits at the repository root. We keep the OpenAI Agent Plugin manifest under `packaging/openai/` and we put it at the root of the upload zip only. A second root `plugin.json` in git could be installed beside the Cursor manifest.
 
 ## Grok Bot and Grok
 
@@ -29,15 +29,15 @@ xAI Grok on the web also has a connector callback, `https://grok.com/connectors-
 
 ### Grok Build catalog
 
-Grok Build installs from the catalog in `xai-org/plugin-marketplace`. A third party entry points at this repository with a pinned commit. The Grok reader looks for `.grok-plugin/plugin.json` first, then `.cursor-plugin/plugin.json`. This repo includes `.grok-plugin/plugin.json` so the catalog resolves version `0.1.0`, the six skills, and `./mcp.json`.
+Grok Build installs from the catalog in `xai-org/plugin-marketplace`. A third party entry points at this repository with a pinned commit. The Grok reader looks for `.grok-plugin/plugin.json` first, then `.cursor-plugin/plugin.json`. We include `.grok-plugin/plugin.json` so the catalog resolves version `0.1.0`, the six skills, and `./mcp.json`.
 
-The catalog pull request cannot be opened with a correct commit SHA until this package is on the default branch. The JSON to paste is in [submission.md](submission.md).
+We cannot open the catalog pull request with a correct commit SHA until this package is on the default branch. The JSON to paste is in [submission.md](submission.md).
 
 ## OpenAI
 
 Checked against OpenAI plugin docs on 2026-10-22.
 
-ChatGPT apps and Codex plugins now share one plugin directory. A plugin may include skills, an MCP server, or both. An Apps SDK user interface is optional. This package does not add a custom UI, an `.app.json` file, or lifecycle hooks. Hooks and app references are not accepted in a public zip today.
+ChatGPT apps and Codex plugins now share one plugin directory. A plugin may include skills, an MCP server, or both. An Apps SDK user interface is optional. We do not add a custom UI, an `.app.json` file, or lifecycle hooks. Hooks and app references are not accepted in a public zip today.
 
 The upload is a zip with `plugin.json` at the zip root, not a pull request. Build it with `python3 scripts/build-openai-plugin-zip.py`. Sources:
 
@@ -70,12 +70,12 @@ Two listings exist, and they are different artifacts.
 
 `.mcp.json` no longer runs `npx`. The Anthropic directory blocks an unpinned `npx` launcher, and a pinned launcher is still held for a reviewer. Native HTTPS avoids that download. Claude Desktop users who need a stdio process keep using `securin-platform.mcpb`.
 
-The Claude Code test is a real sign in. Add the marketplace with `/plugin marketplace add securin-public/securin-skills`, install with `/plugin install securin-platform@securin-skills`, then authenticate `securin` in `/mcp`. Checking that no `npx` process started is not enough. Keycloak still needs to allow `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback` before that sign in is safe for users who update the plugin. This repository does not record a live Claude Code sign in. The claude.ai custom connector UI in the README is a separate path. Its callback `https://claude.ai/api/mcp/auth_callback` stays Needed in [oauth-redirects.md](oauth-redirects.md) because this repository has no live sign in record for it.
+We test Claude Code with a real sign in. We add the marketplace with `/plugin marketplace add securin-public/securin-skills`, we install with `/plugin install securin-platform@securin-skills`, then we authenticate `securin` in `/mcp`. We do not treat a missing `npx` process as a finished test. Claude Code redirect URIs are `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback`. We list them as Needed in [oauth-redirects.md](oauth-redirects.md). The claude.ai custom connector UI in the README is a separate path. We mark `https://claude.ai/api/mcp/auth_callback` as Needed. We do not treat that UI as a completed sign in.
 
-Directory submission is a portal flow at https://claude.ai/directory/manage for a plugin bundle and, separately, an MCP connector. `claude plugin validate` is the local syntax check. It was not available in the environment that prepared this change. JSON Schema checks cover the published Schema Store documents saved under `packaging/schemas/`.
+Directory submission is a portal flow at https://claude.ai/directory/manage for a plugin bundle and, separately, an MCP connector. `claude plugin validate` is the local syntax check. We also check the manifests against the schema snapshots in `packaging/schemas/`.
 
 ### Claude Desktop MCPB
 
-`mcpb/manifest.json` and `securin-platform.mcpb` are the Desktop bundle. The manifest version is `1.2.3`. The marketplace plugin version stays `0.1.0`. The bundle was already shipping at `1.2.2` with `license` set to `MIT`, which does not match the root `LICENSE`. `1.2.3` changes that field to `LicenseRef-Securin-Proprietary` and refreshes the description. It does not reset the bundle to `0.1.0`, because a lower version would look like an older Desktop release.
+`mcpb/manifest.json` and `securin-platform.mcpb` are the Desktop bundle. We set the manifest version to `1.2.3`. We keep the marketplace plugin version at `0.1.0`. The bundle was already shipping at `1.2.2` with `license` set to `MIT`, which does not match the root `LICENSE`. In `1.2.3` we point that field at the root `LICENSE` with `LicenseRef-Securin-Proprietary` and we refresh the description. We do not reset the bundle to `0.1.0`, because a lower version would look like an older Desktop release.
 
 The bundle runs vendored `mcp-remote` `0.1.38` from inside the archive. It does not curl a script and it does not download an unpinned package at install time.

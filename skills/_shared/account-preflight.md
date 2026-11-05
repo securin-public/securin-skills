@@ -18,7 +18,7 @@ Threat records come from Securin Signals. The score is Risk Index. The API field
 
 If no skill fits, use `search_tools` to find a tool by description, then apply the confirmation rule above.
 
-OpenAI review negatives stay covered here: refuse bulk deletion, do not create a ticket without confirmation, and do not cross into an account the user cannot open.
+The same limits cover bulk deletion, creating a ticket without confirmation, and an account the signed in user cannot open.
 
 ## The rule
 

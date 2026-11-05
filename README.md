@@ -90,7 +90,7 @@ Organization owners can add the connector directly from [claude.ai](https://clau
 
 <img width="959" height="398" alt="2" src="https://github.com/user-attachments/assets/ee85cba1-0159-4f55-863e-e56e218d73d0" />
 
-Team members then go to **Customize → Connectors**, find **Securin Platform**, and click **Connect**. The browser should open Securin sign-in. That sign-in sends the redirect URI `https://claude.ai/api/mcp/auth_callback`. The allowlist status for that URI is Needed, not Verified. See [docs/oauth-redirects.md](docs/oauth-redirects.md). These UI steps are not a record of a live sign-in for this package.
+Team members then go to **Customize → Connectors**, find **Securin Platform**, and click **Connect**. We expect the browser to open Securin sign-in. That flow uses `https://claude.ai/api/mcp/auth_callback`. We list that URI as Needed in [docs/oauth-redirects.md](docs/oauth-redirects.md). We do not treat these UI steps as a completed sign-in.
 
 <img width="832" height="724" alt="3" src="https://github.com/user-attachments/assets/0e193ba2-25f3-4d14-83b1-29efd6c96528" />
 
@@ -138,9 +138,9 @@ The plugin marketplace installs both the MCP server and all 6 skills:
 /plugin install securin-platform@securin-skills
 ```
 
-After install, open `/mcp`, select `securin`, and complete the Securin sign-in. The server in `.mcp.json` is native HTTPS. It does not start `npx` or `mcp-remote`. A passing test is that signed-in session, not only the absence of an `npx` process.
+After install, we open `/mcp`, select `securin`, and complete the Securin sign-in. The server in `.mcp.json` is native HTTPS. It does not start `npx` or `mcp-remote`. We count the test as passed only after that signed-in session, not only because no `npx` process started.
 
-Claude Code sign-in is not safe for users who update the plugin until Keycloak allows `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback`. See [docs/oauth-redirects.md](docs/oauth-redirects.md). This repository does not record a live Claude Code sign-in.
+Claude Code redirect URIs are `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback`. We list them as Needed in [docs/oauth-redirects.md](docs/oauth-redirects.md).
 
 To update later: `/plugin marketplace update securin-skills`.
 
@@ -321,7 +321,7 @@ For Claude Desktop and other `mcp-remote` setups, `mcp-remote` needs to spawn a 
 
 Claude Code uses its own browser sign-in for the native HTTPS server in `.mcp.json`. Run `/mcp`, select `securin`, and authenticate. That path does not go through `mcp-remote` or `~/.mcp-auth`.
 
-Corporate SSO or proxies can block the OAuth callback. Ask IT to allow the callback URL the host prints. Claude Code still needs Keycloak to allow `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback`. See [docs/oauth-redirects.md](docs/oauth-redirects.md).
+Corporate SSO or proxies can block the OAuth callback. Ask IT to allow the callback URL the host prints. We list the Claude Code redirect URIs in [docs/oauth-redirects.md](docs/oauth-redirects.md).
 
 </details>
 

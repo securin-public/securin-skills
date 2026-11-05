@@ -58,7 +58,7 @@ Or copy skill subdirectories into your project's `.agents/skills/`.
 
 ### Cursor Marketplace
 
-The repository root is a Cursor plugin named `securin-platform` at version `0.1.0`.
+We publish the repository root as a Cursor plugin named `securin-platform` at version `0.1.0`.
 
 1. After the listing is approved, install Securin Platform from the Cursor Marketplace.
 2. On first use, sign in with Securin OAuth in the browser.
