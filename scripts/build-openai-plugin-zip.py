@@ -10,7 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
-ZIP_NAME = "securin-platform-openai-0.1.0.zip"
+META_PATH = ROOT / "packaging" / "metadata.json"
 
 INCLUDE_DIRS = ("skills", "assets")
 INCLUDE_FILES = ("LICENSE", "README.md")
@@ -26,13 +26,29 @@ def iter_files(path: Path):
         yield child
 
 
+def load_metadata() -> dict:
+    meta = json.loads(META_PATH.read_text(encoding="utf-8"))
+    if not isinstance(meta, dict):
+        raise SystemExit("packaging/metadata.json must be an object")
+    for key in ("name", "version", "mcpUrl"):
+        value = meta.get(key)
+        if not isinstance(value, str) or not value:
+            raise SystemExit(f"packaging/metadata.json is missing {key}")
+    return meta
+
+
+def openai_zip_name(meta: dict) -> str:
+    return f"{meta['name']}-openai-{meta['version']}.zip"
+
+
 def build(destination: Path | None = None) -> Path:
-    destination = destination or (DIST / ZIP_NAME)
+    meta = load_metadata()
+    destination = destination or (DIST / openai_zip_name(meta))
     destination.parent.mkdir(parents=True, exist_ok=True)
     codex_mcp = {
         "mcpServers": {
             "securin": {
-                "url": "https://mcp.securin.io/mcp"
+                "url": meta["mcpUrl"]
             }
         }
     }
@@ -53,11 +69,11 @@ def build(destination: Path | None = None) -> Path:
             base = ROOT / directory
             for file_path in iter_files(base):
                 archive.write(file_path, file_path.relative_to(ROOT).as_posix())
-    verify(destination)
+    verify(destination, meta)
     return destination
 
 
-def verify(destination: Path) -> None:
+def verify(destination: Path, meta: dict) -> None:
     with zipfile.ZipFile(destination) as archive:
         names = set(archive.namelist())
         required = {
@@ -87,11 +103,11 @@ def verify(destination: Path) -> None:
             raise SystemExit(f"OpenAI zip contains banned paths: {banned[:10]}")
         plugin = json.loads(archive.read("plugin.json"))
         mcp = json.loads(archive.read("mcp.json"))
-        if plugin.get("name") != "securin-platform" or plugin.get("version") != "0.1.0":
-            raise SystemExit("OpenAI zip plugin identity drifted")
+        if plugin.get("name") != meta["name"] or plugin.get("version") != meta["version"]:
+            raise SystemExit("OpenAI zip plugin identity drifted from packaging/metadata.json")
         url = mcp.get("mcpServers", {}).get("securin", {}).get("url")
-        if url != "https://mcp.securin.io/mcp":
-            raise SystemExit("OpenAI zip MCP URL drifted")
+        if url != meta["mcpUrl"]:
+            raise SystemExit("OpenAI zip MCP URL drifted from packaging/metadata.json")
         blob = archive.read("mcp.json") + archive.read("plugin.json")
         if b"clientSecret" in blob or b"http://" in blob:
             raise SystemExit("OpenAI zip contains a secret field or a non HTTPS URL")

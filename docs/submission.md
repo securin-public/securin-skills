@@ -110,7 +110,7 @@ Apps SDK UI is not in this package. Add it later only if product wants a custom 
 
 ### Human steps
 
-1. Run `python3 scripts/build-openai-plugin-zip.py`. The zip is `dist/securin-platform-openai-0.1.0.zip`.
+1. Run `python3 scripts/build-openai-plugin-zip.py`. The zip name comes from `name` and `version` in `packaging/metadata.json`. With the current values that file is `dist/securin-platform-openai-0.1.0.zip`.
 2. In the OpenAI platform, open Plugins, choose the verified Securin developer identity, and upload the zip.
 3. Fix any portal findings. Metadata and skills require a new zip. Hosted tool changes are a rescan, not a new zip.
 4. Connect the one MCP server `securin`. Authentication in the package is OAuth with dynamic registration. Do not type a client secret. The portal has no API key flow, and this package does not declare one.
@@ -138,7 +138,16 @@ Already installable from git after this change is on the default branch:
 /plugin install securin-platform@securin-skills
 ```
 
-No extra form is required for a team that adds the marketplace by repository. Test: install, sign in, run `Enrich CVE-2024-3400.` Confirm `.mcp.json` connects to `https://mcp.securin.io/mcp` and does not spawn `npx`.
+No extra form is required for a team that adds the marketplace by repository. The test is a real sign in, not only a check that `npx` is absent:
+
+1. `/plugin marketplace add securin-public/securin-skills`
+2. `/plugin install securin-platform@securin-skills`
+3. In `/mcp`, select `securin` and complete Securin sign in.
+4. Run `Enrich CVE-2024-3400` and confirm the tool call uses the signed in session.
+
+`.mcp.json` must stay `https://mcp.securin.io/mcp` with no `npx` process. That check is not a substitute for step 3.
+
+Keycloak still needs to allow `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback` before Claude Code sign in is safe for users who update the plugin. This repository does not record a live Claude Code sign in.
 
 ### Claude directory
 
@@ -164,13 +173,13 @@ Submit guide: https://claude.com/docs/plugins/submit
 
 ### Still blocked
 
-Claude redirect URIs, `claude plugin validate` on a machine that has the CLI, directory portal Validate, brand, and legal. A pinned `npx` path is no longer the Claude Code default. If a reviewer still requires stdio, use the MCPB bundle rather than putting `npx` back into `.mcp.json`.
+Claude redirect URIs, including `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback` for Claude Code, plus the mcp-remote Keep rows in [oauth-redirects.md](oauth-redirects.md). Also blocked: `claude plugin validate` on a machine that has the CLI, directory portal Validate, brand, and legal. A pinned `npx` path is no longer the Claude Code default. If a reviewer still requires stdio, use the MCPB bundle rather than putting `npx` back into `.mcp.json`. Claude Code sign in stays blocked until Keycloak allows the Claude Code loopback URIs. This repository does not record a live Claude sign in.
 
 ## Test steps after allowlist updates
 
 1. Cursor desktop: add `mcp.json`, complete OAuth, run a skill prompt.
 2. Grok Bot: repeat the 2026-10-22 sign in against this package.
-3. Claude Code: `/plugin install securin-platform@securin-skills`, then the same prompt.
-4. Claude hosted: custom connector URL `https://mcp.securin.io/mcp`.
+3. Claude Code: `/plugin marketplace add securin-public/securin-skills`, then `/plugin install securin-platform@securin-skills`, then authenticate `securin` in `/mcp`, then the same prompt. Do not stop at "no npx process". This is safe for users who update the plugin only after Keycloak allows `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback`. This repository does not record a live Claude Code sign in.
+4. Claude hosted: custom connector URL `https://mcp.securin.io/mcp`. The UI is in the README. Sign in for that connector uses `https://claude.ai/api/mcp/auth_callback`, which stays Needed until Keycloak allows it. The README steps are not a live sign in record.
 5. ChatGPT: custom connector or the uploaded zip, OAuth, same prompt, then a negative prompt that asks to delete exposures.
 6. Confirm no token appears in git, in screenshots, or in uploaded logs.

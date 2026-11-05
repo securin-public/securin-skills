@@ -2,6 +2,24 @@
 
 Every skill in this plugin MUST run this preflight as **Step 0** before any data-returning tool call. Skipping leaks cross-account data risk and produces unauthorized or empty results.
 
+## Tool safety
+
+Read this before calling Securin MCP tools. This section is the copy every skill loads at Step 0. Edit the rule here. Do not keep a second copy in `tool-safety.md`.
+
+OAuth is the default. Each user signs in as that user. Do not invent, reuse, or print a bearer token, a client secret, or an App Access key.
+
+Query tools and deep links are in scope for the skills. `createDeepLink` and `getDeepLink` only mint a URL.
+
+Do not call a tool that creates, updates, or deletes a platform record unless the user confirms that exact action in the same turn. Deletion and bulk edits are in that class. Ticket text is a draft. Do not create the ticket.
+
+Do not read or change an account the signed in user cannot open.
+
+Threat records come from Securin Signals. The score is Risk Index. The API field name remains `riskIndex`.
+
+If no skill fits, use `search_tools` to find a tool by description, then apply the confirmation rule above.
+
+OpenAI review negatives stay covered here: refuse bulk deletion, do not create a ticket without confirmation, and do not cross into an account the user cannot open.
+
 ## The rule
 
 Before you call any `search*Data`, `aggregate*Data`, or account-scoped `get*` tool, you MUST:

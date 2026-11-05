@@ -70,6 +70,8 @@ Two listings exist, and they are different artifacts.
 
 `.mcp.json` no longer runs `npx`. The Anthropic directory blocks an unpinned `npx` launcher, and a pinned launcher is still held for a reviewer. Native HTTPS avoids that download. Claude Desktop users who need a stdio process keep using `securin-platform.mcpb`.
 
+The Claude Code test is a real sign in. Add the marketplace with `/plugin marketplace add securin-public/securin-skills`, install with `/plugin install securin-platform@securin-skills`, then authenticate `securin` in `/mcp`. Checking that no `npx` process started is not enough. Keycloak still needs to allow `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback` before that sign in is safe for users who update the plugin. This repository does not record a live Claude Code sign in. The claude.ai custom connector UI in the README is a separate path. Its callback `https://claude.ai/api/mcp/auth_callback` stays Needed in [oauth-redirects.md](oauth-redirects.md) because this repository has no live sign in record for it.
+
 Directory submission is a portal flow at https://claude.ai/directory/manage for a plugin bundle and, separately, an MCP connector. `claude plugin validate` is the local syntax check. It was not available in the environment that prepared this change. JSON Schema checks cover the published Schema Store documents saved under `packaging/schemas/`.
 
 ### Claude Desktop MCPB

@@ -1,6 +1,8 @@
 # Tool scope
 
-The six skills query Securin and explain the result. They are not a standing grant to change the platform.
+The skills query Securin and explain the result. They are not a standing grant to change the platform.
+
+Agents load this boundary from `skills/_shared/account-preflight.md`, section Tool safety, because every skill reads that file at Step 0. `skills/_shared/tool-safety.md` only points at that section, so the rule stays in one place. The OpenAI negative cases (bulk deletion, ticket creation without confirmation, and another account) are the same rule.
 
 ## What the skills call
 

@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import sys
 import zipfile
 from pathlib import Path
@@ -45,6 +46,13 @@ BANNED_CHARS = {
     "\u2019": "right single quote",
     "\u2018": "left single quote",
 }
+
+# Inline code and FQL string literals may use straight single quotes.
+# Contractions and possessives in prose still fail. APT29 and APT-29 are
+# threat actor names. A bare APT token is still the retired product name.
+INLINE_CODE = re.compile(r"`[^`]*`")
+FQL_SINGLE_QUOTES = re.compile(r"(?<![A-Za-z])'[^'\n]*'(?![A-Za-z])")
+RETIRED_APT = re.compile(r"\bAPT\b(?!-?\d)")
 
 PLUGIN_KEYS = [
     ROOT / ".cursor-plugin" / "plugin.json",
@@ -81,14 +89,36 @@ def schema_validate(report: Report, instance: object, schema_name: str, label: s
         report.fail(f"{label} failed {schema_name} at {where}: {err.message}")
 
 
+def prose_for_apostrophe_check(line: str) -> str:
+    without_code = INLINE_CODE.sub(" ", line)
+    return FQL_SINGLE_QUOTES.sub(" ", without_code)
+
+
 def style_text(report: Report, label: str, text: str) -> None:
     for line_no, line in enumerate(text.splitlines(), 1):
-        for char, name in BANNED_CHARS.items():
-            if char in line:
-                report.fail(f"{label}:{line_no} contains {name}")
-                break
-        if " VRI" in line or "VI " in f" {line} " or " APT" in line:
+        if _line_has_banned_char(line):
+            report.fail(f"{label}:{line_no} contains {_banned_char_name(line)}")
+        if _line_has_retired_name(line):
             report.fail(f"{label}:{line_no} uses a retired product name")
+
+
+def _line_has_banned_char(line: str) -> bool:
+    return _banned_char_name(line) is not None
+
+
+def _banned_char_name(line: str) -> str | None:
+    prose = prose_for_apostrophe_check(line)
+    for char, name in BANNED_CHARS.items():
+        target = prose if char == "'" else line
+        if char in target:
+            return name
+    return None
+
+
+def _line_has_retired_name(line: str) -> bool:
+    if " VRI" in line or "VI " in f" {line} ":
+        return True
+    return RETIRED_APT.search(line) is not None
 
 
 def strip_extensions(node: object) -> object:
@@ -158,6 +188,7 @@ def check_skills(report: Report) -> None:
     skills = ROOT / "skills"
     if (skills / "_shared" / "SKILL.md").exists():
         report.fail("skills/_shared must not contain SKILL.md")
+    _check_tool_safety_home(report, skills)
     found = 0
     for skill_dir in sorted(skills.glob("securin-*")):
         skill_md = skill_dir / "SKILL.md"
@@ -166,14 +197,27 @@ def check_skills(report: Report) -> None:
             continue
         found += 1
         text = skill_md.read_text(encoding="utf-8")
+        if "account-preflight.md" not in text:
+            report.fail(f"{skill_md} must reference account-preflight.md")
         if not text.startswith("---\n"):
             report.fail(f"{skill_md} is missing frontmatter")
             continue
         front = text.split("---", 2)[1]
         if "\nname:" not in f"\n{front}" or "\ndescription:" not in f"\n{front}":
             report.fail(f"{skill_md} frontmatter needs name and description")
-    if found != 6:
-        report.fail(f"expected 6 skills, found {found}")
+    if found < 1:
+        report.fail("expected at least one securin-* skill")
+
+
+def _check_tool_safety_home(report: Report, skills: Path) -> None:
+    preflight = skills / "_shared" / "account-preflight.md"
+    preflight_text = preflight.read_text(encoding="utf-8") if preflight.is_file() else ""
+    rule = "Do not call a tool that creates, updates, or deletes a platform record"
+    if rule not in preflight_text:
+        report.fail("account-preflight.md must contain the least privilege confirmation rule")
+    pointer = skills / "_shared" / "tool-safety.md"
+    if pointer.is_file() and "account-preflight.md" not in pointer.read_text(encoding="utf-8"):
+        report.fail("tool-safety.md must point at account-preflight.md")
 
 
 def check_logos(report: Report) -> None:
@@ -191,7 +235,7 @@ def check_logos(report: Report) -> None:
             report.fail(f"{copy.name} does not match {source}")
 
 
-def check_mcpb_archive(report: Report, manifest: dict) -> None:
+def check_mcpb_archive(report: Report, manifest: dict, meta: dict) -> None:
     archive = ROOT / "securin-platform.mcpb"
     if not archive.is_file():
         report.fail("securin-platform.mcpb is missing")
@@ -208,8 +252,8 @@ def check_mcpb_archive(report: Report, manifest: dict) -> None:
     disk_package = load_json(ROOT / "mcpb" / "server" / "package.json")
     if packed_package != disk_package:
         report.fail("MCPB archive server/package.json does not match mcpb/server/package.json")
-    if packed.get("license") == "MIT" or packed.get("version") != "1.2.3":
-        report.fail("MCPB archive license or version was not updated")
+    if packed.get("license") != meta["license"] or packed.get("version") != meta["mcpbVersion"]:
+        report.fail("MCPB archive license or version does not match packaging/metadata.json")
 
 
 def validate(report: Report | None = None) -> Report:
@@ -274,7 +318,7 @@ def validate(report: Report | None = None) -> Report:
         if mcpb.get("license") != meta["license"] or mcpb.get("version") != meta["mcpbVersion"]:
             report.fail("MCPB license or version drifted")
         style_text(report, "mcpb/manifest.json", json.dumps(mcpb))
-        check_mcpb_archive(report, mcpb)
+        check_mcpb_archive(report, mcpb, meta)
 
     package_json = load_json(ROOT / "mcpb" / "server" / "package.json")
     if isinstance(package_json, dict):

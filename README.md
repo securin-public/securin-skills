@@ -90,7 +90,7 @@ Organization owners can add the connector directly from [claude.ai](https://clau
 
 <img width="959" height="398" alt="2" src="https://github.com/user-attachments/assets/ee85cba1-0159-4f55-863e-e56e218d73d0" />
 
-Team members then go to **Customize → Connectors**, find **Securin Platform**, and click **Connect** — the browser redirects to Securin for sign-in automatically.
+Team members then go to **Customize → Connectors**, find **Securin Platform**, and click **Connect**. The browser should open Securin sign-in. That sign-in sends the redirect URI `https://claude.ai/api/mcp/auth_callback`. The allowlist status for that URI is Needed, not Verified. See [docs/oauth-redirects.md](docs/oauth-redirects.md). These UI steps are not a record of a live sign-in for this package.
 
 <img width="832" height="724" alt="3" src="https://github.com/user-attachments/assets/0e193ba2-25f3-4d14-83b1-29efd6c96528" />
 
@@ -137,6 +137,10 @@ The plugin marketplace installs both the MCP server and all 6 skills:
 /plugin marketplace add securin-public/securin-skills
 /plugin install securin-platform@securin-skills
 ```
+
+After install, open `/mcp`, select `securin`, and complete the Securin sign-in. The server in `.mcp.json` is native HTTPS. It does not start `npx` or `mcp-remote`. A passing test is that signed-in session, not only the absence of an `npx` process.
+
+Claude Code sign-in is not safe for users who update the plugin until Keycloak allows `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback`. See [docs/oauth-redirects.md](docs/oauth-redirects.md). This repository does not record a live Claude Code sign-in.
 
 To update later: `/plugin marketplace update securin-skills`.
 
@@ -230,7 +234,11 @@ Two endpoints, same tools — pick by how you connect:
 
 ### OAuth (default)
 
-No tokens to manage. Sign in once via your browser; the session caches under `~/.mcp-auth` and refreshes automatically. To switch identities: `rm -rf ~/.mcp-auth` and reconnect (in Claude Code, `/mcp` → select `securin` → **Clear credentials**).
+No tokens to manage. Sign in once in the browser.
+
+Hosts that launch `mcp-remote` (the Desktop `.mcpb` bundle and the manual `npx` examples) cache the session under `~/.mcp-auth`. To switch identities on those hosts, run `rm -rf ~/.mcp-auth` and reconnect.
+
+Claude Code does not use `mcp-remote` or `~/.mcp-auth` for this plugin. `.mcp.json` is a native HTTPS server. After install, run `/mcp`, select `securin`, and authenticate. To switch identities: `/mcp`, select `securin`, then **Clear credentials**.
 
 ### Bearer token (programmatic)
 
@@ -309,7 +317,11 @@ Make sure you have the latest Claude Desktop. If install fails silently, fully q
 <details>
 <summary>Browser sign-in never opens</summary>
 
-`mcp-remote` (used under the hood) needs to spawn a browser. If your environment is headless, look in the host's logs for a manual sign-in URL. Corporate SSO or proxies can break the OAuth callback — ask IT to allow the callback URL printed in the console.
+For Claude Desktop and other `mcp-remote` setups, `mcp-remote` needs to spawn a browser. If the environment is headless, look in the host logs for a manual sign-in URL.
+
+Claude Code uses its own browser sign-in for the native HTTPS server in `.mcp.json`. Run `/mcp`, select `securin`, and authenticate. That path does not go through `mcp-remote` or `~/.mcp-auth`.
+
+Corporate SSO or proxies can block the OAuth callback. Ask IT to allow the callback URL the host prints. Claude Code still needs Keycloak to allow `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback`. See [docs/oauth-redirects.md](docs/oauth-redirects.md).
 
 </details>
 
@@ -351,7 +363,7 @@ rm -rf "$HOME/Library/Application Support/mcp-remote"
 Remove-Item -Recurse -Force $HOME\.mcp-auth
 ```
 
-Also worth checking: are two AI hosts (e.g. Claude Desktop + Claude Code) racing to launch the same `mcp-remote` instance at the same time? Stagger their startup or pick one host per machine.
+Also worth checking: are two `mcp-remote` hosts (for example two Claude Desktop windows, or Desktop plus a manual `npx` config) racing to launch at the same time? Stagger their startup or pick one stdio host per machine. Claude Code native HTTPS does not start `mcp-remote`.
 
 </details>
 

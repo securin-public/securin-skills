@@ -28,6 +28,7 @@ Status values:
 | --- | --- |
 | Verified | Securin confirmed on 2026-10-22 that Keycloak accepts this exact URI, and Grok Bot completed OAuth as a real user. |
 | Needed | A host publishes this URI. Keycloak still needs to allow it. This PR did not complete a live sign in for that host. |
+| Keep | A client that already ships in this repo registers this URI. Leave it on the allowlist when tightening. This change did not repeat a live sign in for it. |
 | Rejected | Securin confirmed on 2026-10-22 that Keycloak does not accept this URI. |
 | Confirm | A secondary writeup names this URI. It is not in the Claude page cited below. Confirm with a live connect before relying on it. |
 
@@ -42,9 +43,11 @@ Status values:
 | Cursor desktop custom scheme | `cursor://anysphere.cursor-mcp/oauth/callback` | Rejected | Securin test on 2026-10-22. Some Cursor builds still send it during registration. |
 | Generic loopback | `http://localhost/callback` | Rejected | Securin test on 2026-10-22 |
 | Generic loopback, IP form | `http://127.0.0.1/callback` | Rejected | Securin test on 2026-10-22 |
-| Claude hosted apps | `https://claude.ai/api/mcp/auth_callback` | Needed | Claude connector authentication docs: exact URI for claude.ai, Claude Desktop, Claude mobile, and Cowork |
+| Claude hosted apps | `https://claude.ai/api/mcp/auth_callback` | Needed | Official Claude connector docs name this exact URI for claude.ai, Claude Desktop, Claude mobile, and Cowork. The README custom connector section shows that UI only. This repository has no live sign in record for this URI, so the status stays Needed. Do not read the README as proof that Keycloak already accepts it. |
 | Claude hosted apps, alternate host | `https://claude.com/api/mcp/auth_callback` | Confirm | Named in a secondary host comparison. The Claude page cited above publishes only the `claude.ai` URI. |
-| Claude Code | `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback` | Needed | Claude docs. The port changes every session. Match the path and ignore the port, for both `localhost` and `127.0.0.1`. |
+| Claude Code | `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback` | Needed | Claude docs. The port changes every session. Match the path and ignore the port, for both `localhost` and `127.0.0.1`. Claude Code sign in is not safe for users who update the plugin until Keycloak allows these URIs. This repository does not record a live Claude Code sign in. |
+| mcp-remote 0.1.38 (MCPB and pinned npx) | `http://localhost:<port>/oauth/callback` | Keep | Default redirect in vendored mcp-remote 0.1.38 (`securin-platform.mcpb` and the README `npx` examples). The CLI host defaults to `localhost` and the path is `/oauth/callback`, which is not the Claude Code path. Leave this URI in place when tightening the allowlist. |
+| mcp-remote 0.1.38, IP host | `http://127.0.0.1:<port>/oauth/callback` | Keep | Used when the process is started with `--host 127.0.0.1`. The callback listener binds `127.0.0.1`, but the registered redirect uses the host flag. Keep this form as well so a tighter allowlist does not drop the Desktop bundle. |
 | ChatGPT and Codex, stable callback | `https://chatgpt.com/connector_platform_oauth_redirect` | Needed | `https://chatgpt.com/oauth/client.json` fetched 2026-10-22, and OpenAI authentication docs |
 | ChatGPT, per connection callback | `https://chatgpt.com/connector/oauth/{callback_id}` | Needed | OpenAI authentication docs. Used when issuer identification requirements are not met. The id is assigned when the connector is created. |
 
@@ -52,18 +55,19 @@ Status values:
 
 Some clients send several redirect URIs in one dynamic registration call. If Keycloak rejects any URI in that call, the whole registration can fail before the browser opens. That is why the rejected custom scheme and the rejected generic loopback paths still matter even when the HTTPS callbacks are allowed.
 
-The verified Grok Bot test used the two Cursor HTTPS callbacks. It did not prove desktop loopback, Claude, or ChatGPT.
+The verified Grok Bot test used the two Cursor HTTPS callbacks. It did not prove desktop loopback, the claude.ai callback, Claude Code loopback, the mcp-remote `/oauth/callback` path, or ChatGPT. The README custom connector section shows the claude.ai UI. It is not a live sign in record, so that callback stays Needed.
 
 ## Open items for the Keycloak admin
 
-1. Allow every row marked Needed. Keep the two Verified HTTPS callbacks.
+1. Allow every row marked Needed. Leave every row marked Keep on the allowlist, including both mcp-remote `/oauth/callback` URIs. Leave the two Verified HTTPS callbacks in place.
 2. Decide whether to keep rejecting `cursor://anysphere.cursor-mcp/oauth/callback`. Cursor desktop dynamic registration may still send it together with the HTTPS callback. A reject on that one URI can fail the whole call.
-3. For Claude Code, accept loopback redirects on any port for `http://localhost/callback` and `http://127.0.0.1/callback`. The exact paths with no port were rejected on 2026-10-22. Port specific `8787` URIs for Cursor desktop are a separate allowlist entry.
-4. Protected resource metadata lists `authorization_servers` as `https://mcp.securin.io` (the `/mcp` well known document uses a trailing slash). The authorization server issuer is `https://auth.securin.io/auth/realms/CyberSecurityWorks`. OpenAI uses the stable ChatGPT callback only when those two strings match and the authorize response returns `iss`. They do not match today, so ChatGPT may use the per connection callback instead. Confirm which callback a real ChatGPT connect sends, then allow that exact URI.
-5. `client_id_metadata_document_supported` is absent. ChatGPT prefers a client metadata document and falls back to dynamic registration. Dynamic registration is advertised and should remain the fallback.
-6. `token_endpoint_auth_methods_supported` does not list `none`. The Cursor client metadata document uses `none` with PKCE. Grok Bot OAuth still completed on 2026-10-22, so the register endpoint may accept a public client even though the metadata list omits `none`. Confirm that behavior and add `none` to the advertised list if public clients are intended.
-7. `authorization_response_iss_parameter_supported` is true. Confirm the authorize response includes `iss` and that the value matches the issuer string with no extra slash or host change.
-8. Prefer PKCE `S256`. `plain` is also advertised. Confirm that leaving `plain` enabled is acceptable.
+3. For Claude Code, accept loopback redirects on any port for `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback`. The exact paths with no port were rejected on 2026-10-22. Port specific `8787` URIs for Cursor desktop are a separate allowlist entry. Claude Code sign in is not safe for users who update the plugin until the port specific loopback URIs are allowed. This document does not record a live Claude Code sign in.
+4. Leave `http://localhost:<port>/oauth/callback` on the allowlist for mcp-remote 0.1.38 (the Desktop `.mcpb` bundle and the pinned `npx` examples). Also leave `http://127.0.0.1:<port>/oauth/callback` for a host flag of `127.0.0.1`. That path is different from the Claude Code `/callback` path and from the rejected generic `http://localhost/callback` row. Do not drop it when tightening the list.
+5. Protected resource metadata lists `authorization_servers` as `https://mcp.securin.io` (the `/mcp` well known document uses a trailing slash). The authorization server issuer is `https://auth.securin.io/auth/realms/CyberSecurityWorks`. OpenAI uses the stable ChatGPT callback only when those two strings match and the authorize response returns `iss`. They do not match today, so ChatGPT may use the per connection callback instead. Confirm which callback a real ChatGPT connect sends, then allow that exact URI.
+6. `client_id_metadata_document_supported` is absent. ChatGPT prefers a client metadata document and falls back to dynamic registration. Dynamic registration is advertised and should remain the fallback.
+7. `token_endpoint_auth_methods_supported` does not list `none`. The Cursor client metadata document uses `none` with PKCE. Grok Bot OAuth still completed on 2026-10-22, so the register endpoint may accept a public client even though the metadata list omits `none`. Confirm that behavior and add `none` to the advertised list if public clients are intended.
+8. `authorization_response_iss_parameter_supported` is true. Confirm the authorize response includes `iss` and that the value matches the issuer string with no extra slash or host change.
+9. Prefer PKCE `S256`. `plain` is also advertised. Confirm that leaving `plain` enabled is acceptable.
 
 ## Optional bearer path
 
