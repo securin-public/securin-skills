@@ -27,7 +27,7 @@ trap 'rm -rf "$stage"' EXIT
 cp -R "$SHARED/." "$stage/"
 while IFS= read -r -d '' md; do
   rel="${md#$stage/}"
-  banner="<!-- Mirrored from skills/_shared/${rel}. Do not edit here — edit the source and run scripts/sync-shared.sh. -->"
+  banner="<!-- Mirrored from skills/_shared/${rel}. Do not edit here; edit the source and run scripts/sync-shared.sh. -->"
   { printf '%s\n\n' "$banner"; cat "$md"; } > "$md.tmp"
   mv "$md.tmp" "$md"
 done < <(find "$stage" -type f -name '*.md' -print0)

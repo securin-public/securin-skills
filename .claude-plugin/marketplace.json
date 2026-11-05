@@ -1,30 +1,36 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "securin-skills",
-  "metadata": {
-    "description": "Securin vulnerability-management skills and MCP tooling for AI agents"
-  },
+  "description": "Securin Platform skills and remote MCP server for exposure triage, CVE enrichment, threat correlation, and remediation guidance.",
+  "version": "0.1.0",
   "owner": {
     "name": "Securin",
-    "email": "support@securin.io"
+    "email": "support@securin.io",
+    "url": "https://securin.io"
+  },
+  "metadata": {
+    "description": "Securin Platform skills and remote MCP server for exposure triage, CVE enrichment, threat correlation, and remediation guidance.",
+    "version": "0.1.0"
   },
   "plugins": [
     {
       "name": "securin-platform",
       "source": "./",
-      "description": "Securin Platform workflows for triage, CVE enrichment, threat correlation, and remediation guidance — plus 50+ MCP tools for the Securin API.",
+      "description": "Securin Platform skills for exposure triage, CVE enrichment, threat correlation, and remediation guidance. Connects to the Securin MCP server with per user OAuth single sign on. A Securin account is required.",
       "version": "0.1.0",
       "author": {
         "name": "Securin",
-        "url": "https://www.securin.io"
+        "email": "support@securin.io",
+        "url": "https://securin.io"
       },
-      "homepage": "https://github.com/securin-public/securin-skills",
+      "homepage": "https://securin.io",
       "repository": "https://github.com/securin-public/securin-skills",
+      "license": "LicenseRef-Securin-Proprietary",
       "keywords": [
         "securin",
-        "vulnerability-management",
-        "exposure-management",
+        "vulnerability",
+        "exposure",
         "cve",
-        "threat-intelligence",
         "remediation"
       ]
     }

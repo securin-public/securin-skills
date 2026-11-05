@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "securin": {
+      "type": "http",
+      "url": "https://mcp.securin.io/mcp"
+    }
+  }
+}

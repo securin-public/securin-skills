@@ -67,7 +67,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
   "mcpServers": {
     "securin": {
       "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.securin.io/mcp"]
+      "args": ["-y", "mcp-remote@0.1.38", "https://mcp.securin.io/mcp"]
     }
   }
 }
@@ -90,7 +90,7 @@ Organization owners can add the connector directly from [claude.ai](https://clau
 
 <img width="959" height="398" alt="2" src="https://github.com/user-attachments/assets/ee85cba1-0159-4f55-863e-e56e218d73d0" />
 
-Team members then go to **Customize → Connectors**, find **Securin Platform**, and click **Connect** — the browser redirects to Securin for sign-in automatically.
+Team members then go to **Customize → Connectors**, find **Securin Platform**, and click **Connect**. We expect the browser to open Securin sign-in. That flow uses `https://claude.ai/api/mcp/auth_callback`. We list that URI as Needed in [docs/oauth-redirects.md](docs/oauth-redirects.md). We do not treat these UI steps as a completed sign-in.
 
 <img width="832" height="724" alt="3" src="https://github.com/user-attachments/assets/0e193ba2-25f3-4d14-83b1-29efd6c96528" />
 
@@ -137,6 +137,10 @@ The plugin marketplace installs both the MCP server and all 6 skills:
 /plugin marketplace add securin-public/securin-skills
 /plugin install securin-platform@securin-skills
 ```
+
+After install, we open `/mcp`, select `securin`, and complete the Securin sign-in. The server in `.mcp.json` is native HTTPS. It does not start `npx` or `mcp-remote`. We count the test as passed only after that signed-in session, not only because no `npx` process started.
+
+Claude Code redirect URIs are `http://localhost:<port>/callback` and `http://127.0.0.1:<port>/callback`. We list them as Needed in [docs/oauth-redirects.md](docs/oauth-redirects.md).
 
 To update later: `/plugin marketplace update securin-skills`.
 
@@ -230,7 +234,11 @@ Two endpoints, same tools — pick by how you connect:
 
 ### OAuth (default)
 
-No tokens to manage. Sign in once via your browser; the session caches under `~/.mcp-auth` and refreshes automatically. To switch identities: `rm -rf ~/.mcp-auth` and reconnect (in Claude Code, `/mcp` → select `securin` → **Clear credentials**).
+No tokens to manage. Sign in once in the browser.
+
+Hosts that launch `mcp-remote` (the Desktop `.mcpb` bundle and the manual `npx` examples) cache the session under `~/.mcp-auth`. To switch identities on those hosts, run `rm -rf ~/.mcp-auth` and reconnect.
+
+Claude Code does not use `mcp-remote` or `~/.mcp-auth` for this plugin. `.mcp.json` is a native HTTPS server. After install, run `/mcp`, select `securin`, and authenticate. To switch identities: `/mcp`, select `securin`, then **Clear credentials**.
 
 ### Bearer token (programmatic)
 
@@ -264,7 +272,7 @@ claude mcp add securin --transport http \
   "mcpServers": {
     "securin": {
       "command": "npx",
-      "args": ["-y", "mcp-remote", "https://mcp.securin.io/api/mcp",
+      "args": ["-y", "mcp-remote@0.1.38", "https://mcp.securin.io/api/mcp",
                "--header", "Authorization:${AUTH_TOKEN}"],
       "env": { "AUTH_TOKEN": "Bearer <access-token>" }
     }
@@ -309,7 +317,11 @@ Make sure you have the latest Claude Desktop. If install fails silently, fully q
 <details>
 <summary>Browser sign-in never opens</summary>
 
-`mcp-remote` (used under the hood) needs to spawn a browser. If your environment is headless, look in the host's logs for a manual sign-in URL. Corporate SSO or proxies can break the OAuth callback — ask IT to allow the callback URL printed in the console.
+For Claude Desktop and other `mcp-remote` setups, `mcp-remote` needs to spawn a browser. If the environment is headless, look in the host logs for a manual sign-in URL.
+
+Claude Code uses its own browser sign-in for the native HTTPS server in `.mcp.json`. Run `/mcp`, select `securin`, and authenticate. That path does not go through `mcp-remote` or `~/.mcp-auth`.
+
+Corporate SSO or proxies can block the OAuth callback. Ask IT to allow the callback URL the host prints. We list the Claude Code redirect URIs in [docs/oauth-redirects.md](docs/oauth-redirects.md).
 
 </details>
 
@@ -351,7 +363,7 @@ rm -rf "$HOME/Library/Application Support/mcp-remote"
 Remove-Item -Recurse -Force $HOME\.mcp-auth
 ```
 
-Also worth checking: are two AI hosts (e.g. Claude Desktop + Claude Code) racing to launch the same `mcp-remote` instance at the same time? Stagger their startup or pick one host per machine.
+Also worth checking: are two `mcp-remote` hosts (for example two Claude Desktop windows, or Desktop plus a manual `npx` config) racing to launch at the same time? Stagger their startup or pick one stdio host per machine. Claude Code native HTTPS does not start `mcp-remote`.
 
 </details>
 
@@ -438,6 +450,10 @@ Each skill lives in `skills/<skill-name>/SKILL.md`. To improve one:
 - Match the formatting and tone of existing skills for consistency.
 
 ---
+
+## Marketplace packaging
+
+Listing files for Cursor, Grok Bot, OpenAI, and Claude are in this repository. Read [docs/marketplaces.md](docs/marketplaces.md) for the format used by each host. Human submission steps are in [docs/submission.md](docs/submission.md). OAuth redirect URIs are in [docs/oauth-redirects.md](docs/oauth-redirects.md).
 
 ## Learn more
 

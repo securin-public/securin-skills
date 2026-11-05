@@ -2,20 +2,25 @@
   "manifest_version": "0.3",
   "name": "securin-platform",
   "display_name": "Securin Platform",
-  "version": "1.2.2",
-  "description": "Securin Platform MCP server (remote, OAuth via browser)",
-  "long_description": "Connects Claude Desktop to the Securin Platform MCP server at https://mcp.securin.io/mcp. Authentication is delegated to mcp-remote, which opens a browser to auth.securin.io on first use and caches credentials under ~/.mcp-auth. No API keys or tokens to paste.",
+  "version": "1.2.3",
+  "description": "Securin Platform desktop bridge to the remote MCP server. Each user signs in with OAuth.",
+  "long_description": "Connects Claude Desktop to the Securin Platform MCP server at https://mcp.securin.io/mcp. The bundled bridge opens a browser for Securin OAuth on first use and keeps the session on the local machine. OAuth is the default. This file does not contain an access token.",
   "author": {
     "name": "Securin",
+    "email": "support@securin.io",
     "url": "https://securin.io"
   },
   "homepage": "https://securin.io",
   "documentation": "https://github.com/securin-public/securin-skills",
   "support": "https://github.com/securin-public/securin-skills/issues",
   "icon": "icon.png",
-  "license": "MIT",
-  "privacy_policies": ["https://www.securin.io/privacy-policy/"],
-  "keywords": ["securin", "security", "vulnerability", "cve", "exposure", "attack-surface"],
+  "license": "LicenseRef-Securin-Proprietary",
+  "privacy_policies": ["https://www.securin.io/privacy-policy"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/securin-public/securin-skills"
+  },
+  "keywords": ["securin", "vulnerability", "exposure", "cve", "remediation"],
   "server": {
     "type": "node",
     "entry_point": "server/node_modules/mcp-remote/dist/proxy.js",

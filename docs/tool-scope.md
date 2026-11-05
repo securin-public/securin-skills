@@ -1,0 +1,29 @@
+# Tool scope
+
+We use the skills to query Securin and explain the result. They are not a standing grant to change the platform.
+
+We load this boundary from `skills/_shared/account-preflight.md`, section Tool safety, because every skill reads that file at Step 0. `skills/_shared/tool-safety.md` only points at that section, so the rule stays in one place. The OpenAI negative cases (bulk deletion, ticket creation without confirmation, and another account) are the same rule.
+
+## What the skills call
+
+The skills name search, aggregate, field lookup, and deep link tools. Examples include `searchExposureData`, `searchVulnerabilityData`, `aggregateAssetData`, `getApiFields`, `createDeepLink`, and `getDeepLink`.
+
+`createDeepLink` and `createDeepLinkForView` mint a platform URL for a filter the user already asked to see. They do not change exposure records, asset records, or tickets.
+
+In `securin-remediation-guidance` we draft ticket text for the user to copy. We do not create the ticket.
+
+## Confirmation rule
+
+The remote server can expose tools beyond the six skills. `search_tools` is the discovery tool. We do not add host permissions and we do not preapprove tools.
+
+Do not call a tool that creates, updates, or deletes a platform record unless the user confirms that exact action in the same turn. Deletion, bulk edits, and ticket creation stay in that class. A deep link is not in that class.
+
+If a tool result would send data outside the accounts the signed in user can open, stop and say so.
+
+## What we do not claim
+
+A full tool inventory needs a signed in session. We did not call the live server with a user token, so we do not claim that every remote tool is read only. The skill files are the boundary we control.
+
+## Names
+
+Threat data from Securin is Securin Signals. The score is Risk Index. The API field name remains `riskIndex`.

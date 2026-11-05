@@ -1,12 +1,8 @@
 {
   "mcpServers": {
     "securin": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "https://mcp.securin.io/mcp"
-      ]
+      "type": "http",
+      "url": "https://mcp.securin.io/mcp"
     }
   }
 }
